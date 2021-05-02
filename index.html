@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chia</title>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./buefy.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <b-button @click="load">Load</b-button>
+    <div v-if="plot">
+      {{plot.jobs.length}}
+
+      <!-- <apexchart width="500" type="bar" :options="options" :series="series"></apexchart> -->
+<b-table :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed
+              :show-detail-icon="true">
+              <template v-for="column in columns">
+                <b-table-column :key="column.id" v-bind="column">
+                  <template v-slot="props">
+                    <template>
+                      {{ props.row[column.field] }}
+                    </template>
+                  </template>
+                </b-table-column>
+
+              </template>
+
+              <template #detail="props">
+                <div class="content">
+                  <p>
+                    <strong>{{ props.row.title }}</strong>
+                    <small>@{{ props.row.year }}</small>
+                  </p>
+                  <b-taglist>
+                    <b-tag v-for="(author,idx) in props.row.authors" :key="idx" type="is-primary is-light">
+                      <b-icon icon="human-male" size="is-small"></b-icon>
+                      {{author}}
+                    </b-tag>
+                  </b-taglist>
+                  <b-field label="Title" label-position="on-border">
+                    <b-input v-model="notes[props.row.doi].title" size="is-small"></b-input>
+                  </b-field>
+                  <b-field label="Highlight" label-position="on-border">
+                    <b-input v-model="notes[props.row.doi].highlight" type="textarea" size="is-small"></b-input>
+                  </b-field>
+                  <b-field label="Note" label-position="on-border">
+                    <b-input v-model="notes[props.row.doi].note" type="textarea" size="is-small"></b-input>
+                  </b-field>
+                  <b-field label="Tags" label-position="on-border">
+                    <b-taginput v-model="notes[props.row.doi].tags" ellipsis icon="label" size="is-small"
+                      placeholder="Add a tag" aria-close-label="Delete this tag">
+                    </b-taginput>
+                  </b-field>
+                  <b-taglist>
+                    <template v-for="tag in tags">
+                      <b-tag type="is-info is-light">{{tag.tag}}</b-tag>
+                    </template>
+                  </b-taglist>
+                </div>
+              </template>
+            </b-table>
+
+    </div>
+
+
+
+    <div v-if="false" class="container">
+      <b-tabs v-model="activeTab">
+        <b-tab-item label="Papers" icon="file-document-multiple-outline" :disabled="!papers">
+          <template v-if="papers">
+            <b-collapse class="card" v-model="isKeywordOpen" animation="slide">
+              <template #trigger="props">
+                <div class="card-header" role="button">
+                  <p class="card-header-title">
+                    Keywords
+                  </p>
+                  <a class="card-header-icon">
+                    <b-icon :icon="props.open ? 'menu-down' : 'menu-up'">
+                    </b-icon>
+                  </a>
+                </div>
+              </template>
+
+              <div class="card-content">
+                <div v-if="isKeywordOpen" class="buttons">
+                  <b-button v-for="word in words" :key="word.Word" type="is-light" size="is-small"
+                    @click="search(word.Word)">
+                    {{word.Word}}
+                    <b-tag type="is-light is-info">{{word.Count}}</b-tag>
+                  </b-button>
+                </div>
+              </div>
+            </b-collapse>
+
+            <b-field grouped group-multiline>
+              <template v-for="column in columns">
+                <template v-if="column.isSearchable">
+                  <template v-if="column.options">
+                    <b-select v-model="column.filter" size="is-small">
+                      <option value=""></option>
+                      <option v-for="option in column.options" :value="option.value">
+                        {{ option.name }}
+                      </option>
+                    </b-select>
+                  </template>
+                  <template v-else>
+                    <b-input :placeholder="column.label" v-model="column.filter" size="is-small"
+                      icon-right="close-circle" icon-right-clickable @icon-right-click="column.filter = ''"></b-input>
+                  </template>
+                </template>
+              </template>
+
+              <b-tag>{{filterPapers.length}}</b-tag>
+
+              <b-select v-model="perPage" size="is-small">
+                <option value="10">10 per page</option>
+                <option value="20">20 per page</option>
+                <option value="50">50 per page</option>
+                <option value="90">90 per page</option>
+              </b-select>
+
+              <b-checkbox v-model="noteExist" size="is-small">
+                Note Exist?
+              </b-checkbox>
+            </b-field>
+
+            <b-table :data="filterPapers" :narrowed="true" :paginated="true" :per-page="perPage" detailed
+              :show-detail-icon="false">
+              <template v-for="column in columns">
+                <b-table-column :key="column.id" v-bind="column">
+                  <template v-slot="props">
+                    <template v-if="column.field == 'title'">
+                      <a :href="props.row['doi']" target="_blank">
+                        <b-icon icon="file-document-outline" size="is-small"></b-icon>
+                      </a>
+                      <a :href="'https://dblp.uni-trier.de/search?q=' + props.row[column.field]" target="_blank">
+                        <b-icon icon="select-search" size="is-small"></b-icon>
+                      </a>
+                      <span v-html="props.row['highlight']"
+                        @click="expandNote(props.row);props.toggleDetails(props.row)"></span>
+                      <b-tooltip :label="props.row['publisher']">
+                        <b-tag type="is-light is-info">{{props.row['pub']}}</b-tag>
+                      </b-tooltip>
+                    </template>
+                    <template v-else-if="column.field == 'category'">
+                      <template v-if="props.row[column.field] && ccfcats[props.row[column.field]-1]">
+                        <b-tooltip :label="ccfcats[props.row[column.field]-1].title">
+                          {{ ccfcats[props.row[column.field]-1].icon }}
+                        </b-tooltip>
+                      </template>
+                    </template>
+                    <template v-else>
+                      {{ props.row[column.field] }}
+                    </template>
+                  </template>
+                </b-table-column>
+
+              </template>
+
+              <template #detail="props">
+                <div class="content">
+                  <p>
+                    <strong>{{ props.row.title }}</strong>
+                    <small>@{{ props.row.year }}</small>
+                  </p>
+                  <b-taglist>
+                    <b-tag v-for="(author,idx) in props.row.authors" :key="idx" type="is-primary is-light">
+                      <b-icon icon="human-male" size="is-small"></b-icon>
+                      {{author}}
+                    </b-tag>
+                  </b-taglist>
+                  <b-field label="Title" label-position="on-border">
+                    <b-input v-model="notes[props.row.doi].title" size="is-small"></b-input>
+                  </b-field>
+                  <b-field label="Highlight" label-position="on-border">
+                    <b-input v-model="notes[props.row.doi].highlight" type="textarea" size="is-small"></b-input>
+                  </b-field>
+                  <b-field label="Note" label-position="on-border">
+                    <b-input v-model="notes[props.row.doi].note" type="textarea" size="is-small"></b-input>
+                  </b-field>
+                  <b-field label="Tags" label-position="on-border">
+                    <b-taginput v-model="notes[props.row.doi].tags" ellipsis icon="label" size="is-small"
+                      placeholder="Add a tag" aria-close-label="Delete this tag">
+                    </b-taginput>
+                  </b-field>
+                  <b-taglist>
+                    <template v-for="tag in tags">
+                      <b-tag type="is-info is-light">{{tag.tag}}</b-tag>
+                    </template>
+                  </b-taglist>
+                </div>
+              </template>
+            </b-table>
+
+            <b-collapse class="card" v-model="isOutputOpen" animation="slide">
+              <template #trigger="props">
+                <div class="card-header" role="button">
+                  <p class="card-header-title">
+                    Output
+                  </p>
+                  <a class="card-header-icon">
+                    <b-icon :icon="props.open ? 'menu-down' : 'menu-up'">
+                    </b-icon>
+                  </a>
+                </div>
+              </template>
+
+              <div class="card-content">
+                <div v-if="isOutputOpen">
+                  <b-field label="Output" label-position="on-border">
+                    <b-input type="textarea" readonly :value="JSON.stringify(notes)"></b-input>
+                  </b-field>
+                </div>
+              </div>
+            </b-collapse>
+          </template>
+          <div v-else>
+            <b-skeleton width="60%" :animated="true"></b-skeleton>
+            <b-skeleton width="80%" :animated="true"></b-skeleton>
+            <b-skeleton width="20%" :animated="true"></b-skeleton>
+            <b-skeleton width="40%" :animated="true"></b-skeleton>
+            <b-skeleton width="100%" :animated="true"></b-skeleton>
+          </div>
+        </b-tab-item>
+
+        <b-tab-item label="Patent" icon="script-text-outline" :disabled="!patents">
+          <template v-if="patents">
+
+            <b-field grouped group-multiline>
+              <template v-for="column in patent.columns">
+                <template v-if="column.isSearchable">
+                  <template v-if="column.options">
+                    <b-select v-model="column.filter" size="is-small">
+                      <option value=""></option>
+                      <option v-for="option in column.options" :value="option.value">
+                        {{ option.name }}
+                      </option>
+                    </b-select>
+                  </template>
+                  <template v-else>
+                    <b-input :placeholder="column.label" v-model="column.filter" size="is-small"
+                      icon-right="close-circle" icon-right-clickable @icon-right-click="column.filter = ''"></b-input>
+                  </template>
+                </template>
+              </template>
+
+              <b-tag>{{filterPatents.length}}</b-tag>
+
+              <b-select v-model="patent.perPage" size="is-small">
+                <option value="10">10 per page</option>
+                <option value="20">20 per page</option>
+                <option value="50">50 per page</option>
+                <option value="90">90 per page</option>
+              </b-select>
+            </b-field>
+
+            <b-table :data="filterPatents" :narrowed="true" :paginated="true" :per-page="patent.perPage" detailed
+              :show-detail-icon="false">
+              <template v-for="column in patent.columns">
+                <b-table-column :key="column.id" v-bind="column">
+                  <template v-slot="props">
+                    <template v-if="column.field == 'title'">
+                      <!-- <a :href="props.row['doi']" target="_blank">
+                        <b-icon icon="file-document-outline" size="is-small"></b-icon>
+                      </a> -->
+                      <a :href="'http://epub.sipo.gov.cn/' + props.row['qr']" target="_blank">
+                        <b-icon icon="qrcode" size="is-small"></b-icon>
+                      </a>
+                      <a :href="'http://epub.sipo.gov.cn/' + props.row['img']" target="_blank">
+                        <b-icon icon="select-search" size="is-small"></b-icon>
+                      </a>
+                      <span v-html="props.row['highlight']"
+                        @click="props.toggleDetails(props.row)"></span>
+                      <!-- <b-tooltip :label="props.row['publisher']">
+                        <b-tag type="is-light is-info">{{props.row['pub']}}</b-tag>
+                      </b-tooltip> -->
+                    </template>
+                    <!-- <template v-else-if="column.field == 'category'">
+                      <template v-if="props.row[column.field] && ccfcats[props.row[column.field]-1]">
+                        <b-tooltip :label="ccfcats[props.row[column.field]-1].title">
+                          {{ ccfcats[props.row[column.field]-1].icon }}
+                        </b-tooltip>
+                      </template>
+                    </template> -->
+                    <template v-else>
+                      {{ props.row[column.field] }}
+                    </template>
+                  </template>
+                </b-table-column>
+
+              </template>
+
+              <template #detail="props">
+                <div class="content">
+                  <p>
+                    <strong>{{ props.row.title }}</strong>
+                    <small>{{ props.row.pubdate }}</small>
+                  </p>
+                  <b-taglist>
+                    <b-tag v-for="(author,idx) in props.row.inventors" :key="idx" type="is-primary is-light">
+                      <b-icon icon="human-male" size="is-small"></b-icon>
+                      {{author}}
+                    </b-tag>
+                  </b-taglist>
+                  <b-taglist>
+                    <b-tag v-for="(author,idx) in props.row.patentees" :key="idx" type="is-primary is-light">
+                      <b-icon icon="office-building-outline" size="is-small"></b-icon>
+                      {{author}}
+                    </b-tag>
+                  </b-taglist>
+                  <p>
+                    {{props.row.desc}}
+                  </p>
+                </div>
+              </template>
+            </b-table>
+          </template>
+          <div v-else>
+            <b-skeleton width="60%" :animated="true"></b-skeleton>
+            <b-skeleton width="80%" :animated="true"></b-skeleton>
+            <b-skeleton width="20%" :animated="true"></b-skeleton>
+            <b-skeleton width="40%" :animated="true"></b-skeleton>
+            <b-skeleton width="100%" :animated="true"></b-skeleton>
+          </div>
+        </b-tab-item>
+      </b-tabs>
+
+    </div>
+    <footer v-if="false" class="footer">
+      <div class="content has-text-centered">
+        <p>
+          <strong>Blockchain Survey</strong> by <a href="https://icerdesign.com">Liang Shuang(Icer)</a>
+          @<a href="https://www.sjtu.edu.cn/">SJTU</a>.
+          <span v-if="papers">
+            Data generated from <a href="https://dblp.org/xml/release/">{{filename}}</a>.
+            <br>
+            Using filter:
+            <span v-for="(count, word, idx) in stats">
+              <b-tooltip :label="count.toString()" type="is-light" position="is-top">
+                <span class="is-size-6 has-text-primary">{{word}}</span>
+              </b-tooltip>
+              <span v-if="idx != Object.keys(stats).length - 1">/</span>
+            </span>
+            .
+      </div>
+      </p>
+  </div>
+  </footer>
+
+  </div>
+  <script src="vue.js"></script>
+  <script src="buefy.min.js"></script>
+  <script src="apexcharts.js"></script>
+  <script src="vue-apexcharts.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
