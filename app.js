@@ -58,8 +58,11 @@ var app = new Vue({
                     console.log(json);
                     this.plot = json.plot;
                     this.farm = json.farm;
+                    this.plot.name="Plot Machine";
+                    this.farm.name="Farm Machine";
                     this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
                     this.calcMap();
+                    this.calcCpuMap();
                 });
 
         },
@@ -70,6 +73,8 @@ var app = new Vue({
             if (p == 2) return 35 + n * 3;
             if (p == 3) return 56 + n * 5;
             if (p == 4) return 98;
+        },
+        calcCpuMap() {
         },
         calcMap() {
             const pn = this.farm.farm.plotCount;

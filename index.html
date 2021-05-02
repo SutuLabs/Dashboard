@@ -124,8 +124,28 @@
         </div>
       </div>
 
+      <div class="columns is-desktop">
+        <div class="column is-half" v-for="machine in [plot, farm]">
+          <nav class="panel">
+            <p class="panel-heading">
+              {{machine.name}}
+            </p>
+            <div>
+              {{machine.memory}}
+            </div>
+            <div>
+              {{machine.process}}
+            </div>
+            <div>
+              {{machine.cpus}}
+            </div>
+          </nav>
+        </div>
+      </div>
 
-      <b-table :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed :show-detail-icon="true">
+
+      <b-table v-if="false" :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed
+        :show-detail-icon="true">
         <template v-for="column in columns">
           <b-table-column :key="column.id" v-bind="column">
             <template v-slot="props">
