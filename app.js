@@ -58,11 +58,12 @@ var app = new Vue({
                     console.log(json);
                     this.plot = json.plot;
                     this.farm = json.farm;
-                    this.plot.name="Plot Machine";
-                    this.farm.name="Farm Machine";
+                    this.plot.name = "Plot Machine";
+                    this.farm.name = "Farm Machine";
                     this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
                     this.calcMap();
-                    this.calcCpuMap();
+                    this.calcCpuMap(this.plot);
+                    this.calcCpuMap(this.farm);
                 });
 
         },
@@ -74,7 +75,63 @@ var app = new Vue({
             if (p == 3) return 56 + n * 5;
             if (p == 4) return 98;
         },
-        calcCpuMap() {
+        calcCpuMap(machine) {
+            machine.cpuMap = {
+                data: [{
+                    name: 'Cpu',
+                    data: machine.cpus.map(_ => 100 - _.idle),
+                }],
+                chartOptions: {
+                    chart: {
+                        type: 'bar',
+                        height: 350
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            colors: {
+                                ranges: [{
+                                    from: 0,
+                                    to: 100,
+                                    color: "#FF0000"
+                                }]
+                            },
+                            columnWidth: '55%',
+                            endingShape: 'rounded'
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    xaxis: {
+                        categories: machine.cpus.map((_, i) => i),
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'CPU Usage'
+                        },
+                        max: 100,
+                        min: 0,
+                        decimalsInFloat: 0,
+                    },
+                    fill: {
+                        opacity: 1
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val + " %"
+                            }
+                        }
+                    }
+                }
+            };
+            console.log(machine.cpuMap)
         },
         calcMap() {
             const pn = this.farm.farm.plotCount;

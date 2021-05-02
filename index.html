@@ -130,14 +130,12 @@
             <p class="panel-heading">
               {{machine.name}}
             </p>
+            <apexchart :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
             <div>
               {{machine.memory}}
             </div>
             <div>
               {{machine.process}}
-            </div>
-            <div>
-              {{machine.cpus}}
             </div>
           </nav>
         </div>
