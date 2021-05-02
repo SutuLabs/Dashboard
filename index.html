@@ -16,7 +16,7 @@
     <div v-if="plot">
       {{plot.jobs.length}}
 
-      <!-- <apexchart width="500" type="bar" :options="options" :series="series"></apexchart> -->
+      <apexchart height="300" type="heatmap" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
 <b-table :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed
               :show-detail-icon="true">
               <template v-for="column in columns">

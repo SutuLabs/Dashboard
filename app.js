@@ -8,20 +8,10 @@ var app = new Vue({
         return {
             farm: null,
             plot: null,
-            options: {
-                chart: {
-                    id: 'vuechart-example'
-                },
-                xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-                }
-            },
-            series: [{
-                name: 'series-1',
-                data: [30, 40, 45, 50, 49, 60, 70, 91]
-            }],
-            columns: [
-                {
+
+            diskMap: null,
+
+            columns: [{
                     field: 'id',
                     label: 'ID',
                 },
@@ -68,9 +58,102 @@ var app = new Vue({
                     console.log(json);
                     this.plot = json.plot;
                     this.farm = json.farm;
+                    this.calcMap();
                 });
 
-        }
+        },
+        calcMap() {
+            const pn = this.farm.farm.plotCount;
+            const tt = 12;
+            const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => a - b);
+            console.log(plots,this.plot.jobs);
+            const series = new Array(10).fill().map((_, rowi) => ({
+                name: rowi+1,
+                data: new Array(tt).fill().map((_, coli) => {
+                    const idx = coli * 10 + rowi;
+                    if (idx < pn) return 6;
+                    if (idx - pn >= plots.length) return 0;
+                    const curplot = plots[idx - pn];
+                    return curplot;
+                })
+            }));
+
+
+            this.diskMap = {
+                series,
+                chartOptions: {
+                    chart: {
+                        height: 350,
+                        type: 'heatmap',
+                    },
+                    plotOptions: {
+                        heatmap: {
+                            shadeIntensity: 0.5,
+                            radius: 0,
+                            // useFillColorAsStroke: true,
+                            colorScale: {
+                                ranges: [{
+                                        from: 0,
+                                        to: 0,
+                                        name: 'Empty',
+                                        color: '#DDDDDD'
+                                    },
+                                    {
+                                        from: 1,
+                                        to: 1,
+                                        name: 'Phase 1',
+                                        color: '#FFA100'
+                                    },
+                                    {
+                                        from: 2,
+                                        to: 2,
+                                        name: 'Phase 2',
+                                        color: '#FF00FF'
+                                    },
+                                    {
+                                        from: 3,
+                                        to: 3,
+                                        name: 'Phase 3',
+                                        color: '#FF0000'
+                                    },
+                                    {
+                                        from: 4,
+                                        to: 4,
+                                        name: 'Phase 4',
+                                        color: '#FFB200'
+                                    },
+                                    {
+                                        from: 5,
+                                        to: 5,
+                                        name: 'Moving',
+                                        color: '#128FD9'
+                                    },
+                                    {
+                                        from: 6,
+                                        to: 6,
+                                        name: 'Harvesting',
+                                        color: '#00A100'
+                                    },
+                                ]
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        width: 1
+                    },
+                    title: {
+                        text: '磁盘工作情况'
+                    },
+                },
+
+
+            };
+            console.log(this.diskMap);
+        },
+
     },
     computed: {},
 })
