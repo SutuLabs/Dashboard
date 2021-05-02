@@ -58,17 +58,26 @@ var app = new Vue({
                     console.log(json);
                     this.plot = json.plot;
                     this.farm = json.farm;
+                    this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
                     this.calcMap();
                 });
 
+        },
+        calcProgress(phase) {
+            const p = Number(phase[0]);
+            const n = Number(phase[2]);
+            if (p == 1) return n * 5;
+            if (p == 2) return 35 + n * 3;
+            if (p == 3) return 56 + n * 5;
+            if (p == 4) return 98;
         },
         calcMap() {
             const pn = this.farm.farm.plotCount;
             const tt = 12;
             const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => a - b);
-            console.log(plots,this.plot.jobs);
+            console.log(plots, this.plot.jobs);
             const series = new Array(10).fill().map((_, rowi) => ({
-                name: rowi+1,
+                name: rowi + 1,
                 data: new Array(tt).fill().map((_, coli) => {
                     const idx = coli * 10 + rowi;
                     if (idx < pn) return 6;

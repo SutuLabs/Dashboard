@@ -14,56 +14,75 @@
   <div id="app">
     <b-button @click="load">Load</b-button>
     <div v-if="plot">
-      {{plot.jobs.length}}
+      {{plot.jobs.length}} Jobs
 
-      <apexchart height="300" type="heatmap" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
-<b-table :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed
-              :show-detail-icon="true">
-              <template v-for="column in columns">
-                <b-table-column :key="column.id" v-bind="column">
-                  <template v-slot="props">
-                    <template>
-                      {{ props.row[column.field] }}
-                    </template>
-                  </template>
-                </b-table-column>
+      <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
 
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-half" v-for="job in plot.jobs">
+          <b-progress format="percent" :max="100">
+            <template #bar>
+              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress" type="is-danger">
+              </b-progress-bar>
+              <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
+              </b-progress-bar>
+              <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
+              </b-progress-bar>
+              <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+              </b-progress-bar>
+            </template>
+          </b-progress>
+          {{job.id}}: {{job.wallTime}}, {{job.phase}}, {{job.tempSize}}, {{job.tempDir}}
+        </div>
+      </div>
+
+
+      <b-table :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed :show-detail-icon="true">
+        <template v-for="column in columns">
+          <b-table-column :key="column.id" v-bind="column">
+            <template v-slot="props">
+              <template>
+                {{ props.row[column.field] }}
               </template>
+            </template>
+          </b-table-column>
 
-              <template #detail="props">
-                <div class="content">
-                  <p>
-                    <strong>{{ props.row.title }}</strong>
-                    <small>@{{ props.row.year }}</small>
-                  </p>
-                  <b-taglist>
-                    <b-tag v-for="(author,idx) in props.row.authors" :key="idx" type="is-primary is-light">
-                      <b-icon icon="human-male" size="is-small"></b-icon>
-                      {{author}}
-                    </b-tag>
-                  </b-taglist>
-                  <b-field label="Title" label-position="on-border">
-                    <b-input v-model="notes[props.row.doi].title" size="is-small"></b-input>
-                  </b-field>
-                  <b-field label="Highlight" label-position="on-border">
-                    <b-input v-model="notes[props.row.doi].highlight" type="textarea" size="is-small"></b-input>
-                  </b-field>
-                  <b-field label="Note" label-position="on-border">
-                    <b-input v-model="notes[props.row.doi].note" type="textarea" size="is-small"></b-input>
-                  </b-field>
-                  <b-field label="Tags" label-position="on-border">
-                    <b-taginput v-model="notes[props.row.doi].tags" ellipsis icon="label" size="is-small"
-                      placeholder="Add a tag" aria-close-label="Delete this tag">
-                    </b-taginput>
-                  </b-field>
-                  <b-taglist>
-                    <template v-for="tag in tags">
-                      <b-tag type="is-info is-light">{{tag.tag}}</b-tag>
-                    </template>
-                  </b-taglist>
-                </div>
+        </template>
+
+        <template #detail="props">
+          <div class="content">
+            <p>
+              <strong>{{ props.row.title }}</strong>
+              <small>@{{ props.row.year }}</small>
+            </p>
+            <b-taglist>
+              <b-tag v-for="(author,idx) in props.row.authors" :key="idx" type="is-primary is-light">
+                <b-icon icon="human-male" size="is-small"></b-icon>
+                {{author}}
+              </b-tag>
+            </b-taglist>
+            <b-field label="Title" label-position="on-border">
+              <b-input v-model="notes[props.row.doi].title" size="is-small"></b-input>
+            </b-field>
+            <b-field label="Highlight" label-position="on-border">
+              <b-input v-model="notes[props.row.doi].highlight" type="textarea" size="is-small"></b-input>
+            </b-field>
+            <b-field label="Note" label-position="on-border">
+              <b-input v-model="notes[props.row.doi].note" type="textarea" size="is-small"></b-input>
+            </b-field>
+            <b-field label="Tags" label-position="on-border">
+              <b-taginput v-model="notes[props.row.doi].tags" ellipsis icon="label" size="is-small"
+                placeholder="Add a tag" aria-close-label="Delete this tag">
+              </b-taginput>
+            </b-field>
+            <b-taglist>
+              <template v-for="tag in tags">
+                <b-tag type="is-info is-light">{{tag.tag}}</b-tag>
               </template>
-            </b-table>
+            </b-taglist>
+          </div>
+        </template>
+      </b-table>
 
     </div>
 
@@ -274,8 +293,7 @@
                       <a :href="'http://epub.sipo.gov.cn/' + props.row['img']" target="_blank">
                         <b-icon icon="select-search" size="is-small"></b-icon>
                       </a>
-                      <span v-html="props.row['highlight']"
-                        @click="props.toggleDetails(props.row)"></span>
+                      <span v-html="props.row['highlight']" @click="props.toggleDetails(props.row)"></span>
                       <!-- <b-tooltip :label="props.row['publisher']">
                         <b-tag type="is-light is-info">{{props.row['pub']}}</b-tag>
                       </b-tooltip> -->
