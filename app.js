@@ -58,7 +58,6 @@ var app = new Vue({
             this.getInfo('plotter')
                 .then(response => response.json())
                 .then(json => {
-                    console.log(json);
                     this.plot = json;
                     this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
                     this.calcCpuMap(this.plot);
@@ -67,7 +66,6 @@ var app = new Vue({
             this.getInfo('farmer')
                 .then(response => response.json())
                 .then(json => {
-                    console.log(json);
                     this.farm = json;
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
@@ -138,14 +136,12 @@ var app = new Vue({
                     }
                 }
             };
-            console.log(machine.cpuMap)
         },
         calcFarmPlotMap() {
             if (!this.farm || !this.plot) return;
             const pn = this.farm.farm.plotCount;
             const tt = 12;
             const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => a - b);
-            console.log(plots, this.plot.jobs);
             const series = new Array(10).fill().map((_, rowi) => ({
                 name: rowi + 1,
                 data: new Array(tt).fill().map((_, coli) => {
@@ -230,7 +226,6 @@ var app = new Vue({
 
 
             };
-            console.log(this.diskMap);
         },
         humanize(size) {
             var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -238,7 +233,6 @@ var app = new Vue({
         },
         getDiskProgressType(used, size) {
             const perc = used / size;
-            console.log(perc);
             if (perc < 0.5) return 'success';
             if (perc < 0.7) return 'warning';
             return 'danger';
