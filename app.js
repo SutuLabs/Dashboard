@@ -38,9 +38,9 @@ var app = new Vue({
         this.load();
     },
     methods: {
-        load() {
+        getInfo(path) {
 
-            let url = 'http://10.177.0.165:5000/server/info';
+            let url = `http://10.177.0.165:5000/server/${path}`;
             let username = 'test';
             let password = 'test';
 
@@ -49,21 +49,28 @@ var app = new Vue({
             headers.append('Content-Type', 'text/json');
             headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
-            fetch(url, {
-                    method: 'GET',
-                    headers: headers,
-                })
+            return fetch(url, {
+                method: 'GET',
+                headers: headers,
+            });
+        },
+        load() {
+            this.getInfo('plotter')
                 .then(response => response.json())
                 .then(json => {
                     console.log(json);
-                    this.plot = json.plot;
-                    this.farm = json.farm;
-                    this.plot.name = "Plot Machine";
-                    this.farm.name = "Farm Machine";
+                    this.plot = json;
                     this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
-                    this.calcMap();
                     this.calcCpuMap(this.plot);
+                    this.calcFarmPlotMap();
+                });
+            this.getInfo('farmer')
+                .then(response => response.json())
+                .then(json => {
+                    console.log(json);
+                    this.farm = json;
                     this.calcCpuMap(this.farm);
+                    this.calcFarmPlotMap();
                 });
 
         },
@@ -84,7 +91,7 @@ var app = new Vue({
                 chartOptions: {
                     chart: {
                         type: 'bar',
-                        height: 350
+                        height: 150
                     },
                     plotOptions: {
                         bar: {
@@ -133,7 +140,8 @@ var app = new Vue({
             };
             console.log(machine.cpuMap)
         },
-        calcMap() {
+        calcFarmPlotMap() {
+            if (!this.farm || !this.plot) return;
             const pn = this.farm.farm.plotCount;
             const tt = 12;
             const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => a - b);

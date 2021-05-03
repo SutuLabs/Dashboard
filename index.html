@@ -12,8 +12,8 @@
 
 <body>
   <div id="app">
-    <img src="logo.png" style="width:100%; max-width: 500px;" @click="load"/>
-    <div v-if="plot">
+    <img src="logo.png" style="width:95%; max-width: 500px;" @click="load" />
+    <div v-if="farm">
 
       <b-field grouped group-multiline>
         <div class="control">
@@ -101,7 +101,10 @@
       </b-field>
 
       <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
+    </div>
 
+
+    <div v-if="plot">
       {{plot.jobs.length}} Jobs
 
       <div class="columns is-multiline is-mobile">
@@ -126,7 +129,7 @@
 
       <div class="columns is-desktop">
         <div class="column is-half" v-for="machine in [plot, farm]">
-          <nav class="panel">
+          <nav v-if="machine" class="panel">
             <p class="panel-heading">
               {{machine.name}}
             </p>
@@ -136,6 +139,9 @@
             </div>
             <div>
               {{machine.process}}
+            </div>
+            <div>
+              {{machine.disks}}
             </div>
           </nav>
         </div>
