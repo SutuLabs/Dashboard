@@ -36,6 +36,18 @@ var app = new Vue({
     },
     mounted: function () {
         this.load();
+        setInterval(() => {
+            this.getInfo('servers')
+                .then(response => response.json())
+                .then(json => {
+                    var f = json.find(_ => _.name == 'Farmer');
+                    var p = json.find(_ => _.name == 'Plotter');
+                    Object.assign(this.farm, f);
+                    Object.assign(this.plot, p);
+                    this.calcCpuMap(this.farm);
+                    this.calcCpuMap(this.plot);
+                });
+        }, 7000);
     },
     methods: {
         getInfo(path) {
@@ -70,7 +82,6 @@ var app = new Vue({
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
                 });
-
         },
         calcProgress(phase) {
             const p = Number(phase[0]);
