@@ -13,94 +13,105 @@
 <body>
   <div id="app">
     <img src="logo.png" style="width:95%; max-width: 500px;" @click="load" />
-    <div v-if="farm">
+    <div v-if="farm" class="card">
+      <div class="card-content">
+        <div class="content">
+          <b-field grouped group-multiline>
+            <div class="control">
+              <b-tooltip :label="'时间: ' + farm.node.time">
+                <b-taglist attached>
+                  <b-tag type="is-dark">同步状态</b-tag>
+                  <b-tag type="is-info">{{farm.node.status}}</b-tag>
+                </b-taglist>
+              </b-tooltip>
+            </div>
 
-      <b-field grouped group-multiline>
-        <div class="control">
-          <b-tooltip :label="'时间: ' + farm.node.time">
-            <b-taglist attached>
-              <b-tag type="is-dark">同步状态</b-tag>
-              <b-tag type="is-info">{{farm.node.status}}</b-tag>
-            </b-taglist>
-          </b-tooltip>
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">农场状态</b-tag>
+                <b-tag type="is-info">{{farm.farm.status}}</b-tag>
+              </b-taglist>
+            </div>
+
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">耕田数量</b-tag>
+                <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
+              </b-taglist>
+            </div>
+
+            <div class="control">
+              <b-tooltip :label="'最后挖币高度: ' + farm.farm.lastFarmedHeight">
+                <b-taglist attached>
+                  <b-tag type="is-dark">总共挖币</b-tag>
+                  <b-tag type="is-danger">{{farm.farm.totalFarmed}}</b-tag>
+                </b-taglist>
+              </b-tooltip>
+            </div>
+
+          </b-field>
+
+          <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
+            <template #trigger="props">
+              <a aria-controls="contentIdForA11y1">
+                <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                {{ !props.open ? '显示全部' : '隐藏' }}
+              </a>
+            </template>
+            <b-field grouped group-multiline>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">高度</b-tag>
+                  <b-tag type="is-info">{{farm.node.height}}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">空间</b-tag>
+                  <b-tag type="is-primary is-light">{{farm.farm.totalSize}}</b-tag>
+                  <b-tag type="is-light">{{farm.node.space}}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">难度</b-tag>
+                  <b-tag type="is-light">{{farm.node.difficulty}}</b-tag>
+                </b-taglist>
+              </div>
+
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">交易费用</b-tag>
+                  <b-tag type="is-light">{{farm.farm.txFees}}</b-tag>
+                </b-taglist>
+              </div>
+
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">奖励</b-tag>
+                  <b-tag type="is-light">{{farm.farm.rewards}}</b-tag>
+                </b-taglist>
+              </div>
+
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">期望成功值</b-tag>
+                  <b-tag type="is-light">{{farm.farm.expectedToWin}}</b-tag>
+                </b-taglist>
+              </div>
+
+            </b-field>
+          </b-collapse>
         </div>
-
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">高度</b-tag>
-            <b-tag type="is-info">{{farm.node.height}}</b-tag>
-          </b-taglist>
+      </div>
+    </div>
+    &nbsp;
+    <div v-if="diskMap" class="card">
+      <div class="card-content">
+        <div class="content">
+          <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
         </div>
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">空间</b-tag>
-            <b-tag type="is-light">{{farm.node.space}}</b-tag>
-          </b-taglist>
-        </div>
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">难度</b-tag>
-            <b-tag type="is-light">{{farm.node.difficulty}}</b-tag>
-          </b-taglist>
-        </div>
-
-      </b-field>
-
-      <b-field grouped group-multiline>
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">农场状态</b-tag>
-            <b-tag type="is-info">{{farm.farm.status}}</b-tag>
-          </b-taglist>
-        </div>
-
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">耕田数量</b-tag>
-            <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
-          </b-taglist>
-        </div>
-
-        <div class="control">
-          <b-tooltip :label="'最后挖币高度: ' + farm.farm.lastFarmedHeight">
-            <b-taglist attached>
-              <b-tag type="is-dark">总共挖币</b-tag>
-              <b-tag type="is-danger">{{farm.farm.totalFarmed}}</b-tag>
-            </b-taglist>
-          </b-tooltip>
-        </div>
-
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">交易费用</b-tag>
-            <b-tag type="is-light">{{farm.farm.txFees}}</b-tag>
-          </b-taglist>
-        </div>
-
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">奖励</b-tag>
-            <b-tag type="is-light">{{farm.farm.rewards}}</b-tag>
-          </b-taglist>
-        </div>
-
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">总空间</b-tag>
-            <b-tag type="is-primary">{{farm.farm.totalSize}}</b-tag>
-          </b-taglist>
-        </div>
-
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-dark">期望成功值</b-tag>
-            <b-tag type="is-light">{{farm.farm.expectedToWin}}</b-tag>
-          </b-taglist>
-        </div>
-
-      </b-field>
-
-      <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
+      </div>
     </div>
 
 

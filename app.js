@@ -116,7 +116,7 @@ var app = new Vue({
                         colors: ['transparent']
                     },
                     xaxis: {
-                        categories: machine.cpus.map((_, i) => i),
+                        categories: machine.cpus.map((_, i) => i + 1),
                     },
                     yaxis: {
                         title: {
