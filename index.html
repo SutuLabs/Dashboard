@@ -18,7 +18,7 @@
         <div class="content">
           <b-field grouped group-multiline>
             <div class="control">
-              <b-tooltip :label="'时间: ' + farm.node.time">
+              <b-tooltip :label="'时间: ' + farm.node.time" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">同步状态</b-tag>
                   <b-tag type="is-info">{{farm.node.status}}</b-tag>
@@ -41,7 +41,7 @@
             </div>
 
             <div class="control">
-              <b-tooltip :label="'最后挖币高度: ' + farm.farm.lastFarmedHeight">
+              <b-tooltip :label="'最后挖币高度: ' + farm.farm.lastFarmedHeight" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">总共挖币</b-tag>
                   <b-tag type="is-danger">{{farm.farm.totalFarmed}}</b-tag>
