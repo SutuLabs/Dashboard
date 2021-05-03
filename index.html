@@ -145,14 +145,43 @@
               {{machine.name}}
             </p>
             <apexchart :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
-            <div>
-              {{machine.memory}}
+
+            <div class="columns is-multiline is-mobile">
+              <template v-for="disk in machine.disks">
+                <div class="column is-half" v-if="disk.size > 1024*1024">
+                  <b-progress type="is-warning" :value="disk.used" :max="disk.size" show-value>
+                    {{humanize(disk.used*1024)}}/{{humanize(disk.size*1024)}}
+                  </b-progress>
+
+                  <div class="control">
+                    <b-taglist attached>
+                      <b-tag type="is-info">{{disk.path}}</b-tag>
+                      <b-tag type="is-info is-light">{{disk.device.substring(0,15)}}</b-tag>
+                    </b-taglist>
+                  </div>
+                </div>
+              </template>
             </div>
+
+
             <div>
-              {{machine.process}}
-            </div>
-            <div>
-              {{machine.disks}}
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">内存情况</b-tag>
+                  <b-tag type="is-info">{{machine.memory.used}}</b-tag>
+                  <b-tag type="is-info is-light">{{machine.memory.total}}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">进程情况</b-tag>
+                  <b-tag type="is-success">{{machine.process.running}}</b-tag>
+                  <b-tag type="is-light">{{machine.process.sleeping}}</b-tag>
+                  <b-tag type="is-warning">{{machine.process.stopped}}</b-tag>
+                  <b-tag type="is-danger">{{machine.process.zombie}}</b-tag>
+                  <b-tag type="is-info is-light">={{machine.process.total}}</b-tag>
+                </b-taglist>
+              </div>
             </div>
           </nav>
         </div>
