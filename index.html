@@ -149,7 +149,7 @@
             <div class="columns is-multiline is-mobile">
               <template v-for="disk in machine.disks">
                 <div class="column is-half" v-if="disk.size > 1024*1024">
-                  <b-progress type="is-warning" :value="disk.used" :max="disk.size" show-value>
+                  <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used" :max="disk.size" show-value>
                     {{humanize(disk.used*1024)}}/{{humanize(disk.size*1024)}}
                   </b-progress>
 

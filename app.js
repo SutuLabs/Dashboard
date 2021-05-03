@@ -233,8 +233,15 @@ var app = new Vue({
             console.log(this.diskMap);
         },
         humanize(size) {
-            var i = Math.floor( Math.log(size) / Math.log(1024) );
-            return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+            var i = Math.floor(Math.log(size) / Math.log(1024));
+            return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+        },
+        getDiskProgressType(used, size) {
+            const perc = used / size;
+            console.log(perc);
+            if (perc < 0.5) return 'success';
+            if (perc < 0.7) return 'warning';
+            return 'danger';
         },
     },
     computed: {},
