@@ -86,7 +86,7 @@ var app = new Vue({
             machine.cpuMap = {
                 data: [{
                     name: 'Cpu',
-                    data: machine.cpus.map(_ => 100 - _.idle),
+                    data: machine.cpus.map(_ => 100 - _),
                 }],
                 chartOptions: {
                     chart: {
