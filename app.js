@@ -181,25 +181,25 @@ var app = new Vue({
                                         from: 1,
                                         to: 1,
                                         name: 'Phase 1',
-                                        color: '#FFA100'
+                                        color: '#FF0000'
                                     },
                                     {
                                         from: 2,
                                         to: 2,
                                         name: 'Phase 2',
-                                        color: '#FF00FF'
+                                        color: '#0000FF'
                                     },
                                     {
                                         from: 3,
                                         to: 3,
                                         name: 'Phase 3',
-                                        color: '#FF0000'
+                                        color: '#FFB200'
                                     },
                                     {
                                         from: 4,
                                         to: 4,
                                         name: 'Phase 4',
-                                        color: '#FFB200'
+                                        color: '#006600'
                                     },
                                     {
                                         from: 5,
