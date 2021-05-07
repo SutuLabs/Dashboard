@@ -42,12 +42,14 @@ var app = new Vue({
                 .then(json => {
                     var f = json.find(_ => _.name == 'Farmer');
                     var p = json.find(_ => _.name == 'Plotter');
+                    this.sortDisks(f);
+                    this.sortDisks(p);
                     Object.assign(this.farm, f);
                     Object.assign(this.plot, p);
                     this.calcCpuMap(this.farm);
                     this.calcCpuMap(this.plot);
                 });
-        }, 7000);
+        }, 5000);
     },
     methods: {
         getInfo(path) {
@@ -71,6 +73,7 @@ var app = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.plot = json;
+                    this.sortDisks(this.plot);
                     this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
                     this.calcCpuMap(this.plot);
                     this.calcFarmPlotMap();
@@ -79,9 +82,13 @@ var app = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.farm = json;
+                    this.sortDisks(this.farm);
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
                 });
+        },
+        sortDisks(machine) {
+            if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
         },
         calcProgress(phase) {
             const p = Number(phase[0]);
