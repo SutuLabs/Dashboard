@@ -151,7 +151,7 @@ var app = new Vue({
         calcFarmPlotMap() {
             if (!this.farm || !this.plot) return;
             const pn = this.farm.farm.plotCount;
-            const tt = 12;
+            const tt = 12 + 40;
             const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => a - b);
             const series = new Array(10).fill().map((_, rowi) => ({
                 name: rowi + 1,

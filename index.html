@@ -21,23 +21,29 @@
               <b-tooltip :label="'时间: ' + farm.node.time" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">同步状态</b-tag>
-                  <b-tag type="is-info">{{farm.node.status}}</b-tag>
+                  <b-tag type="is-success" v-if="farm.node.status == 'Full Node Synced'">{{farm.node.status}}</b-tag>
+                  <b-tag type="is-danger" v-else>{{farm.node.status}}</b-tag>
                 </b-taglist>
               </b-tooltip>
             </div>
 
             <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">农场状态</b-tag>
-                <b-tag type="is-info">{{farm.farm.status}}</b-tag>
-              </b-taglist>
+              <b-tooltip :label="'空间: ' + farm.farm.totalSize + '/' + farm.node.space" position="is-bottom">
+                <b-taglist attached>
+                  <b-tag type="is-dark">农场状态</b-tag>
+                  <b-tag type="is-success" v-if="farm.farm.status == 'Farming'">{{farm.farm.status}}</b-tag>
+                  <b-tag type="is-danger" v-else>{{farm.farm.status}}</b-tag>
+                </b-taglist>
+              </b-tooltip>
             </div>
 
             <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">耕田数量</b-tag>
-                <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
-              </b-taglist>
+              <b-tooltip :label="'期望成功值: ' + farm.farm.expectedToWin" position="is-bottom">
+                <b-taglist attached>
+                  <b-tag type="is-dark">耕田数量</b-tag>
+                  <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
+                </b-taglist>
+              </b-tooltip>
             </div>
 
             <div class="control">
@@ -151,7 +157,7 @@
                 <div class="column is-half" v-if="disk.size > 1024*1024">
                   <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
                     :max="disk.size" show-value>
-                    {{humanize(disk.used*1024)}}/{{humanize(disk.size*1024)}}
+                    {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
                   </b-progress>
 
                   <div class="control">
