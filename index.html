@@ -157,15 +157,8 @@
                 <div class="column is-half" v-if="disk.size > 1024*1024">
                   <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
                     :max="disk.size" show-value>
-                    {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                    {{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
                   </b-progress>
-
-                  <div class="control">
-                    <b-taglist attached>
-                      <b-tag type="is-info">{{disk.path}}</b-tag>
-                      <b-tag type="is-info is-light">{{disk.device.substring(0,15)}}</b-tag>
-                    </b-taglist>
-                  </div>
                 </div>
               </template>
             </div>
