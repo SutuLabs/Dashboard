@@ -150,7 +150,7 @@
             <p class="panel-heading">
               {{machine.name}}
             </p>
-            <apexchart :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
+            <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
 
             <div class="columns is-multiline is-mobile">
               <template v-for="disk in machine.disks">
