@@ -157,7 +157,8 @@
                 <div class="column is-half" v-if="disk.size > 1024*1024">
                   <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
                     :max="disk.size" show-value>
-                    {{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}} [{{Math.floor(disk.available / 106430464)}}]
+                    {{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                    [{{Math.floor(disk.available / 106430464)}}]
                   </b-progress>
                 </div>
               </template>
@@ -254,8 +255,7 @@
           <strong>Chiabee</strong> by <a href="https://sutu.tech">素图科技</a>
       </div>
       </p>
-  </div>
-  </footer>
+    </footer>
 
   </div>
   <script src="vue.js"></script>
