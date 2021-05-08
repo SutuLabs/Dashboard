@@ -264,7 +264,7 @@
             </div>
             <div class="column">
               <div class="content">Expected time to win</div>
-              <div>{{ calculator.expectTimeWin }}</div>
+              <div>{{ calculator.expectTimeWin }}min</div>
             </div>
           </div>
         </div>
@@ -286,7 +286,7 @@
           <div class="columns">
             <div class="column">
               <div class="content">Initial size of plots</div> 
-              <div><input v-model="calculator.initSize">GiB</div>
+              <div><input v-model="calculator.initSize" disabled>GiB</div>
             </div>
             <div class="column">
               <div>Plotting speed</div>
@@ -295,7 +295,7 @@
             </div>
             <div class="column">
               <div>Max size of plots</div>
-              <input v-model="calculator.maxSize" disabled>
+              <div><input v-model="calculator.maxSize" disabled>GiB</div>
               <input type="checkbox" name="unlimited" v-model="calculator.unlimited" checked>
               <label for="unlimited">Unlimited</label>
             </div>
@@ -313,7 +313,7 @@
               <div>%<input v-model="calculator.growthRate">weekly</div>
             </div>
             <div class="column">
-              <input ref="unbounded" type="checkbox" name="growth" v-model="calculator.unbounded">
+              <input type="checkbox" name="growth" v-model="calculator.unbounded">
               <label for="growth">Unbonded growth</label>
             </div>
           </div>

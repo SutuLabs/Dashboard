@@ -267,8 +267,6 @@ var app = new Vue({
             var proportion = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)
             var averageBlockTime = 1; // in seconds (TBC)
             var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes  
-            console.log(nPlot)
-            console.log(this.calculator)
 
             // Advanced info 
             if(!this.calculator) {
