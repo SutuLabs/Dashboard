@@ -429,7 +429,34 @@ var app = new Vue({
                             show: false, 
                             decimalsInFloat: 5, 
                         }
-                    ]
+                    ], 
+                    tooltip: {
+                        y: [{
+                            title: {
+                                formatter: function (val) {return val + " (EiB)"}
+                            },
+                        },
+                        {
+                            title: {
+                                formatter: function (val) {return val + " (GiB)"}
+                            },
+                        },
+                        {
+                            title: {
+                                formatter: function (val) {return val + " (%)"}
+                            },
+                        },
+                        {
+                            title: {
+                                formatter: function (val) {return val + " (XCH)"}
+                            },
+                        },
+                        {
+                            title: {
+                                formatter: function (val) {return val + " (XCH)"}
+                            },
+                        }]
+                    }
                 }
             }
         }
