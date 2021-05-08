@@ -241,6 +241,41 @@
 
     &nbsp;
 
+
+    <div class="columns is-desktop">
+      <div class="column is-half">
+        <nav v-if="errors" class="panel">
+          <p class="panel-heading">Errors</p>
+          <div class="panel-block" v-for="err in errors">
+            <span class="panel-icon">
+              <i class="fas fa-error" aria-hidden="true"></i>
+            </span>
+            <b-tag type="is-info is-light">{{err.time}}</b-tag>
+            <span class="has-text-danger">
+              {{err.error}}
+            </span>
+          </div>
+        </nav>
+      </div>
+
+      <div class="column is-half">
+        <nav v-if="events" class="panel">
+          <p class="panel-heading">Events</p>
+          <div class="panel-block" v-for="evt in events">
+            <b-tag type="is-info is-light">{{evt.time}}</b-tag>
+            <span class="has-text-danger" v-if="evt.proofs > 0">
+              {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+            </span>
+            <span class="has-text-info" v-else>
+              {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+            </span>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    &nbsp;
+
     <div class="card">
       <div class="card-content">
         <div class="content">

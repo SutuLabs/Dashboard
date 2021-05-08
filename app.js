@@ -10,6 +10,8 @@ var app = new Vue({
             plot: null,
 
             diskMap: null,
+            errors: null,
+            events: null,
 
             columns: [{
                     field: 'id',
@@ -48,6 +50,16 @@ var app = new Vue({
                     Object.assign(this.plot, p);
                     this.calcCpuMap(this.farm);
                     this.calcCpuMap(this.plot);
+                });
+            this.getInfo('errors')
+                .then(response => response.json())
+                .then(json => {
+                    this.errors = json;
+                });
+            this.getInfo('events')
+                .then(response => response.json())
+                .then(json => {
+                    this.events = json;
                 });
         }, 5000);
     },
