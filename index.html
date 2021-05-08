@@ -272,7 +272,7 @@
             </nav>
           </div>
         </div>
-        
+
       </b-tab-item>
 
       <b-tab-item label="Calculator">
@@ -283,6 +283,10 @@
           <div class="card-content">
             <div>
               <p class="card-header-title">Number of Plots</p> 
+              <p>(of size 101.4GiB, k=32)</p>
+              <b-field>
+                <b-slider v-model="nPlot" :min="1" :max="10000" v-on:input="calculate()" lazy></b-slider>
+              </b-field>
               <input v-model="nPlot" v-on:input="calculate()"> 
             </div>
           </div>
