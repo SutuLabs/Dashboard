@@ -5,14 +5,16 @@ var app = new Vue({
     data: function () {
         let data = JSON.parse(localStorage.getItem("DATA") || JSON.stringify({}));
 
-        return {
-            farm: data.farm,
-            plot: data.plot,
+      return {
+        farm: data.farm,
+        plot: data.plot,
 
-            diskMap: data.diskMap,
-            errors: data.errors,
-            events: data.events,
-        }
+        diskMap: data.diskMap,
+        errors: data.errors,
+        events: data.events,
+        calculator: null,
+        nPlot: 1,
+      }
     },
     mounted: function () {
         this.load();
@@ -243,8 +245,6 @@ var app = new Vue({
                         text: '磁盘工作情况'
                     },
                 },
-
-
             };
         },
         humanize(size) {
@@ -257,6 +257,184 @@ var app = new Vue({
             if (perc < 0.7) return 'warning';
             return 'danger';
         },
+        calculate() {
+            const unitPlotSize = 101.4; 
+            var nPlot = parseInt(this.nPlot); 
+            var rawTotalNetSpace = this.farm.node.space; //EiB
+            var totalNetSpace = 0; 
+            totalNetSpace = parseFloat(rawTotalNetSpace)*1024; 
+            var ownedNetSpace = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)*100; 
+            var proportion = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)
+            var averageBlockTime = 1; // in seconds (TBC)
+            var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes  
+            console.log(nPlot)
+            console.log(this.calculator)
+
+            // Advanced info 
+            if(!this.calculator) {
+                this.calculator = {
+                    totalNetSpace: totalNetSpace.toFixed(2),
+                    ownedNetSpace: ownedNetSpace.toFixed(5),
+                    expectTimeWin: expectTimeWin.toFixed(2), 
+                    timeFrame: 6, 
+                    startDate: "today", 
+                    initSize: 101.4*nPlot,
+                    plottingSpeed: 0.0, 
+                    maxSize: 1014.0, 
+                    unlimited: true, 
+                    initNetSize: parseFloat(rawTotalNetSpace), // EiB 
+                    growthRate: 15, 
+                    unbounded: false, 
+                    exponentialGrowth: 30, 
+                    stabilization: 150, 
+                    stableDaily: 5.000, 
+                }
+            } else {
+                this.calculator.totalNetSpace = totalNetSpace.toFixed(2);
+                this.calculator.ownedNetSpace = ownedNetSpace.toFixed(5);
+                this.calculator.expectTimeWin = expectTimeWin.toFixed(2); 
+                this.calculator.initSize = 101.4*nPlot;
+            }
+
+            var netSpaceData = []; 
+            var plotSizeData = []; 
+            var ownedSpaceData = []; 
+            var dailyEarningData = []; 
+            var totalEarningData = []; 
+            var timeFrameCategory = []; 
+            
+            function get_days(nMonth) {
+                var date1 = new Date(); 
+                var date2 = new Date(); 
+                date2.setMonth(parseInt(date1.getMonth())+parseInt(nMonth)); 
+                var timeDif = date2.getTime() - date1.getTime(); 
+                return (timeDif/(1000 * 3600 * 24)).toFixed(0); 
+            }
+
+            var i; 
+            var nDays = get_days(parseInt(this.calculator.timeFrame)); 
+            for(i = 0; i < nDays; i++) {
+                var date = new Date();
+                timeFrameCategory.push(date.setDate(new Date().getDate()+i)); 
+            }
+
+            // graph of network space 
+            var prevDayNetSpace = parseFloat(this.calculator.initNetSize); 
+            for(i = 0; i < nDays; i++) {
+                if (this.calculator.unbounded) {
+                    if(i) {
+                        prevDayNetSpace = prevDayNetSpace*(1+parseFloat(this.calculator.growthRate)/100/7);
+                    } 
+                } else {
+                    if (i < parseInt(this.calculator.exponentialGrowth)) {
+                        prevDayNetSpace = prevDayNetSpace*(1+parseFloat(this.calculator.growthRate)/100/7); 
+                    } else if (i < parseInt(this.calculator.exponentialGrowth) + parseInt(this.calculator.stabilization)) {
+                        prevDayNetSpace = prevDayNetSpace + parseFloat(this.calculator.stableDaily)/1024; 
+                    } 
+                };
+                netSpaceData.push([timeFrameCategory[i], prevDayNetSpace.toFixed(3)]);
+            };
+
+            // graph of size of plots 
+            var newSize = parseFloat(this.calculator.initSize)
+            for(i = 0; i < nDays; i++) {
+                if(!this.calculator.unlimited) {
+                    if(newSize+parseFloat(this.calculator.plottingSpeed) <= parseFloat(this.calculator.maxSize)) {
+                        newSize = newSize + parseFloat(this.calculator.plottingSpeed); 
+                    }
+                } else {
+                    newSize = newSize + parseFloat(this.calculator.plottingSpeed); 
+                }
+                plotSizeData.push([timeFrameCategory[i], newSize.toFixed(3)])
+            }
+
+            // graph of owned space 
+            for(i = 0; i < nDays; i++) {
+                var newOwnedSpace = plotSizeData[i][1]/(netSpaceData[i][1]*Math.pow(1024,3)) *100; // percentage 
+                ownedSpaceData.push([timeFrameCategory[i], newOwnedSpace]); 
+            }
+
+            // graph of daily earnings 
+            for(i = 0; i < nDays; i++) {
+                var dailyProportion = plotSizeData[i][1]/(netSpaceData[i][1]*Math.pow(1024,3)); 
+                var dailyEarning = 2*(1-Math.pow((1-dailyProportion),4608)); 
+                dailyEarningData.push([timeFrameCategory[i], dailyEarning]);
+            }
+
+            // graph of total earnings
+            var tempSum = 0;  
+            for(i = 0; i < nDays; i++) {
+                tempSum = tempSum+dailyEarningData[i][1];
+                totalEarningData.push([timeFrameCategory[i], tempSum]);
+            }
+
+            this.calculator.calculatorMap = {
+                series: [
+                    {
+                        name: "Network Space", 
+                        data: netSpaceData,
+                    }, 
+                    {
+                        name: "Size of Plots", 
+                        data: plotSizeData,
+                    }, 
+                    {
+                        name: "Owned Space", 
+                        data: ownedSpaceData, 
+                    },
+                    {
+                        name: "Daily Earning", 
+                        data: dailyEarningData, 
+                    },
+                    {
+                        name: "Total Earning", 
+                        data: totalEarningData, 
+                    }
+                ],
+                chartOptions: {
+                    chart:{
+                        type: "line", 
+                        height: 400, 
+                    }, 
+                    dataLabels: {
+                        enabled: false, 
+                    }, 
+                    stroke: {
+                        curve: 'smooth',
+                    }, 
+                    xaxis: {
+                        type: 'datetime',
+                    }, 
+                    yaxis: [
+                        {
+                            seriesName: "Network Space", 
+                            show: false, 
+                            decimalsInFloat: 3,
+                        },
+                        {
+                            seriesName: "Size of Plots", 
+                            show: false, 
+                            decimalsInFloat: 3, 
+                        }, 
+                        {
+                            seriesName: "Owned Space", 
+                            show: false, 
+                            decimalsInFloat: 5, 
+                        },
+                        {
+                            seriesName: "Daily Earning", 
+                            show: false, 
+                            decimalsInFloat: 5, 
+                        },
+                        {
+                            seriesName: "Total Earning",
+                            show: false, 
+                            decimalsInFloat: 5, 
+                        }
+                    ]
+                }
+            }
+        }
     },
     computed: {},
 })

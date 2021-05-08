@@ -239,6 +239,105 @@
 
     </div>
 
+    <div class="card" id="calculator">
+      <header class="card-header">
+        <p class="card-header-title">Chia Calculator</p>
+      </header>
+      <div class="card-content">
+        <div>
+          <p class="card-header-title">Number of Plots</p> 
+          <input v-model="nPlot"> 
+          <button type="button" v-on:click="calculate()">计算</button>
+        </div>
+      </div>
+      <div v-if="calculator" class="card-content">
+        <div>
+          <div class="card-header-title">Network</div>
+          <div class="columns">
+            <div class="column">
+              <div class="content">Total network space</div>
+              <div>{{ calculator.totalNetSpace }}PiB</div>
+            </div>
+            <div class="column">
+              <div class="content">Owned network space</div>
+              <div>{{ calculator.ownedNetSpace }}%</div>
+            </div>
+            <div class="column">
+              <div class="content">Expected time to win</div>
+              <div>{{ calculator.expectTimeWin }}</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-header-title">Earnings over time</div>
+          <div class="columns">
+            <div class="column">
+              <div>Time Frame</div>
+              <div><input v-model="calculator.timeFrame">Months</div>
+            </div>
+            <div class="column">
+              <div>Start Date</div>
+              <input v-model="calculator.startDate"> 
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-header-title">Plots</div>
+          <div class="columns">
+            <div class="column">
+              <div class="content">Initial size of plots</div> 
+              <div><input v-model="calculator.initSize">GiB</div>
+            </div>
+            <div class="column">
+              <div>Plotting speed</div>
+              <div><input v-model="calculator.plottingSpeed">GB</div>
+              <div>Space plotted per day</div>
+            </div>
+            <div class="column">
+              <div>Max size of plots</div>
+              <input v-model="calculator.maxSize" disabled>
+              <input type="checkbox" name="unlimited" v-model="calculator.unlimited" checked>
+              <label for="unlimited">Unlimited</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-header-title">Network Space</div>
+          <div class="columns">
+            <div class="column">
+              <div>Initial size of network</div>
+              <div><input v-model="calculator.initNetSize">EiB</div>
+            </div>
+            <div class="column">
+              <div>Network growth</div>
+              <div>%<input v-model="calculator.growthRate">weekly</div>
+            </div>
+            <div class="column">
+              <input ref="unbounded" type="checkbox" name="growth" v-model="calculator.unbounded">
+              <label for="growth">Unbonded growth</label>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <div>Days of exponential growth</div>
+              <input v-model="calculator.exponentialGrowth">
+            </div>
+            <div class="column">
+              <div>Days of stabilization</div>
+              <input v-model="calculator.stabilization">
+            </div>
+            <div class="column">
+              <div>Stabilized daily growth</div>
+              <div><input v-model="calculator.stableDaily">PiB</div>
+            </div>
+          </div>
+        </div>
+        <div v-if="calculator.calculatorMap">
+          <apexchart height="400" :options="calculator.calculatorMap.chartOptions" :series="calculator.calculatorMap.series"></apexchart>
+        </div>
+      </div>
+    </div>
+
     &nbsp;
 
 
