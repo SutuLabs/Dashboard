@@ -3,37 +3,15 @@ Vue.component('apexchart', VueApexCharts)
 var app = new Vue({
     el: '#app',
     data: function () {
-        let notes = JSON.parse(localStorage.getItem("NOTES") || JSON.stringify({}));
+        let data = JSON.parse(localStorage.getItem("DATA") || JSON.stringify({}));
 
         return {
-            farm: null,
-            plot: null,
+            farm: data.farm,
+            plot: data.plot,
 
-            diskMap: null,
-            errors: null,
-            events: null,
-
-            columns: [{
-                    field: 'id',
-                    label: 'ID',
-                },
-                {
-                    field: 'tempDir',
-                    label: 'tmp',
-                },
-                {
-                    field: 'phase',
-                    label: 'Phase',
-                },
-                {
-                    field: 'memorySize',
-                    label: 'mem',
-                },
-                {
-                    field: 'wallTime',
-                    label: 'wall',
-                }
-            ]
+            diskMap: data.diskMap,
+            errors: data.errors,
+            events: data.events,
         }
     },
     mounted: function () {
@@ -61,6 +39,9 @@ var app = new Vue({
                 .then(json => {
                     this.events = json;
                 });
+        }, 5000);
+        setInterval(() => {
+            this.save();
         }, 5000);
     },
     methods: {
@@ -98,6 +79,15 @@ var app = new Vue({
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
                 });
+        },
+        save() {
+            localStorage.setItem("DATA", JSON.stringify({
+                farm: this.farm,
+                plot: this.plot,
+                diskMap: this.diskMap,
+                errors: this.errors,
+                events: this.events,
+            }));
         },
         sortDisks(machine) {
             if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
