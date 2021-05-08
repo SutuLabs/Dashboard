@@ -265,7 +265,7 @@ var app = new Vue({
             totalNetSpace = parseFloat(rawTotalNetSpace)*1024; 
             var ownedNetSpace = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)*100; 
             var proportion = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)
-            var averageBlockTime = 1; // in seconds (TBC)
+            var averageBlockTime = 18.75; // in seconds
             var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes  
 
             // Advanced info 
