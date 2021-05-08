@@ -21,23 +21,29 @@
               <b-tooltip :label="'时间: ' + farm.node.time" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">同步状态</b-tag>
-                  <b-tag type="is-info">{{farm.node.status}}</b-tag>
+                  <b-tag type="is-success" v-if="farm.node.status == 'Full Node Synced'">{{farm.node.status}}</b-tag>
+                  <b-tag type="is-danger" v-else>{{farm.node.status}}</b-tag>
                 </b-taglist>
               </b-tooltip>
             </div>
 
             <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">农场状态</b-tag>
-                <b-tag type="is-info">{{farm.farm.status}}</b-tag>
-              </b-taglist>
+              <b-tooltip :label="'空间: ' + farm.farm.totalSize + '/' + farm.node.space" position="is-bottom">
+                <b-taglist attached>
+                  <b-tag type="is-dark">农场状态</b-tag>
+                  <b-tag type="is-success" v-if="farm.farm.status == 'Farming'">{{farm.farm.status}}</b-tag>
+                  <b-tag type="is-danger" v-else>{{farm.farm.status}}</b-tag>
+                </b-taglist>
+              </b-tooltip>
             </div>
 
             <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">耕田数量</b-tag>
-                <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
-              </b-taglist>
+              <b-tooltip :label="'期望成功值: ' + farm.farm.expectedToWin" position="is-bottom">
+                <b-taglist attached>
+                  <b-tag type="is-dark">耕田数量</b-tag>
+                  <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
+                </b-taglist>
+              </b-tooltip>
             </div>
 
             <div class="control">
@@ -144,22 +150,16 @@
             <p class="panel-heading">
               {{machine.name}}
             </p>
-            <apexchart :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
+            <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
 
             <div class="columns is-multiline is-mobile">
               <template v-for="disk in machine.disks">
                 <div class="column is-half" v-if="disk.size > 1024*1024">
                   <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
                     :max="disk.size" show-value>
-                    {{humanize(disk.used*1024)}}/{{humanize(disk.size*1024)}}
+                    {{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                    [{{Math.floor(disk.available / 106430464)}}]
                   </b-progress>
-
-                  <div class="control">
-                    <b-taglist attached>
-                      <b-tag type="is-info">{{disk.path}}</b-tag>
-                      <b-tag type="is-info is-light">{{disk.device.substring(0,15)}}</b-tag>
-                    </b-taglist>
-                  </div>
                 </div>
               </template>
             </div>
@@ -241,6 +241,41 @@
 
     &nbsp;
 
+
+    <div class="columns is-desktop">
+      <div class="column is-half">
+        <nav v-if="errors" class="panel">
+          <p class="panel-heading">Errors</p>
+          <div class="panel-block" v-for="err in errors">
+            <span class="panel-icon">
+              <i class="fas fa-error" aria-hidden="true"></i>
+            </span>
+            <b-tag type="is-info is-light">{{err.time}}</b-tag>
+            <span class="has-text-danger">
+              {{err.error}}
+            </span>
+          </div>
+        </nav>
+      </div>
+
+      <div class="column is-half">
+        <nav v-if="events" class="panel">
+          <p class="panel-heading">Events</p>
+          <div class="panel-block" v-for="evt in events">
+            <b-tag type="is-info is-light">{{evt.time}}</b-tag>
+            <span class="has-text-danger" v-if="evt.proofs > 0">
+              {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+            </span>
+            <span class="has-text-info" v-else>
+              {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+            </span>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    &nbsp;
+
     <div class="card">
       <div class="card-content">
         <div class="content">
@@ -255,8 +290,7 @@
           <strong>Chiabee</strong> by <a href="https://sutu.tech">素图科技</a>
       </div>
       </p>
-  </div>
-  </footer>
+    </footer>
 
   </div>
   <script src="vue.js"></script>

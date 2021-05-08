@@ -3,35 +3,15 @@ Vue.component('apexchart', VueApexCharts)
 var app = new Vue({
     el: '#app',
     data: function () {
-        let notes = JSON.parse(localStorage.getItem("NOTES") || JSON.stringify({}));
+        let data = JSON.parse(localStorage.getItem("DATA") || JSON.stringify({}));
 
         return {
-            farm: null,
-            plot: null,
+            farm: data.farm,
+            plot: data.plot,
 
-            diskMap: null,
-
-            columns: [{
-                    field: 'id',
-                    label: 'ID',
-                },
-                {
-                    field: 'tempDir',
-                    label: 'tmp',
-                },
-                {
-                    field: 'phase',
-                    label: 'Phase',
-                },
-                {
-                    field: 'memorySize',
-                    label: 'mem',
-                },
-                {
-                    field: 'wallTime',
-                    label: 'wall',
-                }
-            ]
+            diskMap: data.diskMap,
+            errors: data.errors,
+            events: data.events,
         }
     },
     mounted: function () {
@@ -42,12 +22,27 @@ var app = new Vue({
                 .then(json => {
                     var f = json.find(_ => _.name == 'Farmer');
                     var p = json.find(_ => _.name == 'Plotter');
+                    this.sortDisks(f);
+                    this.sortDisks(p);
                     Object.assign(this.farm, f);
                     Object.assign(this.plot, p);
                     this.calcCpuMap(this.farm);
                     this.calcCpuMap(this.plot);
                 });
-        }, 7000);
+            this.getInfo('errors')
+                .then(response => response.json())
+                .then(json => {
+                    this.errors = json;
+                });
+            this.getInfo('events')
+                .then(response => response.json())
+                .then(json => {
+                    this.events = json;
+                });
+        }, 5000);
+        setInterval(() => {
+            this.save();
+        }, 5000);
     },
     methods: {
         getInfo(path) {
@@ -71,6 +66,7 @@ var app = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.plot = json;
+                    this.sortDisks(this.plot);
                     this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
                     this.calcCpuMap(this.plot);
                     this.calcFarmPlotMap();
@@ -79,9 +75,22 @@ var app = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.farm = json;
+                    this.sortDisks(this.farm);
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
                 });
+        },
+        save() {
+            localStorage.setItem("DATA", JSON.stringify({
+                farm: this.farm,
+                plot: this.plot,
+                diskMap: this.diskMap,
+                errors: this.errors,
+                events: this.events,
+            }));
+        },
+        sortDisks(machine) {
+            if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
         },
         calcProgress(phase) {
             const p = Number(phase[0]);
@@ -151,8 +160,8 @@ var app = new Vue({
         calcFarmPlotMap() {
             if (!this.farm || !this.plot) return;
             const pn = this.farm.farm.plotCount;
-            const tt = 12;
-            const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => a - b);
+            const tt = 12 + 40;
+            const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => b - a);
             const series = new Array(10).fill().map((_, rowi) => ({
                 name: rowi + 1,
                 data: new Array(tt).fill().map((_, coli) => {
