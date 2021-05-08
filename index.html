@@ -246,8 +246,7 @@
       <div class="card-content">
         <div>
           <p class="card-header-title">Number of Plots</p> 
-          <input v-model="nPlot"> 
-          <button type="button" v-on:click="calculate()">计算</button>
+          <input v-model="nPlot" v-on:input="calculate()"> 
         </div>
       </div>
       <div v-if="calculator" class="card-content">

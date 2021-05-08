@@ -81,6 +81,7 @@ var app = new Vue({
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
                 });
+            this.calculate(); 
         },
         save() {
             localStorage.setItem("DATA", JSON.stringify({
