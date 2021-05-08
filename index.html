@@ -332,6 +332,20 @@
             </div>
           </div>
         </div>
+        <div>
+          <div class="card-header-title">Estimated Total Earnings</div>
+          <div class="columns">
+            <div class="column">
+              <div>XCH after {{ calculator.timeFrame }} months</div>
+              <div>{{ calculator.totalXCH.toFixed(2) }}</div>
+            </div>
+            <div class="column">
+              <div>USD after {{ calculator.timeFrame}} months</div>
+              <div>${{ (parseFloat(calculator.XCHprice)*parseFloat(calculator.totalXCH)).toFixed(2)  }}</div>
+              <div>Assume 1 XCH = <input v-model="calculator.XCHprice">USD</div>
+            </div>
+          </div>
+        </div>
         <div v-if="calculator.calculatorMap">
           <apexchart height="400" :options="calculator.calculatorMap.chartOptions" :series="calculator.calculatorMap.series"></apexchart>
         </div>

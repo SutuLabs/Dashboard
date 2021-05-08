@@ -365,6 +365,8 @@ var app = new Vue({
                 tempSum = tempSum+dailyEarningData[i][1];
                 totalEarningData.push([timeFrameCategory[i], tempSum]);
             }
+            this.calculator.totalXCH = totalEarningData[nDays-1][1];
+            this.calculator.XCHprice = 500;
 
             this.calculator.calculatorMap = {
                 series: [
