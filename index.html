@@ -112,279 +112,283 @@
       </div>
     </div>
     &nbsp;
-    <div v-if="diskMap" class="card">
-      <div class="card-content">
-        <div class="content">
-          <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
+
+    <b-tabs v-model="activeTab">
+      <b-tab-item label="Info">
+        <div v-if="diskMap" class="card">
+          <div class="card-content">
+            <div class="content">
+              <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
+        <div v-if="plot">
+          {{plot.jobs.length}} Jobs
 
-    <div v-if="plot">
-      {{plot.jobs.length}} Jobs
+          <div class="columns is-multiline is-mobile">
+            <div class="column is-half" v-for="job in plot.jobs">
+              <b-progress format="percent" :max="100">
+                <template #bar>
+                  <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress" type="is-danger">
+                  </b-progress-bar>
+                  <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
+                    type="is-info">
+                  </b-progress-bar>
+                  <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
+                    type="is-warning">
+                  </b-progress-bar>
+                  <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                  </b-progress-bar>
+                </template>
+              </b-progress>
+              {{job.id}}: {{job.wallTime}}, {{job.phase}}, {{job.tempSize}}, {{job.tempDir}}
+            </div>
+          </div>
 
-      <div class="columns is-multiline is-mobile">
-        <div class="column is-half" v-for="job in plot.jobs">
-          <b-progress format="percent" :max="100">
-            <template #bar>
-              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress" type="is-danger">
-              </b-progress-bar>
-              <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
-                type="is-info">
-              </b-progress-bar>
-              <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
-                type="is-warning">
-              </b-progress-bar>
-              <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-              </b-progress-bar>
-            </template>
-          </b-progress>
-          {{job.id}}: {{job.wallTime}}, {{job.phase}}, {{job.tempSize}}, {{job.tempDir}}
-        </div>
-      </div>
+          <div class="columns is-desktop">
+            <div class="column is-half" v-for="machine in [plot, farm]">
+              <nav v-if="machine" class="panel">
+                <p class="panel-heading">
+                  {{machine.name}}
+                </p>
+                <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
 
-      <div class="columns is-desktop">
-        <div class="column is-half" v-for="machine in [plot, farm]">
-          <nav v-if="machine" class="panel">
-            <p class="panel-heading">
-              {{machine.name}}
-            </p>
-            <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
-
-            <div class="columns is-multiline is-mobile">
-              <template v-for="disk in machine.disks">
-                <div class="column is-half" v-if="disk.size > 1024*1024">
-                  <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
-                    :max="disk.size" show-value>
-                    {{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
-                    [{{Math.floor(disk.available / 106430464)}}]
-                  </b-progress>
+                <div class="columns is-multiline is-mobile">
+                  <template v-for="disk in machine.disks">
+                    <div class="column is-half" v-if="disk.size > 1024*1024">
+                      <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
+                        :max="disk.size" show-value>
+                        {{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                        [{{Math.floor(disk.available / 106430464)}}]
+                      </b-progress>
+                    </div>
+                  </template>
                 </div>
-              </template>
+
+
+                <div>
+                  <div class="control">
+                    <b-taglist attached>
+                      <b-tag type="is-dark">内存情况</b-tag>
+                      <b-tag type="is-info">{{machine.memory.used}}</b-tag>
+                      <b-tag type="is-info is-light">{{machine.memory.total}}</b-tag>
+                    </b-taglist>
+                  </div>
+                  <div class="control">
+                    <b-taglist attached>
+                      <b-tag type="is-dark">进程情况</b-tag>
+                      <b-tag type="is-success">{{machine.process.running}}</b-tag>
+                      <b-tag type="is-light">{{machine.process.sleeping}}</b-tag>
+                      <b-tag type="is-warning">{{machine.process.stopped}}</b-tag>
+                      <b-tag type="is-danger">{{machine.process.zombie}}</b-tag>
+                      <b-tag type="is-info is-light">={{machine.process.total}}</b-tag>
+                    </b-taglist>
+                  </div>
+                </div>
+              </nav>
             </div>
+          </div>
 
 
-            <div>
-              <div class="control">
-                <b-taglist attached>
-                  <b-tag type="is-dark">内存情况</b-tag>
-                  <b-tag type="is-info">{{machine.memory.used}}</b-tag>
-                  <b-tag type="is-info is-light">{{machine.memory.total}}</b-tag>
-                </b-taglist>
-              </div>
-              <div class="control">
-                <b-taglist attached>
-                  <b-tag type="is-dark">进程情况</b-tag>
-                  <b-tag type="is-success">{{machine.process.running}}</b-tag>
-                  <b-tag type="is-light">{{machine.process.sleeping}}</b-tag>
-                  <b-tag type="is-warning">{{machine.process.stopped}}</b-tag>
-                  <b-tag type="is-danger">{{machine.process.zombie}}</b-tag>
-                  <b-tag type="is-info is-light">={{machine.process.total}}</b-tag>
-                </b-taglist>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </div>
+          <b-table v-if="false" :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed
+            :show-detail-icon="true">
+            <template v-for="column in columns">
+              <b-table-column :key="column.id" v-bind="column">
+                <template v-slot="props">
+                  <template>
+                    {{ props.row[column.field] }}
+                  </template>
+                </template>
+              </b-table-column>
 
-
-      <b-table v-if="false" :data="plot.jobs" :narrowed="true" :paginated="true" :per-page="20" detailed
-        :show-detail-icon="true">
-        <template v-for="column in columns">
-          <b-table-column :key="column.id" v-bind="column">
-            <template v-slot="props">
-              <template>
-                {{ props.row[column.field] }}
-              </template>
             </template>
-          </b-table-column>
 
-        </template>
-
-        <template #detail="props">
-          <div class="content">
-            <p>
-              <strong>{{ props.row.title }}</strong>
-              <small>@{{ props.row.year }}</small>
-            </p>
-            <b-taglist>
-              <b-tag v-for="(author,idx) in props.row.authors" :key="idx" type="is-primary is-light">
-                <b-icon icon="human-male" size="is-small"></b-icon>
-                {{author}}
-              </b-tag>
-            </b-taglist>
-            <b-field label="Title" label-position="on-border">
-              <b-input v-model="notes[props.row.doi].title" size="is-small"></b-input>
-            </b-field>
-            <b-field label="Highlight" label-position="on-border">
-              <b-input v-model="notes[props.row.doi].highlight" type="textarea" size="is-small"></b-input>
-            </b-field>
-            <b-field label="Note" label-position="on-border">
-              <b-input v-model="notes[props.row.doi].note" type="textarea" size="is-small"></b-input>
-            </b-field>
-            <b-field label="Tags" label-position="on-border">
-              <b-taginput v-model="notes[props.row.doi].tags" ellipsis icon="label" size="is-small"
-                placeholder="Add a tag" aria-close-label="Delete this tag">
-              </b-taginput>
-            </b-field>
-            <b-taglist>
-              <template v-for="tag in tags">
-                <b-tag type="is-info is-light">{{tag.tag}}</b-tag>
-              </template>
-            </b-taglist>
-          </div>
-        </template>
-      </b-table>
-
-    </div>
-
-    <div class="card" id="calculator">
-      <header class="card-header">
-        <p class="card-header-title">Chia Calculator</p>
-      </header>
-      <div class="card-content">
-        <div>
-          <p class="card-header-title">Number of Plots</p> 
-          <input v-model="nPlot" v-on:input="calculate()"> 
+            <template #detail="props">
+              <div class="content">
+                <p>
+                  <strong>{{ props.row.title }}</strong>
+                  <small>@{{ props.row.year }}</small>
+                </p>
+                <b-taglist>
+                  <b-tag v-for="(author,idx) in props.row.authors" :key="idx" type="is-primary is-light">
+                    <b-icon icon="human-male" size="is-small"></b-icon>
+                    {{author}}
+                  </b-tag>
+                </b-taglist>
+                <b-field label="Title" label-position="on-border">
+                  <b-input v-model="notes[props.row.doi].title" size="is-small"></b-input>
+                </b-field>
+                <b-field label="Highlight" label-position="on-border">
+                  <b-input v-model="notes[props.row.doi].highlight" type="textarea" size="is-small"></b-input>
+                </b-field>
+                <b-field label="Note" label-position="on-border">
+                  <b-input v-model="notes[props.row.doi].note" type="textarea" size="is-small"></b-input>
+                </b-field>
+                <b-field label="Tags" label-position="on-border">
+                  <b-taginput v-model="notes[props.row.doi].tags" ellipsis icon="label" size="is-small"
+                    placeholder="Add a tag" aria-close-label="Delete this tag">
+                  </b-taginput>
+                </b-field>
+                <b-taglist>
+                  <template v-for="tag in tags">
+                    <b-tag type="is-info is-light">{{tag.tag}}</b-tag>
+                  </template>
+                </b-taglist>
+              </div>
+            </template>
+          </b-table>
         </div>
-      </div>
-      <div v-if="calculator" class="card-content">
-        <div>
-          <div class="card-header-title">Network</div>
-          <div class="columns">
-            <div class="column">
-              <div class="content">Total network space</div>
-              <div>{{ calculator.totalNetSpace }}PiB</div>
-            </div>
-            <div class="column">
-              <div class="content">Owned network space</div>
-              <div>{{ calculator.ownedNetSpace }}%</div>
-            </div>
-            <div class="column">
-              <div class="content">Expected time to win</div>
-              <div>{{ calculator.expectTimeWin }}min</div>
-            </div>
+        &nbsp;
+
+        <div class="columns is-desktop">
+          <div class="column is-half">
+            <nav v-if="errors" class="panel">
+              <p class="panel-heading">Errors</p>
+              <div class="panel-block" v-for="err in errors">
+                <span class="panel-icon">
+                  <i class="fas fa-error" aria-hidden="true"></i>
+                </span>
+                <b-tag type="is-info is-light">{{err.time}}</b-tag>
+                <span class="has-text-danger">
+                  {{err.error}}
+                </span>
+              </div>
+            </nav>
           </div>
-        </div>
-        <div>
-          <div class="card-header-title">Earnings over time</div>
-          <div class="columns">
-            <div class="column">
-              <div>Time Frame</div>
-              <div><input v-model="calculator.timeFrame">Months</div>
-            </div>
-            <div class="column">
-              <div>Start Date</div>
-              <input v-model="calculator.startDate"> 
-            </div>
+
+          <div class="column is-half">
+            <nav v-if="events" class="panel">
+              <p class="panel-heading">Events</p>
+              <div class="panel-block" v-for="evt in events">
+                <b-tag type="is-info is-light">{{evt.time}}</b-tag>
+                <span class="has-text-danger" v-if="evt.proofs > 0">
+                  {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+                </span>
+                <span class="has-text-info" v-else>
+                  {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+                </span>
+              </div>
+            </nav>
           </div>
         </div>
-        <div>
-          <div class="card-header-title">Plots</div>
-          <div class="columns">
-            <div class="column">
-              <div class="content">Initial size of plots</div> 
-              <div><input v-model="calculator.initSize" disabled>GiB</div>
+        
+      </b-tab-item>
+
+      <b-tab-item label="Calculator">
+        <div class="card" id="calculator">
+          <header class="card-header">
+            <p class="card-header-title">Chia Calculator</p>
+          </header>
+          <div class="card-content">
+            <div>
+              <p class="card-header-title">Number of Plots</p> 
+              <input v-model="nPlot" v-on:input="calculate()"> 
             </div>
-            <div class="column">
-              <div>Plotting speed</div>
-              <div><input v-model="calculator.plottingSpeed">GB</div>
-              <div>Space plotted per day</div>
+          </div>
+          <div v-if="calculator" class="card-content">
+            <div>
+              <div class="card-header-title">Network</div>
+              <div class="columns">
+                <div class="column">
+                  <div class="content">Total network space</div>
+                  <div>{{ calculator.totalNetSpace }}PiB</div>
+                </div>
+                <div class="column">
+                  <div class="content">Owned network space</div>
+                  <div>{{ calculator.ownedNetSpace }}%</div>
+                </div>
+                <div class="column">
+                  <div class="content">Expected time to win</div>
+                  <div>{{ calculator.expectTimeWin }}min</div>
+                </div>
+              </div>
             </div>
-            <div class="column">
-              <div>Max size of plots</div>
-              <div><input v-model="calculator.maxSize" disabled>GiB</div>
-              <input type="checkbox" name="unlimited" v-model="calculator.unlimited" checked>
-              <label for="unlimited">Unlimited</label>
+            <div>
+              <div class="card-header-title">Earnings over time</div>
+              <div class="columns">
+                <div class="column">
+                  <div>Time Frame</div>
+                  <div><input v-model="calculator.timeFrame">Months</div>
+                </div>
+                <div class="column">
+                  <div>Start Date</div>
+                  <input v-model="calculator.startDate"> 
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-header-title">Plots</div>
+              <div class="columns">
+                <div class="column">
+                  <div class="content">Initial size of plots</div> 
+                  <div><input v-model="calculator.initSize" disabled>GiB</div>
+                </div>
+                <div class="column">
+                  <div>Plotting speed</div>
+                  <div><input v-model="calculator.plottingSpeed">GB</div>
+                  <div>Space plotted per day</div>
+                </div>
+                <div class="column">
+                  <div>Max size of plots</div>
+                  <div><input v-model="calculator.maxSize" disabled>GiB</div>
+                  <input type="checkbox" name="unlimited" v-model="calculator.unlimited" checked>
+                  <label for="unlimited">Unlimited</label>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-header-title">Network Space</div>
+              <div class="columns">
+                <div class="column">
+                  <div>Initial size of network</div>
+                  <div><input v-model="calculator.initNetSize">EiB</div>
+                </div>
+                <div class="column">
+                  <div>Network growth</div>
+                  <div>%<input v-model="calculator.growthRate">weekly</div>
+                </div>
+                <div class="column">
+                  <input type="checkbox" name="growth" v-model="calculator.unbounded">
+                  <label for="growth">Unbonded growth</label>
+                </div>
+              </div>
+              <div class="columns">
+                <div class="column">
+                  <div>Days of exponential growth</div>
+                  <input v-model="calculator.exponentialGrowth">
+                </div>
+                <div class="column">
+                  <div>Days of stabilization</div>
+                  <input v-model="calculator.stabilization">
+                </div>
+                <div class="column">
+                  <div>Stabilized daily growth</div>
+                  <div><input v-model="calculator.stableDaily">PiB</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-header-title">Estimated Total Earnings</div>
+              <div class="columns">
+                <div class="column">
+                  <div>XCH after {{ calculator.timeFrame }} months</div>
+                  <div>{{ calculator.totalXCH.toFixed(2) }}</div>
+                </div>
+                <div class="column">
+                  <div>USD after {{ calculator.timeFrame}} months</div>
+                  <div>${{ (parseFloat(calculator.XCHprice)*parseFloat(calculator.totalXCH)).toFixed(2)  }}</div>
+                  <div>Assume 1 XCH = <input v-model="calculator.XCHprice">USD</div>
+                </div>
+              </div>
+            </div>
+            <div v-if="calculator.calculatorMap">
+              <apexchart height="400" :options="calculator.calculatorMap.chartOptions" :series="calculator.calculatorMap.series"></apexchart>
             </div>
           </div>
         </div>
-        <div>
-          <div class="card-header-title">Network Space</div>
-          <div class="columns">
-            <div class="column">
-              <div>Initial size of network</div>
-              <div><input v-model="calculator.initNetSize">EiB</div>
-            </div>
-            <div class="column">
-              <div>Network growth</div>
-              <div>%<input v-model="calculator.growthRate">weekly</div>
-            </div>
-            <div class="column">
-              <input type="checkbox" name="growth" v-model="calculator.unbounded">
-              <label for="growth">Unbonded growth</label>
-            </div>
-          </div>
-          <div class="columns">
-            <div class="column">
-              <div>Days of exponential growth</div>
-              <input v-model="calculator.exponentialGrowth">
-            </div>
-            <div class="column">
-              <div>Days of stabilization</div>
-              <input v-model="calculator.stabilization">
-            </div>
-            <div class="column">
-              <div>Stabilized daily growth</div>
-              <div><input v-model="calculator.stableDaily">PiB</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="card-header-title">Estimated Total Earnings</div>
-          <div class="columns">
-            <div class="column">
-              <div>XCH after {{ calculator.timeFrame }} months</div>
-              <div>{{ calculator.totalXCH.toFixed(2) }}</div>
-            </div>
-            <div class="column">
-              <div>USD after {{ calculator.timeFrame}} months</div>
-              <div>${{ (parseFloat(calculator.XCHprice)*parseFloat(calculator.totalXCH)).toFixed(2)  }}</div>
-              <div>Assume 1 XCH = <input v-model="calculator.XCHprice">USD</div>
-            </div>
-          </div>
-        </div>
-        <div v-if="calculator.calculatorMap">
-          <apexchart height="400" :options="calculator.calculatorMap.chartOptions" :series="calculator.calculatorMap.series"></apexchart>
-        </div>
-      </div>
-    </div>
-
-    &nbsp;
-
-
-    <div class="columns is-desktop">
-      <div class="column is-half">
-        <nav v-if="errors" class="panel">
-          <p class="panel-heading">Errors</p>
-          <div class="panel-block" v-for="err in errors">
-            <span class="panel-icon">
-              <i class="fas fa-error" aria-hidden="true"></i>
-            </span>
-            <b-tag type="is-info is-light">{{err.time}}</b-tag>
-            <span class="has-text-danger">
-              {{err.error}}
-            </span>
-          </div>
-        </nav>
-      </div>
-
-      <div class="column is-half">
-        <nav v-if="events" class="panel">
-          <p class="panel-heading">Events</p>
-          <div class="panel-block" v-for="evt in events">
-            <b-tag type="is-info is-light">{{evt.time}}</b-tag>
-            <span class="has-text-danger" v-if="evt.proofs > 0">
-              {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
-            </span>
-            <span class="has-text-info" v-else>
-              {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
-            </span>
-          </div>
-        </nav>
-      </div>
-    </div>
+      </b-tab-item>
+    </b-tabs>
 
     &nbsp;
 

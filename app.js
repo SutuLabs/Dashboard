@@ -14,6 +14,7 @@ var app = new Vue({
         events: data.events,
         calculator: null,
         nPlot: 1,
+        activeTab: 0, 
       }
     },
     mounted: function () {
