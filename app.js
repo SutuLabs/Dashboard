@@ -308,7 +308,7 @@ var app = new Vue({
         },
         calculate() {
             const unitPlotSize = 101.4; 
-            var nPlot = parseInt(this.nPlot); 
+            var nPlot = (this.nPlot==""||this.nPlot<0)? 1:parseInt(this.nPlot); 
             var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
             var totalNetSpace = 0; 
             totalNetSpace = rawTotalNetSpace*1024; 
@@ -346,14 +346,25 @@ var app = new Vue({
             function formatTime(time) {
                 var day; 
                 day = time/(24*60); 
-                if(day < 31) {
-                    return day.toString()+" days";
+                if(day < 1) {
+                    var hour, min; 
+                    hour = Math.floor(time/60); 
+                    if(hour < 1) {
+                        if(time < 1) return "Less than 1 minute";
+                        else return "About "+time.toFixed(0).toString()+" minutes";
+                    } else {
+                        min = Math.floor(time-hour*60);
+                        if(min < 1) return hour.toString()+" hours";
+                        else return hour.toString()+" hours "+min.toString()+" minutes";
+                    };
+                } else if(day < 31) {
+                    return day.toFixed(0).toString()+" days";
                 } else {
                     var month, temp_day; 
                     month = Math.floor(day/30); 
-                    temp_day = day-month*30; 
+                    temp_day = Math.floor(day-month*30); 
                     if(month < 12) {
-                        return month.toString()+" month(s) "+temp_day.toString()+" days";
+                        return month.toString()+" months "+temp_day.toString()+" days";
                     } else {
                         var year; 
                         year = Math.floor(day/365);
@@ -368,7 +379,7 @@ var app = new Vue({
                     }
                 }
             }; 
-            this.calculator.expectTimeWin = formatTime(expectTimeWin); 
+            this.calculator.expectTimeWin = (nPlot==0)? "Never":formatTime(expectTimeWin); 
 
             var netSpaceData = []; 
             var plotSizeData = []; 
