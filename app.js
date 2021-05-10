@@ -270,8 +270,8 @@ var app = new Vue({
             totalNetSpace = parseFloat(rawTotalNetSpace)*1024; 
             var ownedNetSpace = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)*100; 
             var proportion = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)
-            var averageBlockTime = 18.75; // in seconds
-            var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes  
+            var averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
+            var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
 
             // Advanced info 
             if(!this.calculator) {
@@ -322,6 +322,7 @@ var app = new Vue({
             }
 
             // graph of network space 
+            // TODO
             var prevDayNetSpace = parseFloat(this.calculator.initNetSize); 
             for(i = 0; i < nDays; i++) {
                 if (this.calculator.unbounded) {
@@ -358,9 +359,10 @@ var app = new Vue({
             }
 
             // graph of daily earnings 
+            // TODO 
             for(i = 0; i < nDays; i++) {
                 var dailyProportion = plotSizeData[i][1]/(netSpaceData[i][1]*Math.pow(1024,3)); 
-                var dailyEarning = 2*(1-Math.pow((1-dailyProportion),4608)); 
+                var dailyEarning = 2*(1-Math.pow((1-dailyProportion),4608)); // reference: https://thechiafarmer.com/2021/04/23/estimated-time-to-win-explained/
                 dailyEarningData.push([timeFrameCategory[i], dailyEarning]);
             }
 
@@ -371,7 +373,7 @@ var app = new Vue({
                 totalEarningData.push([timeFrameCategory[i], tempSum]);
             }
             this.calculator.totalXCH = totalEarningData[nDays-1][1];
-            this.calculator.XCHprice = 500;
+            this.calculator.XCHprice = 500; // TODO: get real time chia price
 
             this.calculator.calculatorMap = {
                 series: [
