@@ -261,6 +261,30 @@ var app = new Vue({
             if (perc < 0.7) return 'warning';
             return 'danger';
         },
+        setSlider() {
+            this.setSliderFlag = true; 
+            var nPlot = parseInt(this.nPlot); 
+            if(nPlot >= 10000) {
+                nPlot = 10000; 
+                this.nPlot = nPlot.toString(); 
+                this.slider = 99; 
+            } else {
+                for(var i = 0; i < 99; i++) { 
+                    if(nPlot >= this.sliderValue[i] && nPlot < this.sliderValue[i+1]) {
+                        this.slider = i; 
+                    };
+                };
+            };
+            this.calculate(); 
+        },
+        setNPlot() {
+            if(!this.setSliderFlag) {
+                this.nPlot = this.sliderValue[this.slider]; 
+                this.calculate(); 
+            } else {
+                this.setSliderFlag = false; 
+            }
+        },
         calculate() {
             const unitPlotSize = 101.4; 
             this.nPlot = this.sliderValue[this.slider]

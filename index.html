@@ -285,9 +285,11 @@
               <p class="card-header-title">Number of Plots</p> 
               <p>(of size 101.4GiB, k=32)</p>
               <b-field>
-                <b-slider v-model="slider" :min="0" :max="99" :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="calculate()" lazy></b-slider>
+                <b-slider v-model="slider" :min="0" :max="99" :tooltip="false" :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()"></b-slider>
               </b-field>
-              <input v-model="nPlot" v-on:input="calculate()"> 
+              <b-field>
+                <b-input v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input> 
+              </b-field>
             </div>
           </div>
           <div v-if="calculator" class="card-content">
