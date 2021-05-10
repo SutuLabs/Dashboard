@@ -317,6 +317,13 @@ var app = new Vue({
                     exponentialGrowth: 30, 
                     stabilization: 150, 
                     stableDaily: 5.000, 
+                    timeFrameUnit: "month",
+                    initSizeUnit: "gib", 
+                    plottingSpeedUnit: "gib",
+                    maxSizeUnit: "gib", 
+                    initNetSizeUnit: "eib",
+                    growthRatePeriod: "weekly",
+                    stableDailyUnit: "pib",
                 }
             } else {
                 this.calculator.totalNetSpace = totalNetSpace.toFixed(2);
