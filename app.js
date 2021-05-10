@@ -379,7 +379,8 @@ var app = new Vue({
                     }
                 }
             }; 
-            this.calculator.expectTimeWin = (nPlot==0)? "Never":formatTime(expectTimeWin); 
+            this.calculator.expectTimeWin = (nPlot==0)? "Never":formatTime(expectTimeWin);
+            if(this.calculator.maxSize < this.calculator.initSize) this.calculator.maxSize = this.calculator.initSize;
 
             var netSpaceData = []; 
             var plotSizeData = []; 
