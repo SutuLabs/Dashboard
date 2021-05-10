@@ -306,7 +306,7 @@ var app = new Vue({
                     ownedNetSpace: ownedNetSpace.toFixed(5),
                     expectTimeWin: expectTimeWin.toFixed(2), 
                     timeFrame: 6, 
-                    startDate: "today", 
+                    startDate: new Date(), 
                     initSize: 101.4*nPlot,
                     plottingSpeed: 0.0, 
                     maxSize: 1014.0, 
@@ -332,20 +332,24 @@ var app = new Vue({
             var totalEarningData = []; 
             var timeFrameCategory = []; 
             
-            function get_days(nMonth) {
-                var date1 = new Date(); 
-                var date2 = new Date(); 
-                date2.setMonth(parseInt(date1.getMonth())+parseInt(nMonth)); 
+            function get_days(startDate, n, unit) {
+                var date1 = new Date(startDate); 
+                var date2 = new Date(startDate); 
+                if(unit == "year") {
+                    date2.setFullYear(parseInt(date1.getFullYear())+n); 
+                } else if(unit == "month") {
+                    date2.setMonth(parseInt(date1.getMonth())+n); 
+                };
                 var timeDif = date2.getTime() - date1.getTime(); 
                 return (timeDif/(1000 * 3600 * 24)).toFixed(0); 
-            }
+            };
 
             var i; 
-            var nDays = get_days(parseInt(this.calculator.timeFrame)); 
+            var nDays = get_days(this.calculator.startDate, parseInt(this.calculator.timeFrame), this.calculator.timeFrameUnit);
             for(i = 0; i < nDays; i++) {
                 var date = new Date();
-                timeFrameCategory.push(date.setDate(new Date().getDate()+i)); 
-            }
+                timeFrameCategory.push(date.setDate(new Date(this.calculator.startDate).getDate()+i)); 
+            };
 
             // graph of network space 
             // TODO

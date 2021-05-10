@@ -313,13 +313,22 @@
             <div>
               <div class="card-header-title">Earnings over time</div>
               <div class="columns">
-                <div class="column">
-                  <div>Time Frame</div>
-                  <div><input v-model="calculator.timeFrame">Months</div>
+                <div class="column is-one-third">
+                  <b-field label="Time Frame">
+                    <b-input size="is-small" :lazy="true" v-model="calculator.timeFrame" v-on:input="calculate()"></b-input>
+                    <b-select size="is-small" v-model="calculator.timeFrameUnit" v-on:input="calculate()">
+                      <option value="month">Months</option>
+                      <option value="year">Years</option>
+                    </b-select>
+                  </b-field>
                 </div>
-                <div class="column">
-                  <div>Start Date</div>
-                  <input v-model="calculator.startDate"> 
+                <div class="column is-one-third">
+                  <b-field label="Start Date">
+                    <b-datepicker size="is-small" v-model="calculator.startDate" 
+                    placeholder="Click to select..."
+                    icon="calendar-today"
+                    trap-focus v-on:input="calculate()"></b-datepicker>
+                  </b-field>
                 </div>
               </div>
             </div>
