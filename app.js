@@ -291,46 +291,66 @@ var app = new Vue({
         calculate() {
             const unitPlotSize = 101.4; 
             var nPlot = parseInt(this.nPlot); 
-            var rawTotalNetSpace = this.farm.node.space; //EiB
+            var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
             var totalNetSpace = 0; 
-            totalNetSpace = parseFloat(rawTotalNetSpace)*1024; 
-            var ownedNetSpace = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)*100; 
-            var proportion = (nPlot*unitPlotSize)/(totalNetSpace*1024*1024)
+            totalNetSpace = rawTotalNetSpace*1024; 
+            var ownedNetSpace = (nPlot*unitPlotSize)/(rawTotalNetSpace*Math.pow(1024,3))*100; 
+            var proportion = (nPlot*unitPlotSize)/(rawTotalNetSpace*Math.pow(1024,3));
             var averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
             var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
 
             // Advanced info 
-            if(!this.calculator) {
-                this.calculator = {
-                    totalNetSpace: totalNetSpace.toFixed(2),
-                    ownedNetSpace: ownedNetSpace.toFixed(5),
-                    expectTimeWin: expectTimeWin.toFixed(2), 
-                    timeFrame: 6, 
-                    startDate: new Date(), 
-                    initSize: 101.4*nPlot,
-                    plottingSpeed: 0.0, 
-                    maxSize: 1014.0, 
-                    unlimited: true, 
-                    initNetSize: parseFloat(rawTotalNetSpace), // EiB 
-                    growthRate: 15, 
-                    unbounded: false, 
-                    exponentialGrowth: 30, 
-                    stabilization: 150, 
-                    stableDaily: 5.000, 
-                    timeFrameUnit: "month",
-                    initSizeUnit: "gib", 
-                    plottingSpeedUnit: "gib",
-                    maxSizeUnit: "gib", 
-                    initNetSizeUnit: "eib",
-                    growthRatePeriod: "weekly",
-                    stableDailyUnit: "pib",
+            if(!this.calculator) this.calculator = {
+                timeFrame: 6,
+                startDate: new Date(),
+                plottingSpeed: 0.0,
+                maxSize: 1014.0,
+                unlimited: true,
+                initNetSize: parseFloat(rawTotalNetSpace), // EiB 
+                growthRate: 15, 
+                unbounded: false,
+                exponentialGrowth: 30, 
+                stabilization: 150,
+                stableDaily: 5.000,
+                timeFrameUnit: "month",
+                initSizeUnit: "gib",
+                plottingSpeedUnit: "gib",
+                maxSizeUnit: "gib",
+                initNetSizeUnit: "eib",
+                growthRatePeriod: "weekly",
+                stableDailyUnit: "pib",
+
+            };
+            this.calculator.totalNetSpace = totalNetSpace.toFixed(2);
+            this.calculator.ownedNetSpace = ownedNetSpace.toFixed(5);
+            this.calculator.initSize = 101.4*nPlot;
+
+            function formatTime(time) {
+                var day; 
+                day = time/(24*60); 
+                if(day < 31) {
+                    return day.toString()+" days";
+                } else {
+                    var month, temp_day; 
+                    month = Math.floor(day/30); 
+                    temp_day = day-month*30; 
+                    if(month < 12) {
+                        return month.toString()+" month(s) "+temp_day.toString()+" days";
+                    } else {
+                        var year; 
+                        year = Math.floor(day/365);
+                        if(year < 1) return "Almost 1 year"
+                        else {
+                            var temp_month = Math.floor((day-year*365)/30); 
+                            if(temp_month < 1) return year.toString()+" years";
+                            else {
+                                return year.toString()+" years "+temp_month.toString()+" months";
+                            }
+                        }
+                    }
                 }
-            } else {
-                this.calculator.totalNetSpace = totalNetSpace.toFixed(2);
-                this.calculator.ownedNetSpace = ownedNetSpace.toFixed(5);
-                this.calculator.expectTimeWin = expectTimeWin.toFixed(2); 
-                this.calculator.initSize = 101.4*nPlot;
-            }
+            }; 
+            this.calculator.expectTimeWin = formatTime(expectTimeWin); 
 
             var netSpaceData = []; 
             var plotSizeData = []; 
