@@ -288,8 +288,6 @@ var app = new Vue({
             this.setSliderFlag = true; 
             var nPlot = parseInt(this.nPlot); 
             if(nPlot >= 10000) {
-                nPlot = 10000; 
-                this.nPlot = nPlot.toString(); 
                 this.slider = 99; 
             } else {
                 for(var i = 0; i < 99; i++) { 
