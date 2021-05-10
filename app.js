@@ -19,38 +19,14 @@ var app = new Vue({
         sliderValue: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,55,64,80,105,141,190,254,335,435,536,637,738,839,940,1041,1142,1243,1344,1445,1596,1747,1898,2049,2200,2351,2502,2653,2804,2955,3226,3497,3768,4039,4310,4581,4852,5123,5394,5665,6098,6531,6964,7397,7830,8263,8696,9129,9562,10000],
         setSliderFlag: false, 
 
+        intervals: [],
+
         activeTab: 0, 
       }
     },
     mounted: function () {
         this.load();
-        setInterval(() => {
-            this.getInfo('servers')
-                .then(response => response.json())
-                .then(json => {
-                    var f = json.find(_ => _.name == 'Farmer');
-                    var p = json.find(_ => _.name == 'Plotter');
-                    this.sortDisks(f);
-                    this.sortDisks(p);
-                    Object.assign(this.farm, f);
-                    Object.assign(this.plot, p);
-                    this.calcCpuMap(this.farm);
-                    this.calcCpuMap(this.plot);
-                });
-            this.getInfo('errors')
-                .then(response => response.json())
-                .then(json => {
-                    this.errors = json;
-                });
-            this.getInfo('events')
-                .then(response => response.json())
-                .then(json => {
-                    this.events = json;
-                });
-        }, 5000);
-        setInterval(() => {
-            this.save();
-        }, 5000);
+        this.switchTab(); 
     },
     methods: {
         getInfo(path) {
@@ -97,6 +73,50 @@ var app = new Vue({
                 errors: this.errors,
                 events: this.events,
             }));
+        },
+        switchTab() {
+            if(this.activeTab == 0) {
+                this.autoRefresh(); 
+            } else {
+                this.stopRefresh(); 
+            }; 
+        },
+        autoRefresh() {
+            var temp; 
+            temp = setInterval(() => {
+                this.getInfo('servers')
+                    .then(response => response.json())
+                    .then(json => {
+                        var f = json.find(_ => _.name == 'Farmer');
+                        var p = json.find(_ => _.name == 'Plotter');
+                        this.sortDisks(f);
+                        this.sortDisks(p);
+                        Object.assign(this.farm, f);
+                        Object.assign(this.plot, p);
+                        this.calcCpuMap(this.farm);
+                        this.calcCpuMap(this.plot);
+                    });
+                this.getInfo('errors')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.errors = json;
+                    });
+                this.getInfo('events')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.events = json;
+                    });
+            }, 5000);
+            this.intervals.push(temp); 
+            temp = setInterval(() => {
+                this.save();
+            }, 5000);
+            this.intervals.push(temp); 
+        },
+        stopRefresh() {
+            for(var i = 0; i < this.intervals.length; i++) {
+                clearInterval(this.intervals[i]); 
+            };
         },
         sortDisks(machine) {
             if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));

@@ -113,7 +113,7 @@
     </div>
     &nbsp;
 
-    <b-tabs v-model="activeTab">
+    <b-tabs v-model="activeTab" @input="switchTab()">
       <b-tab-item label="Info">
         <div v-if="diskMap" class="card">
           <div class="card-content">
