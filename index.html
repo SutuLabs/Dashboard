@@ -293,29 +293,32 @@
             </div>
           </div>
           <div v-if="calculator" class="card-content">
-            <div>
-              <div class="card-header-title">Network</div>
-              <div class="columns">
-                <div class="column is-one-third">
-                  <div class="content">Total network space</div>
-                  <div>{{ calculator.totalNetSpace }}PiB</div>
-                </div>
-                <div class="column is-one-third">
-                  <div class="content">Owned network space</div>
-                  <div>{{ calculator.ownedNetSpace }}%</div>
-                </div>
-                <div class="column is-one-third">
-                  <div class="content">Expected time to win</div>
-                  <div>{{ calculator.expectTimeWin }}min</div>
+            <nav class="level">
+              <div class="level-item has-text-centered">
+                <div>
+                  <div class="heading">Total network space</div>
+                  <div class="title">{{ calculator.totalNetSpace }}PiB</div>
                 </div>
               </div>
-            </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <div class="heading">Owned network space</div>
+                  <div class="title">{{ calculator.ownedNetSpace }}%</div>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <div class="heading">Expected time to win</div>
+                  <div class="title">{{ calculator.expectTimeWin }}min</div>
+                </div>
+              </div>
+            </nav>
             <div>
               <div class="card-header-title">Earnings over time</div>
               <div class="columns">
                 <div class="column is-one-third">
                   <b-field label="Time Frame">
-                    <b-input size="is-small" :lazy="true" v-model="calculator.timeFrame" v-on:input="calculate()"></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.timeFrame" v-on:input="calculate()"></b-input>
                     <b-select size="is-small" v-model="calculator.timeFrameUnit" v-on:input="calculate()">
                       <option value="month">Months</option>
                       <option value="year">Years</option>
@@ -337,7 +340,7 @@
               <div class="columns">
                 <div class="column is-one-third">
                   <b-field label="Initial size of plots">
-                    <b-input size="is-small" :lazy="true" v-model="calculator.initSize" v-on:input="calculate()" disabled></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.initSize" v-on:input="calculate()" disabled></b-input>
                     <b-select size="is-small" v-model="calculator.initSizeUnit" disabled>
                       <option value="gib">GiB</option>
                     </b-select>
@@ -345,7 +348,7 @@
                 </div>
                 <div class="column is-one-third">
                   <b-field label="Plotting Speed">
-                    <b-input size="is-small" :lazy="true" v-model="calculator.plottingSpeed" v-on:input="calculate()"></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.plottingSpeed" v-on:input="calculate()"></b-input>
                     <b-select size="is-small" v-model="calculator.plottingSpeedUnit">
                       <option value="gib">GiB</option>
                     </b-select>
@@ -354,7 +357,7 @@
                 </div>
                 <div class="column is-one-third">
                   <b-field label="Max size of plots">
-                    <b-input size="is-small" :lazy="true" v-model="calculator.maxSize" v-on:input="calculate()" disabled></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize" v-on:input="calculate()" disabled></b-input>
                     <b-select size="is-small" v-model="calculator.maxSizeUnit" disabled>
                       <option value="gib">GiB</option>
                     </b-select>
@@ -370,7 +373,7 @@
               <div class="columns">
                 <div class="column is-one-third">
                   <b-field label="Initial size of network">
-                    <b-input size="is-small" :lazy="true" v-model="calculator.initNetSize" v-on:input="calculate()"></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.initNetSize" v-on:input="calculate()"></b-input>
                     <b-select size="is-small" v-model="calculator.initNetSizeUnit">
                       <option value="eib">EiB</option>
                     </b-select>
@@ -381,7 +384,7 @@
                     <p class="control">
                       <span class="button is-static is-small">%</span>
                     </p>
-                    <b-input size="is-small" :lazy="true" v-model="calculator.growthRate" v-on:input="calculate()"></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.growthRate" v-on:input="calculate()"></b-input>
                     <b-select size="is-small" v-model="calculator.growthRatePeriod">
                       <option value="weekly">Weekly</option>
                     </b-select>
@@ -406,7 +409,7 @@
                 </div>
                 <div class="column is-one-third">
                   <b-field label="Stabilized daily growth">
-                    <b-input size="is-small" :lazy="true" v-model="calculator.stableDaily" v-on:input="calculate()"></b-input>
+                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.stableDaily" v-on:input="calculate()"></b-input>
                     <b-select size="is-small" v-model="calculator.stableDailyUnit">
                       <option value="pib">PiB</option>
                     </b-select>
@@ -414,20 +417,30 @@
                 </div>
               </div>
             </div>
-            <div>
-              <div class="card-header-title">Estimated Total Earnings</div>
-              <div class="columns">
-                <div class="column is-half">
-                  <div>XCH after {{ calculator.timeFrame }} months</div>
-                  <div>{{ calculator.totalXCH.toFixed(2) }}</div>
-                </div>
-                <div class="column is-half">
-                  <div>USD after {{ calculator.timeFrame}} months</div>
-                  <div>${{ (parseFloat(calculator.XCHprice)*parseFloat(calculator.totalXCH)).toFixed(2)  }}</div>
-                  <div>Assume 1 XCH = <input v-model="calculator.XCHprice">USD</div>
+            <div class="card-header-title">Estimated Total Earnings</div>
+            <nav class="level">
+              <div class="level-item has-text-centered">
+                <div>
+                  <div class="heading">XCH after {{ calculator.timeFrame }} months</div>
+                  <div class="title">{{ calculator.totalXCH.toFixed(2) }}</div>
                 </div>
               </div>
-            </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <div class="heading">USD after {{ calculator.timeFrame}} months</div>
+                  <div class="title">${{ (parseFloat(calculator.XCHprice)*parseFloat(calculator.totalXCH)).toFixed(2)  }}</div>
+                  </div>
+              </div>
+            </nav>
+            <b-field>
+              <p class="control">
+                <span class="button is-static is-small">Assume 1 XCH =</span>
+              </p>
+              <b-input size="is-small" v-model="calculator.XCHprice"></b-input>
+              <p class="control">
+                <span class="button is-static is-small">USD</span>
+              </p>
+            </b-field>
             <div v-if="calculator.calculatorMap">
               <apexchart height="400" :options="calculator.calculatorMap.chartOptions" :series="calculator.calculatorMap.series"></apexchart>
             </div>
