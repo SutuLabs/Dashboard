@@ -280,7 +280,10 @@
           <header class="card-header">
             <p class="card-header-title">Chia Calculator</p>
           </header>
-          <div class="card-content">
+          <div v-if="!calculator" class="card-content">
+            <p>An error occurred. Please try again later.</p>
+          </div>
+          <div v-if="calculator" class="card-content">
             <div>
               <p class="card-header-title">Number of Plots</p> 
               <p>(of size 101.4GiB, k=32)</p>

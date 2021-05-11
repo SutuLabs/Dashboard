@@ -313,7 +313,13 @@ var app = new Vue({
         calculate() {
             const unitPlotSize = 101.4; 
             var nPlot = (this.nPlot==""||this.nPlot<0)? 1:parseInt(this.nPlot); 
-            var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
+            var rawTotalNetSpace; //EiB
+            try {
+                rawTotalNetSpace = parseFloat(this.farm.node.space);
+            } catch(err) {
+                console.log(err); 
+                return ;
+            }; 
             var totalNetSpace = 0; 
             totalNetSpace = rawTotalNetSpace*1024; 
             var ownedNetSpace = (nPlot*unitPlotSize)/(rawTotalNetSpace*Math.pow(1024,3))*100; 
