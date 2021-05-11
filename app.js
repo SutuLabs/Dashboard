@@ -19,38 +19,14 @@ var app = new Vue({
         sliderValue: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,55,64,80,105,141,190,254,335,435,536,637,738,839,940,1041,1142,1243,1344,1445,1596,1747,1898,2049,2200,2351,2502,2653,2804,2955,3226,3497,3768,4039,4310,4581,4852,5123,5394,5665,6098,6531,6964,7397,7830,8263,8696,9129,9562,10000],
         setSliderFlag: false, 
 
+        intervals: [],
+
         activeTab: 0, 
       }
     },
     mounted: function () {
         this.load();
-        setInterval(() => {
-            this.getInfo('servers')
-                .then(response => response.json())
-                .then(json => {
-                    var f = json.find(_ => _.name == 'Farmer');
-                    var p = json.find(_ => _.name == 'Plotter');
-                    this.sortDisks(f);
-                    this.sortDisks(p);
-                    Object.assign(this.farm, f);
-                    Object.assign(this.plot, p);
-                    this.calcCpuMap(this.farm);
-                    this.calcCpuMap(this.plot);
-                });
-            this.getInfo('errors')
-                .then(response => response.json())
-                .then(json => {
-                    this.errors = json;
-                });
-            this.getInfo('events')
-                .then(response => response.json())
-                .then(json => {
-                    this.events = json;
-                });
-        }, 5000);
-        setInterval(() => {
-            this.save();
-        }, 5000);
+        this.switchTab(); 
     },
     methods: {
         getInfo(path) {
@@ -97,6 +73,50 @@ var app = new Vue({
                 errors: this.errors,
                 events: this.events,
             }));
+        },
+        switchTab() {
+            if(this.activeTab == 0) {
+                this.autoRefresh(); 
+            } else {
+                this.stopRefresh(); 
+            }; 
+        },
+        autoRefresh() {
+            var temp; 
+            temp = setInterval(() => {
+                this.getInfo('servers')
+                    .then(response => response.json())
+                    .then(json => {
+                        var f = json.find(_ => _.name == 'Farmer');
+                        var p = json.find(_ => _.name == 'Plotter');
+                        this.sortDisks(f);
+                        this.sortDisks(p);
+                        Object.assign(this.farm, f);
+                        Object.assign(this.plot, p);
+                        this.calcCpuMap(this.farm);
+                        this.calcCpuMap(this.plot);
+                    });
+                this.getInfo('errors')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.errors = json;
+                    });
+                this.getInfo('events')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.events = json;
+                    });
+            }, 5000);
+            this.intervals.push(temp); 
+            temp = setInterval(() => {
+                this.save();
+            }, 5000);
+            this.intervals.push(temp); 
+        },
+        stopRefresh() {
+            for(var i = 0; i < this.intervals.length; i++) {
+                clearInterval(this.intervals[i]); 
+            };
         },
         sortDisks(machine) {
             if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
@@ -268,8 +288,6 @@ var app = new Vue({
             this.setSliderFlag = true; 
             var nPlot = parseInt(this.nPlot); 
             if(nPlot >= 10000) {
-                nPlot = 10000; 
-                this.nPlot = nPlot.toString(); 
                 this.slider = 99; 
             } else {
                 for(var i = 0; i < 99; i++) { 
@@ -290,7 +308,7 @@ var app = new Vue({
         },
         calculate() {
             const unitPlotSize = 101.4; 
-            var nPlot = parseInt(this.nPlot); 
+            var nPlot = (this.nPlot==""||this.nPlot<0)? 1:parseInt(this.nPlot); 
             var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
             var totalNetSpace = 0; 
             totalNetSpace = rawTotalNetSpace*1024; 
@@ -328,14 +346,25 @@ var app = new Vue({
             function formatTime(time) {
                 var day; 
                 day = time/(24*60); 
-                if(day < 31) {
-                    return day.toString()+" days";
+                if(day < 1) {
+                    var hour, min; 
+                    hour = Math.floor(time/60); 
+                    if(hour < 1) {
+                        if(time < 1) return "Less than 1 minute";
+                        else return "About "+time.toFixed(0).toString()+" minutes";
+                    } else {
+                        min = Math.floor(time-hour*60);
+                        if(min < 1) return hour.toString()+" hours";
+                        else return hour.toString()+" hours "+min.toString()+" minutes";
+                    };
+                } else if(day < 31) {
+                    return day.toFixed(0).toString()+" days";
                 } else {
                     var month, temp_day; 
                     month = Math.floor(day/30); 
-                    temp_day = day-month*30; 
+                    temp_day = Math.floor(day-month*30); 
                     if(month < 12) {
-                        return month.toString()+" month(s) "+temp_day.toString()+" days";
+                        return month.toString()+" months "+temp_day.toString()+" days";
                     } else {
                         var year; 
                         year = Math.floor(day/365);
@@ -350,7 +379,8 @@ var app = new Vue({
                     }
                 }
             }; 
-            this.calculator.expectTimeWin = formatTime(expectTimeWin); 
+            this.calculator.expectTimeWin = (nPlot==0)? "Never":formatTime(expectTimeWin);
+            if(this.calculator.maxSize < this.calculator.initSize) this.calculator.maxSize = this.calculator.initSize;
 
             var netSpaceData = []; 
             var plotSizeData = []; 
