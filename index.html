@@ -260,13 +260,13 @@
           <div class="column is-half">
             <nav v-if="events" class="panel">
               <p class="panel-heading">Events</p>
-              <div class="panel-block" v-for="evt in events">
+              <div class="panel-block" v-for="evt in events.slice(0,10)">
                 <b-tag type="is-info is-light">{{evt.time}}</b-tag>
                 <span class="has-text-danger" v-if="evt.proofs > 0">
-                  {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+                  {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长: {{evt.duration.totalMilliseconds}} ms
                 </span>
                 <span class="has-text-info" v-else>
-                  {{evt.eligibleNumber}} plots were eligible for farming , Found {{evt.proofs}} proofs. Time: {{evt.duration}}. Total {{evt.total}} plots
+                  {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长: {{evt.duration.totalMilliseconds}} ms
                 </span>
               </div>
             </nav>
