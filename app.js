@@ -112,6 +112,10 @@ var app = new Vue({
                 this.save();
             }, 5000);
             this.intervals.push(temp); 
+            temp = setInterval(() => {
+                this.load();
+            }, 20000);
+            this.intervals.push(temp); 
         },
         stopRefresh() {
             for(var i = 0; i < this.intervals.length; i++) {
