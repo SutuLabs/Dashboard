@@ -8,6 +8,21 @@
     padding: 16px; 
 }
 
+#chiaPrice .title, #netInfo .title {
+    color: #00FF00;
+    font-weight: bold;
+}
+
+.card-header-title > .title-only { 
+    font-size: large;
+    color: #04F0F3;
+}
+
+.card-header-title > .heading {
+    padding-left: 20px;
+    padding-top: 8px;
+}
+
 #calculator .tab-content {
     padding-left: 0;
     padding-right: 0;
