@@ -21,13 +21,12 @@ var app = new Vue({
         setSliderFlag: false, 
 
         intervals: [],
-
-        activeTab: 0, 
+        
+        activePage: 0,
       }
     },
     mounted: function () {
         this.load();
-        this.switchTab(); 
     },
     methods: {
         getInfo(path) {
@@ -75,11 +74,12 @@ var app = new Vue({
                 events: this.events,
             }));
         },
-        switchTab() {
-            if(this.activeTab == 0) {
+        switchPage(pageNumber) {
+            this.activePage = pageNumber;
+            if(this.activePage == 2) {
+                this.stopRefresh();
+            } else { 
                 this.autoRefresh(); 
-            } else {
-                this.stopRefresh(); 
             }; 
         },
         autoRefresh() {
