@@ -67,43 +67,50 @@
           <div class="column">
             <div class="box">
               <div class="heading">全网容量</div>
-              <div class="title is-5">TODO</div>
+              <div v-if="farm" class="title is-5">{{farm.farm.totalSize}}</div>
+              <div v-if="!farm" class="title is-5">Loading</div>
             </div>
           </div>
           <div class="column">
           <div class="box">
             <div class="heading">奇亚币总量</div>
-            <div class="title is-5">TODO</div>
+            <div v-if="farm" class="title is-5">TODO</div>
+            <div v-if="!farm" class="title is-5">Loading</div>
           </div>
           </div>
           <div class="column">
             <div class="box">
               <div class="heading">总价值</div>
-              <div class="title is-5">TODO</div>
+              <div v-if="farm" class="title is-5">TODO</div>
+            <div v-if="!farm" class="title is-5">Loading</div>
             </div>
           </div>
           <div class="column">
             <div class="box">
               <div class="heading">收获的奇亚币</div>
-              <div class="title is-5">TODO</div>
+              <div v-if="farm" class="title is-5">{{farm.farm.totalFarmed}}</div>
+            <div v-if="!farm" class="title is-5">Loading</div>
             </div>
           </div>
           <div class="column">
             <div class="box">
               <div class="heading">收获的奇亚币价值</div>
-              <div class="title is-5">TODO</div>
+              <div v-if="farm" class="title is-5">TODO</div>
+              <div v-if="!farm" class="title is-5">Loading</div>
             </div>
           </div>
           <div class="column">
             <div class="box">
               <div class="heading">难度系数</div>
-              <div class="title is-5">TODO</div>
+              <div v-if="farm" class="title is-5">{{farm.node.difficulty}}</div>
+              <div v-if="!farm" class="title is-5">Loading</div>
             </div>
           </div>
           <div class="column">
             <div class="box">
               <div class="heading">最新的收割区块高度</div>
-              <div class="title is-5">TODO</div>
+              <div v-if="farm" class="title is-5">{{farm.node.height}}</div>
+              <div v-if="!farm" class="title is-5">Loading</div>
             </div>
           </div>
         </div>
@@ -115,6 +122,81 @@
                 <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
               </div>
             </div>
+            <div class="card-content">
+              <div>
+                <p class="title is-5">你的算力</p> 
+                <p>(of size 101.4GiB, k=32)</p>
+                <b-field>
+                  <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false" :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()"></b-slider>
+                </b-field>
+                <div class="columns">
+                  <div class="column">
+                    <b-field>
+                      <b-input size="is-small" v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input>
+                      <p class="control">
+                        <span class="button is-small">块农田</span>
+                      </p>
+                    </b-field>
+                  </div>
+                  <!-- TODO -->
+                  <div v-if="calculator" class="column">
+                    <b-field>
+                      <p class="control">
+                        <span class="button is-small">Assume 1 XCH =</span>
+                      </p>
+                      <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
+                      <p class="control">
+                        <span class="button is-small">USD</span>
+                      </p>
+                    </b-field>
+                  </div>
+                </div>
+                <div v-if="calculator" >
+                  <div class="title is-4">Estimated Earnings</div>
+                  <nav class="level">
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <div class="heading">Hourly XCH</div>
+                        <div class="title is-5">{{ calculator.estimatedEarning.XCH.hour.toFixed(2) }}/hour</div>
+                      </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <div class="heading">Daily XCH</div>
+                        <div class="title is-5">{{ calculator.estimatedEarning.XCH.day.toFixed(2) }}/day</div>
+                      </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <div class="heading">Monthly XCH</div>
+                        <div class="title is-5">{{ calculator.estimatedEarning.XCH.month.toFixed(2) }}/month</div>
+                      </div>
+                    </div>
+                  </nav>
+                  <nav class="level">
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <div class="heading">Hourly USD</div>
+                        <div class="title is-5">${{ calculator.estimatedEarning.USD.hour.toFixed(2) }}/hour</div>
+                      </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <div class="heading">Daily USD</div>
+                        <div class="title is-5">${{ calculator.estimatedEarning.USD.day.toFixed(2) }}/day</div>
+                      </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <div class="heading">Monthly USD</div>
+                        <div class="title is-5">${{ calculator.estimatedEarning.USD.month.toFixed(2) }}/month</div>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <div class="card-content"></div>
           </div>
         </div>
         <div class="block">
@@ -122,13 +204,13 @@
             <div class="column is-half">
               <div class="box">
                 <div class="title is-5">全网大小(PiB)</div>
-                <div></div>
+                <div>TODO</div>
               </div>
             </div>
             <div class="column is-half">
               <div class="box">
                 <div class="title is-5">chia价格(USD)</div>
-                <div></div>
+                <div>TODO</div>
               </div>
             </div>
           </div>
@@ -136,13 +218,13 @@
             <div class="column is-half">
               <div class="box">
                 <div class="title is-5">每日营收(1TiB)</div>
-                <div></div>
+                <div>TODO</div>
               </div>
             </div>
             <div class="column is-half">
               <div class="box">
                 <div class="title is-5">收获时间(1TiB)</div>
-                <div></div>
+                <div>TODO</div>
               </div>
             </div>
           </div>
@@ -155,7 +237,15 @@
                 <div class="heading">实时查看并监控矿场工作状态及数据</div>
               </div>
             </div>
-            <div class="card-content"></div>
+            <div class="card-content">
+              <div v-if="diskMap" class="card">
+                <div class="card-content">
+                  <div class="content">
+                    <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

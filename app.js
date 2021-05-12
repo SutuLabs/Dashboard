@@ -21,7 +21,7 @@ var app = new Vue({
         setSliderFlag: false, 
 
         intervals: [],
-        
+
         activePage: 0,
       }
     },
@@ -274,8 +274,16 @@ var app = new Vue({
                         width: 1
                     },
                     title: {
-                        text: '磁盘工作情况'
+                        text: '磁盘工作情况',
+                        style: {
+                            color: "#FFFFFF",
+                        },
                     },
+                    legend: {
+                        labels: {
+                            colors: "#FFFFFF",
+                        }
+                    }
                 },
             };
         },
@@ -326,7 +334,7 @@ var app = new Vue({
             // Advanced info 
             if(!this.calculator) this.calculator = {
                 timeFrame: 6,
-                startDate: new Date(),
+                startDate: "today",
                 plottingSpeed: 0.0,
                 maxSize: 1014.0,
                 unlimited: true,
@@ -336,18 +344,31 @@ var app = new Vue({
                 exponentialGrowth: 30, 
                 stabilization: 150,
                 stableDaily: 5.000,
-                timeFrameUnit: "month",
+                timeFrameUnit: "6month",
                 initSizeUnit: "gib",
                 plottingSpeedUnit: "gib",
                 maxSizeUnit: "gib",
                 initNetSizeUnit: "eib",
                 growthRatePeriod: "weekly",
                 stableDailyUnit: "pib",
+                XCHprice: 500, // TODO: get real time chia price
 
             };
             this.calculator.totalNetSpace = totalNetSpace.toFixed(2);
             this.calculator.ownedNetSpace = ownedNetSpace.toFixed(5);
             this.calculator.initSize = 101.4*nPlot;
+            this.calculator.estimatedEarning = {
+                XCH: {
+                    hour: 2/(expectTimeWin/60),
+                    day: 2/(expectTimeWin/(60*24)), 
+                    month: 2/(expectTimeWin/(60*24*30)),
+                }, 
+                USD: {
+                    hour: 2/(expectTimeWin/60) * this.calculator.XCHprice,
+                    day: 2/(expectTimeWin/(60*24)) * this.calculator.XCHprice,
+                    month: 2/(expectTimeWin/(60*24*30)) * this.calculator.XCHprice,
+                }
+            };
 
             function formatTime(time) {
                 var day; 
@@ -396,8 +417,15 @@ var app = new Vue({
             var timeFrameCategory = []; 
             
             function get_days(startDate, n, unit) {
-                var date1 = new Date(startDate); 
-                var date2 = new Date(startDate); 
+                var date1, date2; 
+                if(startDate=="today"){
+                    date1 = new Date(); 
+                    date2 = new Date(); 
+                } else {
+                    date1 = new Date(2021,4,2); 
+                    date2 = new Date(2021,4,2); 
+                };
+                unit = unit.slice(1);
                 if(unit == "year") {
                     date2.setFullYear(parseInt(date1.getFullYear())+n); 
                 } else if(unit == "month") {
@@ -408,10 +436,13 @@ var app = new Vue({
             };
 
             var i; 
-            var nDays = get_days(this.calculator.startDate, parseInt(this.calculator.timeFrame), this.calculator.timeFrameUnit);
+            var nDays = get_days(this.calculator.startDate, parseInt(this.calculator.timeFrameUnit), this.calculator.timeFrameUnit);
+            var startDate; 
+            if(this.calculator.startDate == "today") {startDate = new Date()} 
+            else {startDate = new Date(2021,4,2)};
             for(i = 0; i < nDays; i++) {
                 var date = new Date();
-                timeFrameCategory.push(date.setDate(new Date(this.calculator.startDate).getDate()+i)); 
+                timeFrameCategory.push(date.setDate(startDate.getDate()+i)); 
             };
 
             // graph of network space 
@@ -466,7 +497,7 @@ var app = new Vue({
                 totalEarningData.push([timeFrameCategory[i], tempSum]);
             }
             this.calculator.totalXCH = totalEarningData[nDays-1][1];
-            this.calculator.XCHprice = 500; // TODO: get real time chia price
+            this.calculator.totalEarningUSD = parseFloat(this.calculator.XCHprice)*parseFloat(this.calculator.totalXCH);
 
             this.calculator.calculatorMap = {
                 series: [
