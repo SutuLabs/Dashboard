@@ -238,11 +238,9 @@
               </div>
             </div>
             <div class="card-content">
-              <div v-if="diskMap" class="card">
-                <div class="card-content">
-                  <div class="content">
-                    <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
-                  </div>
+              <div v-if="diskMap">
+                <div class="content">
+                  <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
                 </div>
               </div>
             </div>
@@ -356,11 +354,9 @@
         </div>
 
         <div class="box">
-          <div v-if="diskMap" class="card">
-            <div class="card-content">
-              <div class="content">
-                <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
-              </div>
+          <div v-if="diskMap">
+            <div class="content">
+              <apexchart height="300" :options="diskMap.chartOptions" :series="diskMap.series"></apexchart>
             </div>
           </div>
         </div>
