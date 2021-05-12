@@ -27,6 +27,7 @@ var app = new Vue({
     },
     mounted: function () {
         this.load();
+        this.autoRefresh();
     },
     methods: {
         getInfo(path) {
@@ -74,11 +75,11 @@ var app = new Vue({
                 events: this.events,
             }));
         },
-        switchPage(pageNumber) {
-            this.activePage = pageNumber;
-            if(this.activePage == 2) {
+        switchPage(currentPage, targetPage) {
+            this.activePage = targetPage;
+            if(targetPage == 2) {
                 this.stopRefresh();
-            } else { 
+            } else if(currentPage == 2) { 
                 this.autoRefresh(); 
             }; 
         },
@@ -120,8 +121,9 @@ var app = new Vue({
         },
         stopRefresh() {
             for(var i = 0; i < this.intervals.length; i++) {
-                clearInterval(this.intervals[i]); 
+                clearInterval(this.intervals[i]);
             };
+            this.intervals.length = 0;
         },
         sortDisks(machine) {
             if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));

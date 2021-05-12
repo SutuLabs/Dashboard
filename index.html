@@ -26,19 +26,19 @@
           </div>
         </template>
         <template #end>
-          <b-navbar-item :active="activePage == 0" @click="switchPage(0)">
+          <b-navbar-item :active="activePage == 0" @click="switchPage(activePage,0)">
             首页
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 1" @click="switchPage(1)">
+          <b-navbar-item :active="activePage == 1" @click="switchPage(activePage,1)">
             区块链浏览器
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 2" @click="switchPage(2)">
+          <b-navbar-item :active="activePage == 2" @click="switchPage(activePage,2)">
             计算器 
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 3" @click="switchPage(3)">
+          <b-navbar-item :active="activePage == 3" @click="switchPage(activePage,3)">
             矿场监控
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 4" @click="switchPage(4)">
+          <b-navbar-item :active="activePage == 4" @click="switchPage(activePage,4)">
             关于我们
           </b-navbar-item>
         </template>
@@ -117,7 +117,7 @@
         </div>
         <div class="block">
           <div class="card">
-            <div class="card-header" @click="switchPage(2)">
+            <div class="card-header" @click="switchPage(activePage,2)">
               <div class="card-header-title">
                 <div class="title-only">奇亚币收益计算器 </div>
                 <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
@@ -232,7 +232,7 @@
         </div>
         <div class="block">
           <div class="card">
-            <div class="card-header" @click="switchPage(3)">
+            <div class="card-header" @click="switchPage(activePage,3)">
               <div class="card-header-title">
                 <div class="title-only">矿场监控</div>
                 <div class="heading">实时查看并监控矿场工作状态及数据</div>
@@ -732,16 +732,16 @@
     <div id="mobileBottomNavbar">
       <b-navbar :fixed-bottom="true" :mobile-burger="false">
         <template #brand>
-          <b-navbar-item :active="activePage == 0" @click="switchPage(0)">
+          <b-navbar-item :active="activePage == 0" @click="switchPage(activePage,0)">
             首页
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 1" @click="switchPage(1)">
+          <b-navbar-item :active="activePage == 1" @click="switchPage(activePage,1)">
             浏览器
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 3" @click="switchPage(3)">
+          <b-navbar-item :active="activePage == 3" @click="switchPage(activePage,3)">
             矿场监控
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 4" @click="switchPage(4)">
+          <b-navbar-item :active="activePage == 4" @click="switchPage(activePage,4)">
             关于
           </b-navbar-item>
         </template>
