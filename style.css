@@ -1,3 +1,9 @@
+.slogan {
+    margin-top: 24px;
+    font-size: small;
+    color: gold;
+}
+
 #main {
     padding: 16px; 
 }

@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>chia</title>
+  <link rel="shortcut icon" type="image/x-icon" href="logo.png" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" type="text/sass" href="./style.sass"/>
   <link rel="stylesheet" href="./buefy.min.css" />
@@ -20,7 +21,7 @@
           <b-navbar-item>
             <img src="logo.png">
           </b-navbar-item>
-          <div>
+          <div class="slogan">
             Chiabee，为矿场提供更专业的技术服务。
           </div>
         </template>
@@ -50,7 +51,7 @@
           <b-navbar-item>
             <img src="logo.png">
           </b-navbar-item>
-          <div>
+          <div class="slogan">
             Chiabee，为矿场提供更专业的技术服务。
           </div>
         </template>
@@ -499,7 +500,7 @@
         </div>
       </div>
       <div v-if="activePage == 3">
-        <div v-if="farm" class="card">
+        <div v-if="farm" class="box">
           <div class="card-content">
             <div class="content">
               <b-field grouped group-multiline>
