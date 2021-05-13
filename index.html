@@ -114,6 +114,18 @@
             </div>
           </div>
         </div>
+        <!-- mobile net info --> 
+        <div class="block" id="mobileNetInfo">
+          <b-carousel-list :data="netInfoList" :items-to-show="2">
+            <template #item="list">
+              <div class="box">
+                <div class="heading">{{list.title}}</div>
+                <div v-if="farm" class="title is-5">{{list.data}}</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
+            </template>
+          </b-carousel-list>
+        </div>
         <div class="block">
           <div class="card">
             <div class="card-header" @click="switchPage(activePage,2)">

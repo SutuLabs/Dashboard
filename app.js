@@ -13,6 +13,15 @@ var app = new Vue({
         errors: data.errors,
         events: data.events,
 
+        netInfoList: [
+            {title: "当前币价",},
+            {title: "全网容量",},
+            {title: "奇亚币总量",},
+            {title: "总价值",},
+            {title: "收获的奇亚币",},
+            {title: "难度系数",},
+            {title: "最新的收割区块高度",},
+        ],
         averageBlockTime: 18.75, // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
         calculator: null,
         basicCalc: {
@@ -75,7 +84,8 @@ var app = new Vue({
                     this.sortDisks(this.farm);
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
-                    this.basicCalculate(); 
+                    this.basicCalculate();
+                    this.getNetInfo(this.farm);
                 });
         },
         save() {
@@ -110,6 +120,7 @@ var app = new Vue({
                         Object.assign(this.plot, p);
                         this.calcCpuMap(this.farm);
                         this.calcCpuMap(this.plot);
+                        this.getNetInfo(this.farm);
                     });
                 this.getInfo('errors')
                     .then(response => response.json())
@@ -137,6 +148,38 @@ var app = new Vue({
                 clearInterval(this.intervals[i]);
             };
             this.intervals.length = 0;
+        },
+        getNetInfo(farm) {
+            this.netInfoList = [
+                {
+                    title: "当前币价", 
+                    data: "TODO",
+                },
+                {
+                    title: "全网容量",
+                    data: farm.farm.totalSize,
+                },
+                {
+                    title: "奇亚币总量", 
+                    data: "TODO",
+                },
+                {
+                    title: "总价值", 
+                    data: "TODO",
+                },
+                {
+                    title: "收获的奇亚币", 
+                    data: farm.farm.totalFarmed,
+                },
+                {
+                    title: "难度系数", 
+                    data: farm.node.difficulty,
+                },
+                {
+                    title: "最新的收割区块高度", 
+                    data: farm.node.height,
+                },
+            ];
         },
         sortDisks(machine) {
             if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
