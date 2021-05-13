@@ -253,6 +253,7 @@ var app = new Vue({
                         opacity: 1
                     },
                     tooltip: {
+                        theme: "dark",
                         y: {
                             formatter: function (val) {
                                 return val + " %"
@@ -324,6 +325,49 @@ var app = new Vue({
                 })
             }));
 
+            const colorRanges = [{
+                from: 0,
+                to: 0,
+                name: 'Empty',
+                color: '#DDDDDD'
+                },
+                {
+                    from: 1,
+                    to: 1,
+                    name: 'Phase 1',
+                    color: '#FF0000'
+                },
+                {
+                    from: 2,
+                    to: 2,
+                    name: 'Phase 2',
+                    color: '#0000FF'
+                },
+                {
+                    from: 3,
+                    to: 3,
+                    name: 'Phase 3',
+                    color: '#FFB200'
+                },
+                {
+                    from: 4,
+                    to: 4,
+                    name: 'Phase 4',
+                    color: '#006600'
+                },
+                {
+                    from: 5,
+                    to: 5,
+                    name: 'Moving',
+                    color: '#128FD9'
+                },
+                {
+                    from: 6,
+                    to: 6,
+                    name: 'Harvesting',
+                    color: '#00A100'
+                },
+            ];
 
             this.diskMap = {
                 series,
@@ -338,49 +382,7 @@ var app = new Vue({
                             radius: 0,
                             // useFillColorAsStroke: true,
                             colorScale: {
-                                ranges: [{
-                                        from: 0,
-                                        to: 0,
-                                        name: 'Empty',
-                                        color: '#DDDDDD'
-                                    },
-                                    {
-                                        from: 1,
-                                        to: 1,
-                                        name: 'Phase 1',
-                                        color: '#FF0000'
-                                    },
-                                    {
-                                        from: 2,
-                                        to: 2,
-                                        name: 'Phase 2',
-                                        color: '#0000FF'
-                                    },
-                                    {
-                                        from: 3,
-                                        to: 3,
-                                        name: 'Phase 3',
-                                        color: '#FFB200'
-                                    },
-                                    {
-                                        from: 4,
-                                        to: 4,
-                                        name: 'Phase 4',
-                                        color: '#006600'
-                                    },
-                                    {
-                                        from: 5,
-                                        to: 5,
-                                        name: 'Moving',
-                                        color: '#128FD9'
-                                    },
-                                    {
-                                        from: 6,
-                                        to: 6,
-                                        name: 'Harvesting',
-                                        color: '#00A100'
-                                    },
-                                ]
+                                ranges: colorRanges,
                             }
                         }
                     },
@@ -399,6 +401,14 @@ var app = new Vue({
                     legend: {
                         labels: {
                             colors: "white",
+                        }
+                    },
+                    tooltip: {
+                        theme: "dark",
+                        y: {
+                          formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                            return colorRanges[value].name
+                            }
                         }
                     }
                 },
