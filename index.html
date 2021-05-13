@@ -124,80 +124,69 @@
               </div>
             </div>
             <div class="card-content">
-              <div>
-                <p class="title is-5">你的算力</p> 
-                <p>(大小为101.4GiB, k=32)</p>
-                <b-field>
-                  <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false" :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()"></b-slider>
-                </b-field>
+              <div class="block">
                 <div class="columns">
-                  <div class="column">
-                    <b-field>
-                      <b-input size="is-small" v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input>
-                      <p class="control">
-                        <span class="button is-small">块农田</span>
-                      </p>
-                    </b-field>
+                  <div class="column is-one-quarter">
+                    <p class="title is-5">输入您拥有的算力或田数</p>
                   </div>
-                  <!-- TODO -->
-                  <div v-if="calculator" class="column">
-                    <b-field>
-                      <p class="control">
-                        <span class="button is-small">1 XCH =</span>
-                      </p>
-                      <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
-                      <p class="control">
-                        <span class="button is-small">美元</span>
-                      </p>
-                    </b-field>
+                  <div class="column is-one-quarter">
+                    <p v-if="basicCalc.unit=='tib'">（约为{{ (parseInt(basicCalc.n)*1024/101.4).toFixed(0) }}plots）</p>
+                    <p v-if="basicCalc.unit=='plots'">（约为{{ (parseInt(basicCalc.n)*101.4/1024).toFixed(0) }}Tib）</p>
                   </div>
                 </div>
-                <div v-if="calculator" >
-                  <div class="title is-4">预估收益</div>
-                  <nav class="level">
-                    <div class="level-item has-text-centered">
-                      <div>
-                        <div class="heading">每小时 XCH</div>
-                        <div class="title is-5">{{ calculator.estimatedEarning.XCH.hour.toFixed(2) }}/小时</div>
-                      </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                      <div>
-                        <div class="heading">每日 XCH</div>
-                        <div class="title is-5">{{ calculator.estimatedEarning.XCH.day.toFixed(2) }}/日</div>
-                      </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                      <div>
-                        <div class="heading">每月 XCH</div>
-                        <div class="title is-5">{{ calculator.estimatedEarning.XCH.month.toFixed(2) }}/月</div>
-                      </div>
-                    </div>
-                  </nav>
-                  <nav class="level">
-                    <div class="level-item has-text-centered">
-                      <div>
-                        <div class="heading">每小时 USD</div>
-                        <div class="title is-5">${{ calculator.estimatedEarning.USD.hour.toFixed(2) }}/小时</div>
-                      </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                      <div>
-                        <div class="heading">每日 USD</div>
-                        <div class="title is-5">${{ calculator.estimatedEarning.USD.day.toFixed(2) }}/日</div>
-                      </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                      <div>
-                        <div class="heading">每月 USD</div>
-                        <div class="title is-5">${{ calculator.estimatedEarning.USD.month.toFixed(2) }}/月</div>
-                      </div>
-                    </div>
-                  </nav>
+                <b-field>
+                  <b-input size="is-small" v-model="basicCalc.n" :lazy="true" v-on:input="basicCalculate()"></b-input>
+                  <b-select size="is-small" v-model="basicCalc.unit" v-on:input="basicCalculate()">
+                    <option value="tib">TiB</option>
+                    <option value="plots">Plots</option>
+                  </b-select>
+                </b-field>
+              </div>
+              <div class="block">
+                <div class="columns">
+                  <div class="column is-one-quarter">
+                    <p class="title is-5">输入您的单T成本</p>
+                  </div>
+                  <div class="column is-one-quarter">
+                    <p v-if="basicCalc.costUnit=='USDT'">（当前平均算力成本为18.09U/TB）</p>
+                    <p v-if="basicCalc.costUnit=='RMB'">（当前平均算力成本为120.00元/TB）</p>
+                  </div>
+                  <div class="column is-one-quarter">
+                    <p>TODO: 单T成本计算标准</p>
+                  </div>
+                </div>
+                <b-field>
+                  <b-input size="is-small" v-model="basicCalc.unitCost" :lazy="true" v-on:input="basicCalculate()"></b-input>
+                  <b-select size="is-small" v-model="basicCalc.costUnit" v-on:input="basicCalculate()">
+                    <option value="USDT">USDT</option>
+                    <option value="RMB">RMB</option>
+                  </b-select>
+                  <p class="control">
+                    <span class="button is-small">/TB</span>
+                  </p>
+                </b-field>
+              </div>
+              <div class="columns">
+                <div class="column is-one-third">
+                  <div class="box">
+                    <div class="heading">预计爆块时间</div>
+                    <div class="title is-5">{{ basicCalc.estimatedTime }}</div>
+                  </div>
+                </div>
+                <div class="column is-one-third">
+                  <div class="box">
+                    <div class="heading">日均收益</div>
+                    <div class="title is-5">{{ basicCalc.dailyEarning.toFixed(2) }}</div>
+                  </div>
+                </div>
+                <div class="column is-one-third">
+                  <div class="box">
+                    <div class="heading">预计回本时间</div>
+                    <div class="title is-5">{{ basicCalc.timeToEarnCost.toFixed(0) }}天</div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="card-content"></div>
           </div>
         </div>
         <div class="block">

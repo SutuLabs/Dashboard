@@ -13,7 +13,18 @@ var app = new Vue({
         errors: data.errors,
         events: data.events,
 
+        averageBlockTime: 18.75, // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
         calculator: null,
+        basicCalc: {
+            n: 1, 
+            unit: "tib",
+            unitCost: 18.09, 
+            costUnit: "USDT",
+            estimatedTime: 0,
+            dailyEarning: 0,
+            timeToEarnCost: 0, //days
+            chiaPrice: 500,
+        },
         calcLoading: true,
         nPlot: null,
         slider: 0, 
@@ -63,7 +74,7 @@ var app = new Vue({
                     this.sortDisks(this.farm);
                     this.calcCpuMap(this.farm);
                     this.calcFarmPlotMap();
-                    this.calculate(); 
+                    this.basicCalculate(); 
                 });
         },
         save() {
@@ -79,6 +90,7 @@ var app = new Vue({
             this.activePage = targetPage;
             if(targetPage == 2) {
                 this.stopRefresh();
+                this.calculate();
             } else if(currentPage == 2) { 
                 this.autoRefresh(); 
             }; 
@@ -214,7 +226,7 @@ var app = new Vue({
                 series,
                 chartOptions: {
                     chart: {
-                        height: 350,
+                        height: 300,
                         type: 'heatmap',
                     },
                     plotOptions: {
@@ -321,6 +333,63 @@ var app = new Vue({
                 this.setSliderFlag = false; 
             }
         },
+        formatTime(time) {
+            var day; 
+            day = time/(24*60); 
+            if(day < 1) {
+                var hour, min; 
+                hour = Math.floor(time/60); 
+                if(hour < 1) {
+                    if(time < 1) return "Less than 1 minute";
+                    else return "About "+time.toFixed(0).toString()+" minutes";
+                } else {
+                    min = Math.floor(time-hour*60);
+                    if(min < 1) return hour.toString()+" hours";
+                    else return hour.toString()+" hours "+min.toString()+" minutes";
+                };
+            } else if(day < 31) {
+                return day.toFixed(0).toString()+" days";
+            } else {
+                var month, temp_day; 
+                month = Math.floor(day/30); 
+                temp_day = Math.floor(day-month*30); 
+                if(month < 12) {
+                    return month.toString()+" months "+temp_day.toString()+" days";
+                } else {
+                    var year; 
+                    year = Math.floor(day/365);
+                    if(year < 1) return "Almost 1 year"
+                    else {
+                        var temp_month = Math.floor((day-year*365)/30); 
+                        if(temp_month < 1) return year.toString()+" years";
+                        else {
+                            return year.toString()+" years "+temp_month.toString()+" months";
+                        }
+                    }
+                }
+            }
+        },
+        basicCalculate() {
+            var initSize; //Tib
+            var unitCost = parseFloat(this.basicCalc.unitCost); 
+            var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
+
+            if(this.basicCalc.unit == "Tib") {
+                initSize = parseInt(this.basicCalc.n);
+            } else {
+                initSize = parseInt(this.basicCalc.n)*101.4/1024; 
+            }
+            var proportion = (initSize)/(rawTotalNetSpace*Math.pow(1024,2));
+            var expectTimeWin = ((this.averageBlockTime/60)/proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
+            this.basicCalc.estimatedTime = this.formatTime(expectTimeWin);
+
+            var dailyEarning = 2*(1-Math.pow((1-proportion),4608)); // XCH reference: https://thechiafarmer.com/2021/04/23/estimated-time-to-win-explained/
+            var dailyEarningUSD = dailyEarning*parseFloat(this.basicCalc.chiaPrice); // TODO: get chia price from coinbase
+            this.basicCalc.dailyEarning = dailyEarningUSD;
+            // simplified version: without considering network growth
+            var totalCost = unitCost*initSize; 
+            this.basicCalc.timeToEarnCost = (totalCost/(dailyEarningUSD));
+        },
         calculate() {
             this.calcLoading = false;
             const unitPlotSize = 101.4; 
@@ -330,8 +399,7 @@ var app = new Vue({
             totalNetSpace = rawTotalNetSpace*1024; 
             var ownedNetSpace = (nPlot*unitPlotSize)/(rawTotalNetSpace*Math.pow(1024,3))*100; 
             var proportion = (nPlot*unitPlotSize)/(rawTotalNetSpace*Math.pow(1024,3));
-            var averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
-            var expectTimeWin = ((averageBlockTime/60)/proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
+            var expectTimeWin = ((this.averageBlockTime/60)/proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
 
             // Advanced info 
             if(!this.calculator) this.calculator = {
@@ -372,43 +440,7 @@ var app = new Vue({
                 }
             };
 
-            function formatTime(time) {
-                var day; 
-                day = time/(24*60); 
-                if(day < 1) {
-                    var hour, min; 
-                    hour = Math.floor(time/60); 
-                    if(hour < 1) {
-                        if(time < 1) return "Less than 1 minute";
-                        else return "About "+time.toFixed(0).toString()+" minutes";
-                    } else {
-                        min = Math.floor(time-hour*60);
-                        if(min < 1) return hour.toString()+" hours";
-                        else return hour.toString()+" hours "+min.toString()+" minutes";
-                    };
-                } else if(day < 31) {
-                    return day.toFixed(0).toString()+" days";
-                } else {
-                    var month, temp_day; 
-                    month = Math.floor(day/30); 
-                    temp_day = Math.floor(day-month*30); 
-                    if(month < 12) {
-                        return month.toString()+" months "+temp_day.toString()+" days";
-                    } else {
-                        var year; 
-                        year = Math.floor(day/365);
-                        if(year < 1) return "Almost 1 year"
-                        else {
-                            var temp_month = Math.floor((day-year*365)/30); 
-                            if(temp_month < 1) return year.toString()+" years";
-                            else {
-                                return year.toString()+" years "+temp_month.toString()+" months";
-                            }
-                        }
-                    }
-                }
-            }; 
-            this.calculator.expectTimeWin = (nPlot==0)? "Never":formatTime(expectTimeWin);
+            this.calculator.expectTimeWin = (nPlot==0)? "Never":this.formatTime(expectTimeWin);
             if(this.calculator.maxSize < this.calculator.initSize) this.calculator.maxSize = this.calculator.initSize;
 
             var netSpaceData = []; 
