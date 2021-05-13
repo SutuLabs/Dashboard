@@ -623,23 +623,42 @@
               <div v-if="!plot" class="content">Loading</div>
               <div v-if="plot" class="content">
                 <div class="title is-5">{{plot.jobs.length}} Jobs</div>
-                <div class="columns is-multiline is-mobile">
-                  <div class="column is-half" v-for="job in plot.jobs">
-                    <b-progress format="percent" :max="100">
-                      <template #bar>
-                        <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress" type="is-danger">
-                        </b-progress-bar>
-                        <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
-                          type="is-info">
-                        </b-progress-bar>
-                        <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
-                          type="is-warning">
-                        </b-progress-bar>
-                        <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                        </b-progress-bar>
-                      </template>
-                    </b-progress>
-                    {{job.id}}: {{job.wallTime}}, {{job.phase}}, {{job.tempSize}}, {{job.tempDir}}
+                <div class="columns is-multiline is-desktop">
+                  <div class="column" v-for='dir in tempDirSet'>
+                    <table class="table is-striped is-hoverable">
+                      <thead>
+                        <tr></tr>
+                        <tr>
+                          <th>{{dir}}</th>
+                          <th>id</th>
+                          <th>工作时长 </th>
+                          <th>工作进度</th>
+                          <th>容量</th>
+                        </tr>
+                      </thead>
+                      <tr v-for="job in plot.jobs" v-if="job.tempDir==dir">
+                        <td>
+                          <b-progress format="percent" :max="100">
+                            <template #bar>
+                              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress" type="is-danger">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
+                                type="is-info">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
+                                type="is-warning">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                              </b-progress-bar>
+                            </template>
+                          </b-progress>
+                        </td>
+                        <td>{{job.id}}</td>
+                        <td>{{job.wallTime}}</td>
+                        <td>{{job.phase}}</td>
+                        <td>{{job.tempSize}}</td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
               </div>

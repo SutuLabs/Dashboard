@@ -673,5 +673,9 @@ var app = new Vue({
             }
         }
     },
-    computed: {},
+    computed: {
+        tempDirSet: function () {
+            return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
+        },
+    },
 })
