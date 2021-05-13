@@ -9,12 +9,6 @@
     padding-top: 8px;
 }
 
-#calculator .tab-content {
-    padding-left: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-}
-
 .navbarButton {
     width: 25vw;
     display: flexbox;
