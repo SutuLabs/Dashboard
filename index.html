@@ -176,7 +176,9 @@
                 <div class="column is-one-third">
                   <div class="box">
                     <div class="heading">日均收益</div>
-                    <div class="title is-5">{{ basicCalc.dailyEarning.toFixed(2) }}</div>
+                    <div class="title is-5">{{ basicCalc.dailyEarningXCH.toFixed(2) }}</div>
+                    <div v-if="basicCalc.costUnit=='USDT'">约{{ basicCalc.dailyEarning.toFixed(2) }}USDT/天</div>
+                    <div v-if="basicCalc.costUnit=='RMB'">约{{ basicCalc.dailyEarning.toFixed(2) }}元/天</div>
                   </div>
                 </div>
                 <div class="column is-one-third">

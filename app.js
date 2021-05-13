@@ -21,6 +21,7 @@ var app = new Vue({
             unitCost: 18.09, 
             costUnit: "USDT",
             estimatedTime: 0,
+            dailyEarningXCH: 0,
             dailyEarning: 0,
             timeToEarnCost: 0, //days
             chiaPrice: 500,
@@ -383,12 +384,13 @@ var app = new Vue({
             var expectTimeWin = ((this.averageBlockTime/60)/proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
             this.basicCalc.estimatedTime = this.formatTime(expectTimeWin);
 
-            var dailyEarning = 2*(1-Math.pow((1-proportion),4608)); // XCH reference: https://thechiafarmer.com/2021/04/23/estimated-time-to-win-explained/
-            var dailyEarningUSD = dailyEarning*parseFloat(this.basicCalc.chiaPrice); // TODO: get chia price from coinbase
-            this.basicCalc.dailyEarning = dailyEarningUSD;
+            var dailyEarningXCH = 2*(1-Math.pow((1-proportion),4608)); // XCH reference: https://thechiafarmer.com/2021/04/23/estimated-time-to-win-explained/
+            var dailyEarning = dailyEarningXCH*parseFloat(this.basicCalc.chiaPrice); // TODO: get chia price from coinbase
+            this.basicCalc.dailyEarningXCH = dailyEarningXCH;
+            this.basicCalc.dailyEarning = dailyEarning;
             // simplified version: without considering network growth
             var totalCost = unitCost*initSize; 
-            this.basicCalc.timeToEarnCost = (totalCost/(dailyEarningUSD));
+            this.basicCalc.timeToEarnCost = (totalCost/(dailyEarning));
         },
         calculate() {
             this.calcLoading = false;
