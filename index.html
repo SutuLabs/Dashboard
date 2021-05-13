@@ -677,7 +677,7 @@
                 <div class="card-content p-4">
                   <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
   
-                  <div class="columns is-multiline is-mobile">
+                  <div class="columns is-multiline">
                     <div class="column is-5">
                       <template>
                         <div v-for="disk in machine.disks" v-if="disk.size > 1024*1024">
@@ -689,43 +689,44 @@
                         </div>
                       </template>
                     </div>
-                    <div class="column is-3">
-                      <b-tooltip position="is-bottom" type="is-light" multilined>
-                        <div>
-                          <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
-                          <apexchart height="200" :options="machine.cpuRadialBar.chartOptions" :series="machine.cpuRadialBar.data"></apexchart>
-                        </div>
-                        <template v-slot:content>
-                          <div>已用：{{machine.memory.used}}GB</div>
-                          <div>总共：{{machine.memory.total}}GB</div>
-                        </template>
-                      </b-tooltip>
-                    </div>
-                    <div class="column is-4">
-                      <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
-                      <table class="table is-fullwidth is-narrow">
-                        <tr>
-                          <td class="has-background-success-dark is-size-7">进行中</td>
-                          <td class="is-size-7">{{machine.process.running}}</td>
-                        </tr>
-                        <tr>
-                          <td class="has-background-info-dark is-size-7">待进行</td>
-                          <td class="is-size-7">{{machine.process.sleeping}}</td>
-                        </tr>
-                        <tr>
-                          <td class="has-background-warning-dark is-size-7">预警</td>
-                          <td class="is-size-7">{{machine.process.stopped}}</td>
-                        </tr>
-                        <tr>
-                          <td class="has-background-danger-dark is-size-7">问题</td>
-                          <td class="is-size-7">{{machine.process.zombie}}</td>
-                        </tr>
-                        <tr>
-                          <td class="has-text-white is-size-7">总计</td>
-                          <td class="is-size-7">{{machine.process.total}}</td>
-                        </tr>
-                      </table>
-                      <div ></div><div></div>
+                    <div class="column is-7 columns is-mobile">
+                      <div class="column is-5">
+                        <b-tooltip position="is-bottom" type="is-light" multilined>
+                          <div>
+                            <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
+                            <apexchart height="150" :options="machine.cpuRadialBar.chartOptions" :series="machine.cpuRadialBar.data"></apexchart>
+                          </div>
+                          <template v-slot:content>
+                            <div>已用：{{machine.memory.used}}GB</div>
+                            <div>总共：{{machine.memory.total}}GB</div>
+                          </template>
+                        </b-tooltip>
+                      </div>
+                      <div class="column is-7">
+                        <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
+                        <table class="table is-fullwidth is-narrow">
+                          <tr>
+                            <td class="has-background-success-dark is-size-7">进行中</td>
+                            <td class="is-size-7">{{machine.process.running}}</td>
+                          </tr>
+                          <tr>
+                            <td class="has-background-info-dark is-size-7">待进行</td>
+                            <td class="is-size-7">{{machine.process.sleeping}}</td>
+                          </tr>
+                          <tr>
+                            <td class="has-background-warning-dark is-size-7">预警</td>
+                            <td class="is-size-7">{{machine.process.stopped}}</td>
+                          </tr>
+                          <tr>
+                            <td class="has-background-danger-dark is-size-7">问题</td>
+                            <td class="is-size-7">{{machine.process.zombie}}</td>
+                          </tr>
+                          <tr>
+                            <td class="has-text-white is-size-7">总计</td>
+                            <td class="is-size-7">{{machine.process.total}}</td>
+                          </tr>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -266,7 +266,7 @@ var app = new Vue({
                 data: [(machine.memory.used/machine.memory.total*100).toFixed(1)], 
                 chartOptions: {
                     chart: {
-                        height: 200,
+                        height: 150,
                         type: 'radialBar',
                     },
                     plotOptions:{
@@ -284,7 +284,7 @@ var app = new Vue({
                                     color: "#FFFFFF",
                                 },
                                 value: {
-                                    fontSize: "20px",
+                                    fontSize: "16px",
                                     show: true,
                                     color: "#FFFFFF",
                                 },
