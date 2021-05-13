@@ -386,6 +386,13 @@ var app = new Vue({
                             }
                         }
                     },
+                    xaxis: {
+                        labels: {
+                            style:{
+                                colors: 'white',
+                            }
+                        }
+                    },
                     dataLabels: {
                         enabled: false
                     },
@@ -683,6 +690,11 @@ var app = new Vue({
                     }, 
                     xaxis: {
                         type: 'datetime',
+                        labels: {
+                            style: {
+                                colors: 'white',
+                            }
+                        }
                     }, 
                     yaxis: [
                         {
@@ -711,7 +723,13 @@ var app = new Vue({
                             decimalsInFloat: 5, 
                         }
                     ], 
+                    legend: {
+                        labels: {
+                            colors: "white",
+                        }
+                    },
                     tooltip: {
+                        theme: "dark",
                         y: [{
                             title: {
                                 formatter: function (val) {return val + " (EiB)"}
