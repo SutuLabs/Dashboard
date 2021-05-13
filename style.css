@@ -29,6 +29,16 @@
     padding-bottom: 0;
 }
 
+.navbarButton {
+    width: 25vw;
+    display: flexbox;
+    flex-direction: column;
+}
+
+#mobileBottomNavbar div {
+    font-size: 10px;
+}
+
 @media screen and (min-width: 769px) {
     #mobileBottomNavbar, #mobileTopNavbar {
         display: none;

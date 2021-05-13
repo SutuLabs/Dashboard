@@ -723,17 +723,21 @@
     <div id="mobileBottomNavbar">
       <b-navbar :fixed-bottom="true" :mobile-burger="false">
         <template #brand>
-          <b-navbar-item :active="activePage == 0" @click="switchPage(activePage,0)">
-            首页
+          <b-navbar-item class="navbarButton" :active="activePage == 0" @click="switchPage(activePage,0)">
+            <div><b-icon icon="home"></b-icon></div>
+            <div>首页</div>
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 1" @click="switchPage(activePage,1)">
-            浏览器
+          <b-navbar-item class="navbarButton" :active="activePage == 1" @click="switchPage(activePage,1)">
+            <div><b-icon icon="view-column"></b-icon></div>
+            <div>浏览器</div>
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 3" @click="switchPage(activePage,3)">
-            矿场监控
+          <b-navbar-item class="navbarButton" :active="activePage == 3" @click="switchPage(activePage,3)">
+            <div><b-icon icon="monitor-dashboard"></b-icon></div>
+            <div>矿场监控</div>
           </b-navbar-item>
-          <b-navbar-item :active="activePage == 4" @click="switchPage(activePage,4)">
-            关于
+          <b-navbar-item class="navbarButton" :active="activePage == 4" @click="switchPage(activePage,4)">
+            <div><b-icon icon="information"></b-icon></div>
+            <div>关于</div>
           </b-navbar-item>
         </template>
       </b-navbar>
