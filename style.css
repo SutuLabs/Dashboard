@@ -4,10 +4,6 @@
     color: gold;
 }
 
-#chiaPrice .title, #netInfo .title, #mobileNetInfo .title {
-    font-weight: bold;
-}
-
 .card-header-title > .heading {
     padding-left: 20px;
     padding-top: 8px;

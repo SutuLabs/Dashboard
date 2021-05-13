@@ -59,68 +59,68 @@
     <div class="p-4">
       <div v-if="activePage == 0">
         <div class="is-hidden-mobile block">
-          <div class="box" id="chiaPrice">
+          <div class="box">
             <div class="heading">当前币价</div>
-            <div class="title is-3 has-text-success">TODO</div>
+            <div class="title is-3 has-text-success has-text-weight-bold">TODO</div>
           </div>
-          <div class="columns" id="netInfo">
+          <div class="columns">
             <div class="column">
               <div class="box">
                 <div class="heading">全网容量</div>
-                <div v-if="farm" class="title is-5 has-text-success">{{farm.farm.totalSize}}</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.farm.totalSize}}</div>
                 <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
             <div class="box">
               <div class="heading">奇亚币总量</div>
-              <div v-if="farm" class="title is-5 has-text-success">TODO</div>
+              <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
               <div v-if="!farm" class="title is-5">Loading</div>
             </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">总价值</div>
-                <div v-if="farm" class="title is-5 has-text-success">TODO</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
               <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">收获的奇亚币</div>
-                <div v-if="farm" class="title is-5 has-text-success">{{farm.farm.totalFarmed}}</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.farm.totalFarmed}}</div>
               <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">收获的奇亚币价值</div>
-                <div v-if="farm" class="title is-5 has-text-success">TODO</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
                 <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">难度系数</div>
-                <div v-if="farm" class="title is-5 has-text-success">{{farm.node.difficulty}}</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.difficulty}}</div>
                 <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">最新的收割区块高度</div>
-                <div v-if="farm" class="title is-5 has-text-success">{{farm.node.height}}</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.height}}</div>
                 <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
           </div>
         </div> 
-        <div class="block is-hidden-tablet" id="mobileNetInfo">
+        <div class="block is-hidden-tablet">
           <b-carousel-list :data="netInfoList" :items-to-show="2">
             <template #item="list">
               <div class="box">
                 <div class="heading">{{list.title}}</div>
-                <div v-if="farm" class="title is-5 has-text-success">{{list.data}}</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{list.data}}</div>
                 <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </template>
