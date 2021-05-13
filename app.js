@@ -210,7 +210,7 @@ var app = new Vue({
                                 ranges: [{
                                     from: 0,
                                     to: 100,
-                                    color: "#FF0000"
+                                    color: '#00FF01'
                                 }]
                             },
                             columnWidth: '55%',
@@ -227,10 +227,23 @@ var app = new Vue({
                     },
                     xaxis: {
                         categories: machine.cpus.map((_, i) => i + 1),
+                        labels: {
+                            style:{
+                                colors: 'white',
+                            }
+                        }
                     },
                     yaxis: {
                         title: {
-                            text: 'CPU Usage'
+                            text: 'CPU Usage',
+                            style:{
+                                color: 'white',
+                            }
+                        },
+                        labels: {
+                            style:{
+                                colors: 'white',
+                            }
                         },
                         max: 100,
                         min: 0,
@@ -334,12 +347,12 @@ var app = new Vue({
                     title: {
                         text: '磁盘工作情况',
                         style: {
-                            color: "#FFFFFF",
+                            color: "white",
                         },
                     },
                     legend: {
                         labels: {
-                            colors: "#FFFFFF",
+                            colors: "white",
                         }
                     }
                 },
