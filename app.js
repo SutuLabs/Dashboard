@@ -44,6 +44,8 @@ var app = new Vue({
         intervals: [],
 
         activePage: 0,
+        evtNum: 10,
+        errNum: 10
       }
     },
     mounted: function () {
@@ -761,8 +763,18 @@ var app = new Vue({
         }
     },
     computed: {
-        tempDirSet: function () {
-            return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
-        },
+    tempDirSet: function () {
+      return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
     },
+    sortedErrors: function () {
+      return this.errors.sort((a, b) => {
+        return a.time < b.time ? 1 : -1;
+      }).slice(0, this.errNum)
+    },
+    sortedEvents: function () {
+      return this.events.sort((a, b) => {
+        return a.time < b.time ? 1 : -1;
+      }).slice(0, this.evtNum)
+    },
+  },
 })
