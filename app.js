@@ -261,6 +261,52 @@ var app = new Vue({
                     }
                 }
             };
+            machine.cpuRadialBar = {
+                data: [(machine.memory.used/machine.memory.total*100).toFixed(1)], 
+                chartOptions: {
+                    chart: {
+                        height: 200,
+                        type: 'radialBar',
+                    },
+                    plotOptions:{
+                        radialBar: {
+                            startAngle: -135,
+                            endAngle: 135,
+                            track: {
+                                background: '#A9A9A9',
+                                startAngle: -135,
+                                endAngle: 135,
+                                },
+                            dataLabels: {
+                                name: {
+                                    show: false,
+                                    color: "#FFFFFF",
+                                },
+                                value: {
+                                    fontSize: "20px",
+                                    show: true,
+                                    color: "#FFFFFF",
+                                },
+                            },
+                        },
+                    },
+                    fill: {
+                        colors: [function({ value, seriesIndex, w }) {
+                            if(value < 55) {
+                                return '#00FF00'
+                            } else if (value >= 55 && value < 80) {
+                                return '#FFFF00'
+                            } else {
+                                return '#FF0000'
+                            }
+                          }],
+                    },
+                    stroke: {
+                        lineCap: "butt"
+                    },
+                    labels: ['内存情况'],
+                },
+            }
         },
         calcFarmPlotMap() {
             if (!this.farm || !this.plot) return;

@@ -669,42 +669,64 @@
         <div class="block">
           <div class="columns is-desktop">
             <div class="column is-half" v-for="machine in [plot, farm]">
-              <nav v-if="machine" class="panel">
+              <nav v-if="machine" class="card">
                 <p class="panel-heading">
                   {{machine.name}}
                 </p>
-                <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
-
-                <div class="columns is-multiline is-mobile">
-                  <template v-for="disk in machine.disks">
-                    <div class="column is-half" v-if="disk.size > 1024*1024">
-                      <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
-                        :max="disk.size" show-value>
-                        <div class="has-text-white">{{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
-                        [{{Math.floor(disk.available / 106430464)}}]</div>
-                      </b-progress>
+                
+                <div class="card-content p-4">
+                  <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
+  
+                  <div class="columns is-multiline is-mobile">
+                    <div class="column is-5">
+                      <template>
+                        <div v-for="disk in machine.disks" v-if="disk.size > 1024*1024">
+                          <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
+                            :max="disk.size" show-value>
+                            <div class="has-text-white">{{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                            [{{Math.floor(disk.available / 106430464)}}]</div>
+                          </b-progress>
+                        </div>
+                      </template>
                     </div>
-                  </template>
-                </div>
-
-
-                <div>
-                  <div class="control">
-                    <b-taglist attached>
-                      <b-tag type="is-dark">内存情况</b-tag>
-                      <b-tag type="is-info">{{machine.memory.used}}</b-tag>
-                      <b-tag type="is-info is-light">{{machine.memory.total}}</b-tag>
-                    </b-taglist>
-                  </div>
-                  <div class="control">
-                    <b-taglist attached>
-                      <b-tag type="is-dark">进程情况</b-tag>
-                      <b-tag type="is-success">{{machine.process.running}}</b-tag>
-                      <b-tag type="is-light">{{machine.process.sleeping}}</b-tag>
-                      <b-tag type="is-warning">{{machine.process.stopped}}</b-tag>
-                      <b-tag type="is-danger">{{machine.process.zombie}}</b-tag>
-                      <b-tag type="is-info is-light">={{machine.process.total}}</b-tag>
-                    </b-taglist>
+                    <div class="column is-3">
+                      <b-tooltip position="is-bottom" type="is-light" multilined>
+                        <div>
+                          <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
+                          <apexchart height="200" :options="machine.cpuRadialBar.chartOptions" :series="machine.cpuRadialBar.data"></apexchart>
+                        </div>
+                        <template v-slot:content>
+                          <div>已用：{{machine.memory.used}}GB</div>
+                          <div>总共：{{machine.memory.total}}GB</div>
+                        </template>
+                      </b-tooltip>
+                    </div>
+                    <div class="column is-4">
+                      <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
+                      <table class="table is-fullwidth is-narrow">
+                        <tr>
+                          <td class="has-background-success-dark is-size-7">进行中</td>
+                          <td class="is-size-7">{{machine.process.running}}</td>
+                        </tr>
+                        <tr>
+                          <td class="has-background-info-dark is-size-7">待进行</td>
+                          <td class="is-size-7">{{machine.process.sleeping}}</td>
+                        </tr>
+                        <tr>
+                          <td class="has-background-warning-dark is-size-7">预警</td>
+                          <td class="is-size-7">{{machine.process.stopped}}</td>
+                        </tr>
+                        <tr>
+                          <td class="has-background-danger-dark is-size-7">问题</td>
+                          <td class="is-size-7">{{machine.process.zombie}}</td>
+                        </tr>
+                        <tr>
+                          <td class="has-text-white is-size-7">总计</td>
+                          <td class="is-size-7">{{machine.process.total}}</td>
+                        </tr>
+                      </table>
+                      <div ></div><div></div>
+                    </div>
                   </div>
                 </div>
               </nav>
