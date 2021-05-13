@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>chia</title>
-  <link rel="shortcut icon" type="image/x-icon" href="logo.png" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./buefy.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
@@ -14,7 +13,7 @@
 
 <body>
   <div id="app">
-    <div id="desktopNavbar">
+    <div class="is-hidden-mobile">
       <b-navbar>
         <template #brand>
           <b-navbar-item>
@@ -44,7 +43,7 @@
       </b-navbar>
     </div>
 
-    <div id="mobileTopNavbar">
+    <div class="is-hidden-tablet">
       <b-navbar :mobile-burger="false">
         <template #brand>
           <b-navbar-item>
@@ -57,70 +56,71 @@
       </b-navbar>
     </div>
 
-    <div id="main">
+    <div class="p-4">
       <div v-if="activePage == 0">
-        <div class="box" id="chiaPrice">
-          <div class="heading">当前币价</div>
-          <div class="title is-3">TODO</div>
-        </div>
-        <div class="columns" id="netInfo">
-          <div class="column">
+        <div class="is-hidden-mobile block">
+          <div class="box" id="chiaPrice">
+            <div class="heading">当前币价</div>
+            <div class="title is-3 has-text-success">TODO</div>
+          </div>
+          <div class="columns" id="netInfo">
+            <div class="column">
+              <div class="box">
+                <div class="heading">全网容量</div>
+                <div v-if="farm" class="title is-5 has-text-success">{{farm.farm.totalSize}}</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
+            </div>
+            <div class="column">
             <div class="box">
-              <div class="heading">全网容量</div>
-              <div v-if="farm" class="title is-5">{{farm.farm.totalSize}}</div>
+              <div class="heading">奇亚币总量</div>
+              <div v-if="farm" class="title is-5 has-text-success">TODO</div>
               <div v-if="!farm" class="title is-5">Loading</div>
             </div>
-          </div>
-          <div class="column">
-          <div class="box">
-            <div class="heading">奇亚币总量</div>
-            <div v-if="farm" class="title is-5">TODO</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-          </div>
-          <div class="column">
-            <div class="box">
-              <div class="heading">总价值</div>
-              <div v-if="farm" class="title is-5">TODO</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
             </div>
-          </div>
-          <div class="column">
-            <div class="box">
-              <div class="heading">收获的奇亚币</div>
-              <div v-if="farm" class="title is-5">{{farm.farm.totalFarmed}}</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="box">
-              <div class="heading">收获的奇亚币价值</div>
-              <div v-if="farm" class="title is-5">TODO</div>
+            <div class="column">
+              <div class="box">
+                <div class="heading">总价值</div>
+                <div v-if="farm" class="title is-5 has-text-success">TODO</div>
               <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
             </div>
-          </div>
-          <div class="column">
-            <div class="box">
-              <div class="heading">难度系数</div>
-              <div v-if="farm" class="title is-5">{{farm.node.difficulty}}</div>
+            <div class="column">
+              <div class="box">
+                <div class="heading">收获的奇亚币</div>
+                <div v-if="farm" class="title is-5 has-text-success">{{farm.farm.totalFarmed}}</div>
               <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="box">
+                <div class="heading">收获的奇亚币价值</div>
+                <div v-if="farm" class="title is-5 has-text-success">TODO</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="box">
+                <div class="heading">难度系数</div>
+                <div v-if="farm" class="title is-5 has-text-success">{{farm.node.difficulty}}</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="box">
+                <div class="heading">最新的收割区块高度</div>
+                <div v-if="farm" class="title is-5 has-text-success">{{farm.node.height}}</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
             </div>
           </div>
-          <div class="column">
-            <div class="box">
-              <div class="heading">最新的收割区块高度</div>
-              <div v-if="farm" class="title is-5">{{farm.node.height}}</div>
-              <div v-if="!farm" class="title is-5">Loading</div>
-            </div>
-          </div>
-        </div>
-        <!-- mobile net info --> 
-        <div class="block" id="mobileNetInfo">
+        </div> 
+        <div class="block is-hidden-tablet" id="mobileNetInfo">
           <b-carousel-list :data="netInfoList" :items-to-show="2">
             <template #item="list">
               <div class="box">
                 <div class="heading">{{list.title}}</div>
-                <div v-if="farm" class="title is-5">{{list.data}}</div>
+                <div v-if="farm" class="title is-5 has-text-success">{{list.data}}</div>
                 <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </template>
@@ -130,7 +130,7 @@
           <div class="card">
             <div class="card-header" @click="switchPage(activePage,2)">
               <div class="card-header-title">
-                <div class="title-only">奇亚币收益计算器 </div>
+                <div class="has-text-info">奇亚币收益计算器 </div>
                 <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
               </div>
             </div>
@@ -236,7 +236,7 @@
           <div class="card">
             <div class="card-header" @click="switchPage(activePage,3)">
               <div class="card-header-title">
-                <div class="title-only">矿场监控</div>
+                <div class="has-text-info">矿场监控</div>
                 <div class="heading">实时查看并监控矿场工作状态及数据</div>
               </div>
             </div>
@@ -731,7 +731,7 @@
       </div>
     </div>
 
-    <div id="mobileBottomNavbar">
+    <div class="is-hidden-tablet">
       <b-navbar :fixed-bottom="true" :mobile-burger="false">
         <template #brand>
           <b-navbar-item class="navbarButton" :active="activePage == 0" @click="switchPage(activePage,0)">

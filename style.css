@@ -4,18 +4,8 @@
     color: gold;
 }
 
-#main {
-    padding: 16px; 
-}
-
-#chiaPrice .title, #netInfo .title {
-    color: #00FF00;
+#chiaPrice .title, #netInfo .title, #mobileNetInfo .title {
     font-weight: bold;
-}
-
-.card-header-title > .title-only { 
-    font-size: large;
-    color: #04F0F3;
 }
 
 .card-header-title > .heading {
@@ -33,28 +23,4 @@
     width: 25vw;
     display: flexbox;
     flex-direction: column;
-}
-
-#mobileBottomNavbar div {
-    font-size: 10px;
-}
-
-@media screen and (min-width: 769px) {
-    #mobileBottomNavbar, #mobileTopNavbar {
-        display: none;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    #desktopNavbar {
-        display: none;
-    }
-
-    #mobileBottomNavbar, #mobileTopNavbar {
-        display: block;
-    }
-
-    #mobileBottomNavbar {
-        bottom: 0;
-    }
 }
