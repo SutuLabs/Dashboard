@@ -58,7 +58,9 @@ var app = new Vue({
 
             activePage: 0,
             evtNum: 10,
-            errNum: 10
+            errNum: 10,
+            plottingPerformance: [],
+            selectedOS: '',
         }
     },
     mounted: function () {
@@ -793,7 +795,18 @@ var app = new Vue({
                     }
                 }
             }
-        }
+        },
+        loadlist() {
+            var url = "ChiaPlottingPerformance.json"
+            var request = new XMLHttpRequest();
+            request.open("get", url);
+            request.send(null);
+            request.onload = function () {
+                if (request.status >= 200 || request.status < 300) {
+                    app.$data.plottingPerformance = JSON.parse(request.responseText);
+                }
+            }
+        },
     },
     computed: {
         tempDirSet: function () {
@@ -809,5 +822,20 @@ var app = new Vue({
                 return a.time < b.time ? 1 : -1;
             }).slice(0, this.evtNum)
         },
+        selectedPerformance: function () {
+            if (this.selectedOS === 'all') {
+                return this.plottingPerformance
+            }
+            else if (this.selectedOS === 'Else') {
+                return this.plottingPerformance.filter(_ => {
+                return _.OS.indexOf('Ubuntu') == -1 && _.OS.indexOf('Windows') == -1;
+                })
+            }
+            else {
+                return this.plottingPerformance.filter(_ => {
+                return _.OS.indexOf(this.selectedOS) > -1;
+                })
+            }
+            }
     },
 })
