@@ -784,29 +784,31 @@
             </div>
           </template>
           <div class="card-content">
-            <div>
-              <section>
-                <b-dropdown aria-role="list" v-model="selectedOS">
-                  <template #trigger>
-                    <b-button type="is-primary">Select OS</b-button>
-                  </template>
-                  <b-dropdown-item value="all">All</b-dropdown-item>
-                  <b-dropdown-item value="Windows">Windows</b-dropdown-item>
-                  <b-dropdown-item value="Ubuntu">Ubuntu</b-dropdown-item>
-                  <b-dropdown-item value="Else">Else</b-dropdown-item>
-                </b-dropdown>
-              </section>
-            </div>
+            <b-dropdown aria-role="list" v-model="selectedOS">
+              <template #trigger>
+                <b-button type="is-primary">Select OS</b-button>
+              </template>
+              <b-dropdown-item value="all">All</b-dropdown-item>
+              <b-dropdown-item value="WSL">WSL</b-dropdown-item>
+              <b-dropdown-item value="Windows">Windows</b-dropdown-item>
+              <b-dropdown-item value="Ubuntu">Ubuntu</b-dropdown-item>
+              <b-dropdown-item value="Else">Else</b-dropdown-item>
+            </b-dropdown>
+            <b-select class="is-inline-block" v-model="perPage">
+              <option value="10">10 per page</option>
+              <option value="20">20 per page</option>
+              <option value="50">50 per page</option>
+              <option value="100">100 per page</option>
+            </b-select>
             <template>
-
               <b-table :data="selectedPerformance" :row-class="(row) =>'has-background-dark'" :mobile-cards="false"
-                paginated per-page="10" detailed custom-detail-row>
+                :per-page="perPage" paginated detailed custom-detail-row>
                 <b-table-column field="User" label="名字" v-slot="props">
                   {{props.row.User.length>9 ? props.row.User.substr(0,4)+'...'+props.row.User.substr(-3): props.row.User}}
                 </b-table-column>
                 <b-table-column field='OS' label="操作系统" v-slot="props">
                   {{
-                   (props.row['OS'].match('Ubuntu')&& props.row['OS'].match('Windows')) ? 'Ubuntu & Windows':false ||
+                    props.row['OS'].match('WSL') ? 'WSL':false ||
                     props.row['OS'].match('Ubuntu')? 'Ubuntu':false || 
                     props.row['OS'].match('Windows')? 'Windows':false ||
                     '其他'
