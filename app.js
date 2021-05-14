@@ -61,11 +61,13 @@ var app = new Vue({
             errNum: 10,
             plottingPerformance: [],
             selectedOS: '',
+            perPage: 10,
         }
     },
     mounted: function () {
         this.load();
         this.autoRefresh();
+        this.loadlist();
     },
     methods: {
         getInfo(path) {
