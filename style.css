@@ -1,0 +1,16 @@
+.slogan {
+    margin-top: 24px;
+    font-size: small;
+    color: gold;
+}
+
+.card-header-title > .heading {
+    padding-left: 20px;
+    padding-top: 8px;
+}
+
+.navbarButton {
+    width: 25vw;
+    display: flexbox;
+    flex-direction: column;
+}
