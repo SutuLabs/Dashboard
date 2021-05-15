@@ -59,7 +59,7 @@ var app = new Vue({
             activePage: 0,
             evtNum: 10,
             errNum: 10,
-            plottingPerformance: [],
+            plottingPerformances: [],
             selectedOS: '',
             perPage: 10,
         }
@@ -800,44 +800,40 @@ var app = new Vue({
         },
         loadlist() {
             var url = "ChiaPlottingPerformance.json"
-            var request = new XMLHttpRequest();
-            request.open("get", url);
-            request.send(null);
-            request.onload = function () {
-                if (request.status >= 200 || request.status < 300) {
-                    app.$data.plottingPerformance = JSON.parse(request.responseText);
-                }
-            }
+            fetch(url, {
+                    method: 'GET',
+                })
+                .then((resp) => resp.json())
+                .then((json) => {
+                    this.plottingPerformances = json;
+                });
         },
     },
     computed: {
-        tempDirSet: function () {
-            return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
-        },
-        sortedErrors: function () {
-            return this.errors.sort((a, b) => {
-                return a.time < b.time ? 1 : -1;
-            }).slice(0, this.errNum)
-        },
-        sortedEvents: function () {
-            return this.events.sort((a, b) => {
-                return a.time < b.time ? 1 : -1;
-            }).slice(0, this.evtNum)
-        },
+        tempDirSet: () => [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort(),
+        sortedErrors: () => this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum),
+        sortedEvents: () => this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum),
         selectedPerformance: function () {
             if (this.selectedOS === 'all') {
-                return this.plottingPerformance
-            }
-            else if (this.selectedOS === 'Else') {
-                return this.plottingPerformance.filter(_ => {
-                return _.OS.indexOf('Ubuntu') == -1 && _.OS.indexOf('Windows') == -1;
+                return this.plottingPerformances;
+            } else if (this.selectedOS === 'Else') {
+                return this.plottingPerformances.filter(_ => {
+                    return _.OS.indexOf('Ubuntu') == -1 && _.OS.indexOf('Windows') == -1;
+                })
+            } else {
+                return this.plottingPerformances.filter(_ => {
+                    return _.OS.indexOf(this.selectedOS) > -1;
                 })
             }
-            else {
-                return this.plottingPerformance.filter(_ => {
-                return _.OS.indexOf(this.selectedOS) > -1;
-                })
-            }
-            }
+        }
+    },
+    filters: {
+        shorten: function (value, len = 10) {
+            if (!value) return ''
+            let padding = '...';
+            let left = Math.ceil((len - padding.length) / 2);
+            let right = len - padding.length - left;
+            return value.length >= len ? value.substr(0, left) + padding + value.substr(-right) : value;
+        },
     },
 })
