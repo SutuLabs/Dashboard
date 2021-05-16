@@ -810,10 +810,16 @@ var app = new Vue({
         },
     },
     computed: {
-        tempDirSet: () => [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort(),
-        sortedErrors: () => this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum),
-        sortedEvents: () => this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum),
-        selectedPerformance: function () {
+        tempDirSet() {
+            return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
+        },
+        sortedErrors() {
+            return this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
+        },
+        sortedEvents() {
+            return this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
+        },
+        selectedPerformance() {
             if (this.selectedOS === 'all') {
                 return this.plottingPerformances;
             } else if (this.selectedOS === 'Else') {
@@ -825,7 +831,7 @@ var app = new Vue({
                     return _.OS.indexOf(this.selectedOS) > -1;
                 })
             }
-        }
+        },
     },
     filters: {
         shorten: function (value, len = 10) {

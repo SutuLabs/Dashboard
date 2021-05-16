@@ -778,11 +778,11 @@
                   <b-tag type="is-info is-light">{{evt.time}}</b-tag>
                   <span class="has-text-danger" v-if="evt.proofs > 0">
                     {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
-                    {{evt.duration.totalMilliseconds}} ms
+                    {{evt.duration}} s
                   </span>
                   <span class="has-text-info" v-else>
                     {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
-                    {{evt.duration.totalMilliseconds}} ms
+                    {{evt.duration}} s
                   </span>
                 </div>
               </nav>
