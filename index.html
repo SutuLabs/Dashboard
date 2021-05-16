@@ -31,7 +31,7 @@
             区块链浏览器
           </b-navbar-item>
           <b-navbar-item :active="activePage == 2" @click="switchPage(activePage,2)">
-            计算器 
+            计算器
           </b-navbar-item>
           <b-navbar-item :active="activePage == 3" @click="switchPage(activePage,3)">
             矿场监控
@@ -72,24 +72,25 @@
               </div>
             </div>
             <div class="column">
-            <div class="box">
-              <div class="heading">奇亚币总量</div>
-              <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
-              <div v-if="!farm" class="title is-5">Loading</div>
-            </div>
+              <div class="box">
+                <div class="heading">奇亚币总量</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
+              </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">总价值</div>
                 <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
-              <div v-if="!farm" class="title is-5">Loading</div>
+                <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
               <div class="box">
                 <div class="heading">收获的奇亚币</div>
-                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.farm.totalFarmed}}</div>
-              <div v-if="!farm" class="title is-5">Loading</div>
+                <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.farm.totalFarmed}}
+                </div>
+                <div v-if="!farm" class="title is-5">Loading</div>
               </div>
             </div>
             <div class="column">
@@ -114,7 +115,7 @@
               </div>
             </div>
           </div>
-        </div> 
+        </div>
         <div class="block is-hidden-tablet">
           <b-carousel-list :data="netInfoList" :items-to-show="2">
             <template #item="list">
@@ -167,7 +168,8 @@
                   </div>
                 </div>
                 <b-field>
-                  <b-input size="is-small" v-model="basicCalc.unitCost" :lazy="true" v-on:input="basicCalculate()"></b-input>
+                  <b-input size="is-small" v-model="basicCalc.unitCost" :lazy="true" v-on:input="basicCalculate()">
+                  </b-input>
                   <b-select size="is-small" v-model="basicCalc.costUnit" v-on:input="basicCalculate()">
                     <option value="USDT">USDT</option>
                     <option value="RMB">RMB</option>
@@ -256,33 +258,35 @@
       <div v-if="activePage == 2" id="calculator">
         <b-loading v-model="calcLoading" :is-full-page="false"></b-loading>
         <div class="box" v-if="calculator">
-          <p class="title is-5">你的算力</p> 
-                <p>(of size 101.4GiB, k=32)</p>
-                <b-field>
-                  <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false" :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()"></b-slider>
-                </b-field>
-                <div class="columns">
-                  <div class="column">
-                    <b-field>
-                      <b-input size="is-small" v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input>
-                      <p class="control">
-                        <span class="button is-small">块农田</span>
-                      </p>
-                    </b-field>
-                  </div>
-                  <!-- TODO -->
-                  <div v-if="calculator" class="column" style="visibility: hidden;">
-                    <b-field>
-                      <p class="control">
-                        <span class="button is-small">Assume 1 XCH =</span>
-                      </p>
-                      <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
-                      <p class="control">
-                        <span class="button is-small">USD</span>
-                      </p>
-                    </b-field>
-                  </div>
-                </div>
+          <p class="title is-5">你的算力</p>
+          <p>(of size 101.4GiB, k=32)</p>
+          <b-field>
+            <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false"
+              :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()">
+            </b-slider>
+          </b-field>
+          <div class="columns">
+            <div class="column">
+              <b-field>
+                <b-input size="is-small" v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input>
+                <p class="control">
+                  <span class="button is-small">块农田</span>
+                </p>
+              </b-field>
+            </div>
+            <!-- TODO -->
+            <div v-if="calculator" class="column" style="visibility: hidden;">
+              <b-field>
+                <p class="control">
+                  <span class="button is-small">Assume 1 XCH =</span>
+                </p>
+                <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
+                <p class="control">
+                  <span class="button is-small">USD</span>
+                </p>
+              </b-field>
+            </div>
+          </div>
         </div>
 
         <div v-if="calculator">
@@ -383,14 +387,16 @@
                 </div>
               </div>
               <div v-if="calculator.calculatorMap">
-                <apexchart height="400" :options="calculator.calculatorMap.chartOptions" :series="calculator.calculatorMap.series"></apexchart>
+                <apexchart height="400" :options="calculator.calculatorMap.chartOptions"
+                  :series="calculator.calculatorMap.series"></apexchart>
               </div>
               <div class="box">
                 <div class="title is-4">Plots</div>
                 <div class="columns">
                   <div class="column is-one-third">
                     <b-field label="Initial size of plots">
-                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.initSize" v-on:input="calculate()" disabled></b-input>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.initSize"
+                        v-on:input="calculate()" disabled></b-input>
                       <b-select size="is-small" v-model="calculator.initSizeUnit" disabled>
                         <option value="gib">GiB</option>
                       </b-select>
@@ -398,7 +404,8 @@
                   </div>
                   <div class="column is-one-third">
                     <b-field label="Plotting Speed">
-                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.plottingSpeed" v-on:input="calculate()"></b-input>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.plottingSpeed"
+                        v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.plottingSpeedUnit">
                         <option value="gib">GiB</option>
                       </b-select>
@@ -407,7 +414,8 @@
                   </div>
                   <div class="column is-one-third">
                     <b-field label="Max size of plots">
-                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize" v-on:input="calculate()" :disabled="calculator.unlimited"></b-input>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize"
+                        v-on:input="calculate()" :disabled="calculator.unlimited"></b-input>
                       <b-select size="is-small" v-model="calculator.maxSizeUnit" :disabled="calculator.unlimited">
                         <option value="gib">GiB</option>
                       </b-select>
@@ -423,7 +431,8 @@
                 <div class="columns">
                   <div class="column is-one-third">
                     <b-field label="Initial size of network">
-                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.initNetSize" v-on:input="calculate()"></b-input>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.initNetSize"
+                        v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.initNetSizeUnit">
                         <option value="eib">EiB</option>
                       </b-select>
@@ -434,7 +443,8 @@
                       <p class="control">
                         <span class="button  is-small">%</span>
                       </p>
-                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.growthRate" v-on:input="calculate()"></b-input>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.growthRate"
+                        v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.growthRatePeriod">
                         <option value="weekly">Weekly</option>
                       </b-select>
@@ -449,17 +459,20 @@
                 <div class="columns">
                   <div class="column is-one-third">
                     <b-field label="Days of exponential growth">
-                      <b-input size="is-small" :lazy="true" v-model="calculator.exponentialGrowth" v-on:input="calculate()"></b-input>
+                      <b-input size="is-small" :lazy="true" v-model="calculator.exponentialGrowth"
+                        v-on:input="calculate()"></b-input>
                     </b-field>
                   </div>
                   <div class="column is-one-third">
                     <b-field label="Days of stabilization">
-                      <b-input size="is-small" :lazy="true" v-model="calculator.stabilization" v-on:input="calculate()"></b-input>
+                      <b-input size="is-small" :lazy="true" v-model="calculator.stabilization" v-on:input="calculate()">
+                      </b-input>
                     </b-field>
                   </div>
                   <div class="column is-one-third">
                     <b-field label="Stabilized daily growth">
-                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.stableDaily" v-on:input="calculate()"></b-input>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.stableDaily"
+                        v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.stableDailyUnit">
                         <option value="pib">PiB</option>
                       </b-select>
@@ -480,7 +493,7 @@
                     <div>
                       <div class="heading">USD after {{ calculator.timeFrame }} {{ calculator.timeFrameUnit }}</div>
                       <div class="title is-5">${{ calculator.totalEarningUSD.toFixed(2) }}</div>
-                      </div>
+                    </div>
                   </div>
                 </nav>
               </div>
@@ -510,12 +523,13 @@
                   <b-tooltip :label="'时间: ' + farm.node.time" position="is-bottom">
                     <b-taglist attached>
                       <b-tag type="is-dark">同步状态</b-tag>
-                      <b-tag type="is-success" v-if="farm.node.status == 'Full Node Synced'">{{farm.node.status}}</b-tag>
+                      <b-tag type="is-success" v-if="farm.node.status == 'Full Node Synced'">{{farm.node.status}}
+                      </b-tag>
                       <b-tag type="is-danger" v-else>{{farm.node.status}}</b-tag>
                     </b-taglist>
                   </b-tooltip>
                 </div>
-    
+
                 <div class="control">
                   <b-tooltip :label="'空间: ' + farm.farm.totalSize + '/' + farm.node.space" position="is-bottom">
                     <b-taglist attached>
@@ -525,7 +539,7 @@
                     </b-taglist>
                   </b-tooltip>
                 </div>
-    
+
                 <div class="control">
                   <b-tooltip :label="'期望成功值: ' + farm.farm.expectedToWin" position="is-bottom">
                     <b-taglist attached>
@@ -534,7 +548,7 @@
                     </b-taglist>
                   </b-tooltip>
                 </div>
-    
+
                 <div class="control">
                   <b-tooltip :label="'最后挖币高度: ' + farm.farm.lastFarmedHeight" position="is-bottom">
                     <b-taglist attached>
@@ -543,9 +557,9 @@
                     </b-taglist>
                   </b-tooltip>
                 </div>
-    
+
               </b-field>
-    
+
               <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
                 <template #trigger="props">
                   <a aria-controls="contentIdForA11y1">
@@ -573,28 +587,28 @@
                       <b-tag type="is-light">{{farm.node.difficulty}}</b-tag>
                     </b-taglist>
                   </div>
-    
+
                   <div class="control">
                     <b-taglist attached>
                       <b-tag type="is-dark">交易费用</b-tag>
                       <b-tag type="is-light">{{farm.farm.txFees}}</b-tag>
                     </b-taglist>
                   </div>
-    
+
                   <div class="control">
                     <b-taglist attached>
                       <b-tag type="is-dark">奖励</b-tag>
                       <b-tag type="is-light">{{farm.farm.rewards}}</b-tag>
                     </b-taglist>
                   </div>
-    
+
                   <div class="control">
                     <b-taglist attached>
                       <b-tag type="is-dark">期望成功值</b-tag>
                       <b-tag type="is-light">{{farm.farm.expectedToWin}}</b-tag>
                     </b-taglist>
                   </div>
-    
+
                 </b-field>
               </b-collapse>
             </div>
@@ -613,10 +627,10 @@
           <b-collapse class="card" animation="slide" :open="false">
             <template #trigger="props">
               <div class="card-header" role="button">
-                  <p class="card-header-title">Plotting Progress</p>
-                  <a class="card-header-icon">
-                      <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-                  </a>
+                <p class="card-header-title">Plotting Progress</p>
+                <a class="card-header-icon">
+                  <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                </a>
               </div>
             </template>
             <div class="card-content">
@@ -640,13 +654,14 @@
                         <td>
                           <b-progress format="percent" :max="100">
                             <template #bar>
-                              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress" type="is-danger">
+                              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                                type="is-danger">
                               </b-progress-bar>
-                              <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
-                                type="is-info">
+                              <b-progress-bar v-if="job.progress > 35"
+                                :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
                               </b-progress-bar>
-                              <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
-                                type="is-warning">
+                              <b-progress-bar v-if="job.progress > 56"
+                                :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
                               </b-progress-bar>
                               <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
                               </b-progress-bar>
@@ -673,18 +688,20 @@
                 <p class="panel-heading">
                   {{machine.name}}
                 </p>
-                
+
                 <div class="card-content p-4">
-                  <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data"></apexchart>
-  
+                  <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
+                  </apexchart>
+
                   <div class="columns is-multiline">
                     <div class="column is-5">
                       <template>
                         <div v-for="disk in machine.disks" v-if="disk.size > 1024*1024">
                           <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
                             :max="disk.size" show-value>
-                            <div class="has-text-white">{{disk.path}}: {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
-                            [{{Math.floor(disk.available / 106430464)}}]</div>
+                            <div class="has-text-white">{{disk.path}}:
+                              {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                              [{{Math.floor(disk.available / 106430464)}}]</div>
                           </b-progress>
                         </div>
                       </template>
@@ -694,7 +711,8 @@
                         <b-tooltip position="is-bottom" type="is-light" multilined>
                           <div>
                             <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
-                            <apexchart height="150" :options="machine.cpuRadialBar.chartOptions" :series="machine.cpuRadialBar.data"></apexchart>
+                            <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
+                              :series="machine.cpuRadialBar.data"></apexchart>
                           </div>
                           <template v-slot:content>
                             <div>已用：{{machine.memory.used}}GB</div>
@@ -734,7 +752,7 @@
             </div>
           </div>
         </div>
-   <div class="block">
+        <div class="block">
           <div class="columns is-desktop">
             <div class="column is-half">
               <nav v-if="errors" class="panel">
@@ -759,10 +777,12 @@
                 <div class="panel-block" v-for="evt in sortedEvents">
                   <b-tag type="is-info is-light">{{evt.time}}</b-tag>
                   <span class="has-text-danger" v-if="evt.proofs > 0">
-                    {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长: {{evt.duration.totalMilliseconds}} ms
+                    {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
+                    {{evt.duration.totalMilliseconds}} ms
                   </span>
                   <span class="has-text-info" v-else>
-                    {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长: {{evt.duration.totalMilliseconds}} ms
+                    {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
+                    {{evt.duration.totalMilliseconds}} ms
                   </span>
                 </div>
               </nav>
@@ -772,6 +792,76 @@
           </div>
         </div>
       </div>
+
+      <div class="block">
+        <b-collapse class="card" animation="slide" :open="false">
+          <template #trigger="props">
+            <div class="card-header" role="button">
+              <p class="card-header-title">Chia plotting performance</p>
+              <a class="card-header-icon">
+                <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+              </a>
+            </div>
+          </template>
+          <div class="card-content">
+            <b-dropdown aria-role="list" v-model="selectedOS">
+              <template #trigger>
+                <b-button type="is-primary">Select OS</b-button>
+              </template>
+              <b-dropdown-item value="all">All</b-dropdown-item>
+              <b-dropdown-item value="WSL">WSL</b-dropdown-item>
+              <b-dropdown-item value="Windows">Windows</b-dropdown-item>
+              <b-dropdown-item value="Ubuntu">Ubuntu</b-dropdown-item>
+              <b-dropdown-item value="Else">Else</b-dropdown-item>
+            </b-dropdown>
+            <b-select class="is-inline-block" v-model="perPage">
+              <option value="10">10 per page</option>
+              <option value="20">20 per page</option>
+              <option value="50">50 per page</option>
+              <option value="100">100 per page</option>
+            </b-select>
+            <template>
+              <b-table :data="selectedPerformance" :row-class="(row) =>'has-background-dark'" :mobile-cards="false"
+                :per-page="perPage" paginated detailed custom-detail-row>
+                <b-table-column field="User" label="名字" v-slot="props">
+                  {{props.row.User | shorten}}
+                </b-table-column>
+                <b-table-column field='OS' label="操作系统" v-slot="props">
+                  {{
+                    props.row['OS'].match('WSL') ? 'WSL':false ||
+                    props.row['OS'].match('[Lu|U]buntu')? 'Ubuntu':false || 
+                    props.row['OS'].match('Fedora')? 'Fedora':false || 
+                    props.row['OS'].match('Windows')? 'Windows':false ||
+                    '其他'
+                  }}
+                </b-table-column>
+                <b-table-column field='TiB/day (all // Plots)' label="TiB/day" v-slot="props">
+                  {{props.row['TiB/day (all // Plots)']}}
+                </b-table-column>
+                <template #detail="props">
+                  <tr>
+                    <td colspan="4">
+                      <div class="box">
+                        <div>CPU：{{props.row.CPU}}</div>
+                        <div>操作系统：{{props.row['OS']}}</div>
+                        <div>主板：{{props.row["Motherboard / SAS Adapter (Server)"]}}</div>
+                        <div>内存：{{props.row.DRAM}}</div>
+                        <div>硬盘：{{props.row["Temp Drive"]}}</div>
+                        <div>时长(h)：{{props.row["Time (hr)"]}}</div>
+                        <div>同时P图：{{props.row["// Plots"]}}</div>
+                        <div v-if="props.row['Comment']">其他说明：{{props.row['Comment']}}</div>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </b-table>
+
+            </template>
+          </div>
+        </b-collapse>
+      </div>
+
+
       <div v-if="activePage == 4">
         this is the about
       </div>
@@ -781,25 +871,33 @@
       <b-navbar :fixed-bottom="true" :mobile-burger="false">
         <template #brand>
           <b-navbar-item class="navbarButton" :active="activePage == 0" @click="switchPage(activePage,0)">
-            <div><b-icon icon="home"></b-icon></div>
+            <div>
+              <b-icon icon="home"></b-icon>
+            </div>
             <div>首页</div>
           </b-navbar-item>
           <b-navbar-item class="navbarButton" :active="activePage == 1" @click="switchPage(activePage,1)">
-            <div><b-icon icon="view-column"></b-icon></div>
+            <div>
+              <b-icon icon="view-column"></b-icon>
+            </div>
             <div>浏览器</div>
           </b-navbar-item>
           <b-navbar-item class="navbarButton" :active="activePage == 3" @click="switchPage(activePage,3)">
-            <div><b-icon icon="monitor-dashboard"></b-icon></div>
+            <div>
+              <b-icon icon="monitor-dashboard"></b-icon>
+            </div>
             <div>矿场监控</div>
           </b-navbar-item>
           <b-navbar-item class="navbarButton" :active="activePage == 4" @click="switchPage(activePage,4)">
-            <div><b-icon icon="information"></b-icon></div>
+            <div>
+              <b-icon icon="information"></b-icon>
+            </div>
             <div>关于</div>
           </b-navbar-item>
         </template>
       </b-navbar>
     </div>
-  
+
   </div>
   <script src="vue.js"></script>
   <script src="buefy.min.js"></script>

@@ -58,12 +58,16 @@ var app = new Vue({
 
             activePage: 0,
             evtNum: 10,
-            errNum: 10
+            errNum: 10,
+            plottingPerformances: [],
+            selectedOS: '',
+            perPage: 10,
         }
     },
     mounted: function () {
         this.load();
         this.autoRefresh();
+        this.loadlist();
     },
     methods: {
         getInfo(path) {
@@ -793,21 +797,43 @@ var app = new Vue({
                     }
                 }
             }
-        }
+        },
+        loadlist() {
+            var url = "ChiaPlottingPerformance.json"
+            fetch(url, {
+                    method: 'GET',
+                })
+                .then((resp) => resp.json())
+                .then((json) => {
+                    this.plottingPerformances = json;
+                });
+        },
     },
     computed: {
-        tempDirSet: function () {
-            return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
-        },
-        sortedErrors: function () {
-            return this.errors.sort((a, b) => {
-                return a.time < b.time ? 1 : -1;
-            }).slice(0, this.errNum)
-        },
-        sortedEvents: function () {
-            return this.events.sort((a, b) => {
-                return a.time < b.time ? 1 : -1;
-            }).slice(0, this.evtNum)
+        tempDirSet: () => [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort(),
+        sortedErrors: () => this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum),
+        sortedEvents: () => this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum),
+        selectedPerformance: function () {
+            if (this.selectedOS === 'all') {
+                return this.plottingPerformances;
+            } else if (this.selectedOS === 'Else') {
+                return this.plottingPerformances.filter(_ => {
+                    return _.OS.indexOf('Ubuntu') == -1 && _.OS.indexOf('Windows') == -1;
+                })
+            } else {
+                return this.plottingPerformances.filter(_ => {
+                    return _.OS.indexOf(this.selectedOS) > -1;
+                })
+            }
+        }
+    },
+    filters: {
+        shorten: function (value, len = 10) {
+            if (!value) return ''
+            let padding = '...';
+            let left = Math.ceil((len - padding.length) / 2);
+            let right = len - padding.length - left;
+            return value.length >= len ? value.substr(0, left) + padding + value.substr(-right) : value;
         },
     },
 })
