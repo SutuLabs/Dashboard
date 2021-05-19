@@ -44,7 +44,6 @@
       var temp;
       temp = setInterval(() => {
         this.load();
-        console.log("diskMap refreshing")
       }, 20000);
       getInfo.intervals.push([temp,"diskMap"]);
     }

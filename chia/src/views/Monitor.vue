@@ -195,7 +195,7 @@
                 </div>
                 <div class="column is-7 columns is-mobile">
                   <div class="column is-5">
-                    <b-tooltip position="is-bottom" type="is-light" multilined>
+                    <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                       <div>
                         <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
                         <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
@@ -240,19 +240,21 @@
       </div>
     </div>
 
-    <div class="block">
+    <div class="block" id="errors">
       <div class="columns is-desktop">
         <div class="column is-half" v-if="errors!=null">
           <nav class="panel">
             <p class="panel-heading">Errors</p>
-            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
-              <span class="panel-icon">
-                <i class="fas fa-error" aria-hidden="true"></i>
-              </span>
-              <b-tag type="is-info is-light">{{err.time}}</b-tag>
-              <span class="has-text-danger">
-                {{err.error}}
-              </span>
+            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)"> 
+              <b-tooltip type="is-light" size="is-large" multilined>
+                <b-tag type="is-info is-light">{{err.time}}</b-tag>
+                <span class="has-text-danger">
+                  {{shorten(err.error)}}
+                </span>
+                <template v-slot:content>
+                  <p class="is-size-7">{{err.error}}</p>
+                </template>
+              </b-tooltip>
             </div>
           </nav>
           <b-button rounded @click="errNum+=10" :disabled="errNum>=errors.length">Expand</b-button>
@@ -282,6 +284,12 @@
 
   </div>
 </template>
+
+<style>
+  .b-tooltip.is-multiline.is-large .tooltip-content{
+    width: 600px;
+  }
+</style>
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
@@ -498,6 +506,21 @@
       if (perc < 0.5) return 'success';
       if (perc < 0.7) return 'warning';
       return 'danger';
+    }
+    shorten(err: string) {
+      var temp: string;
+      if (err.includes("plot")) {
+        err = err.split("plot");
+        temp = err[0] + err[err.length-1];
+        return temp;
+      }
+      else if (err.includes("id")) {
+        temp = err.slice(0, err.lastIndexOf("id")) + "<id>" + err.slice(err.indexOf(","), err.length - 1); 
+        return temp;
+      }
+      else {
+        return err;
+      }
     }
     get tempDirSet() {
       return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
