@@ -4,6 +4,7 @@ export default {
   diskMap: null, 
   errors: null, 
   events: null,
+  intervals: [],
 
   getInfo(path) {
 
@@ -32,5 +33,11 @@ export default {
   },
   sortDisks(machine) {
     if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
+  },
+  stopRefresh() {
+    for (let i = 0; i < this.intervals.length; i++) {
+      clearInterval(this.intervals[i][0]);
+    }
+    this.intervals.length = 0;
   },
 }

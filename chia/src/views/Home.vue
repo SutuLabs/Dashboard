@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="home">
     <div class="is-hidden-mobile block">
       <div class="box">
@@ -167,11 +167,13 @@
     plot = null;
 
     mounted() {
-      this.autoRefresh()
+      getInfo.stopRefresh();
+      this.load();
+      this.autoRefresh();
     }
 
     // TODO: setintervals 
-    autoRefresh() {
+    load() {
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {
@@ -179,6 +181,23 @@
           getInfo.sortDisks(this.farm);
           this.getNetInfo(this.farm);
         });
+    }
+    autoRefresh() {
+      var temp;
+      temp = setInterval(() => {
+        getInfo.getInfo("farmer")
+          .then(response => response.json())
+          .then(json => {
+            this.farm = json;
+            getInfo.sortDisks(this.farm);
+            this.getNetInfo(this.farm);
+          });
+      }, 5000);
+      getInfo.intervals.push([temp,"farmer"]);
+      temp = setInterval(() => {
+        getInfo.save();
+      }, 5000);
+      getInfo.intervals.push([temp, "save"]);
     }
     getNetInfo(farm) {
       this.netInfoList = [{

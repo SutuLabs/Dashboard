@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="explorer">
     <div v-if="farm!=null" class="box">
       <div class="card-content">
@@ -373,7 +373,10 @@
     perPage = 10;
 
     mounted() {
+      getInfo.stopRefresh();
       this.load();
+      this.loadlist();
+      this.autoRefresh(); 
     }
 
     load() {
@@ -381,20 +384,49 @@
         .then(response => response.json())
         .then(json => {
           this.farm = json;
-          console.log(this.farm);
           getInfo.sortDisks(this.farm);
           this.calcCpuMap(this.farm);
-          //this.getNetInfo(this.farm);
         });
       getInfo.getInfo('plotter')
         .then(response => response.json())
         .then(json => {
           this.plot = json;
-          console.log(this.farm);
           getInfo.sortDisks(this.plot);
-          this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase))
+          this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase));
           this.calcCpuMap(this.plot);
         });
+    }
+    autoRefresh() {
+      var temp;
+      temp = setInterval(() => {
+        getInfo.getInfo('servers')
+          .then(response => response.json())
+          .then(json => {
+            var f = json.find(_ => _.name == 'Farmer');
+            var p = json.find(_ => _.name == 'Plotter');
+            getInfo.sortDisks(f);
+            getInfo.sortDisks(p);
+            Object.assign(this.farm, f);
+            Object.assign(this.plot, p);
+            this.calcCpuMap(this.farm);
+            this.calcCpuMap(this.plot);
+          });
+        getInfo.getInfo('errors')
+          .then(response => response.json())
+          .then(json => {
+            this.errors = json;
+          });
+        getInfo.getInfo('events')
+          .then(response => response.json())
+          .then(json => {
+            this.events = json;
+          });
+      }, 5000);
+      getInfo.intervals.push([temp,"monitor"]);
+      temp = setInterval(() => {
+        getInfo.save();
+      }, 5000);
+      getInfo.intervals.push([temp,"save"]);
     }
     calcProgress(phase) {
       const p = Number(phase[0]);

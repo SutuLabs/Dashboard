@@ -276,7 +276,9 @@
     averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
 
     mounted() {
+      getInfo.stopRefresh();
       this.load();
+      this.autoRefresh();
     }
 
     load() {
@@ -287,6 +289,23 @@
           getInfo.sortDisks(this.farm);
           this.calculate();
         });
+    }
+    autoRefresh() {
+      var temp;
+      temp = setInterval(() => {
+        getInfo.getInfo("farmer")
+          .then(response => response.json())
+          .then(json => {
+            this.farm = json;
+            getInfo.sortDisks(this.farm);
+            this.calculate();
+          });
+      }, 5000);
+      getInfo.intervals.push([temp,"farmer"]);
+      temp = setInterval(() => {
+        getInfo.save();
+      }, 5000);
+      getInfo.intervals.push([temp,"save"]);
     }
     setSlider() {
       this.setSliderFlag = true;

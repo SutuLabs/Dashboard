@@ -20,6 +20,7 @@
 
     mounted() {
       this.load();
+      this.autoRefresh();
     }
     
     load() {
@@ -37,6 +38,15 @@
           getInfo.sortDisks(this.plot);
           this.calcFarmPlotMap();
         });
+    }
+
+    autoRefresh() {
+      var temp;
+      temp = setInterval(() => {
+        this.load();
+        console.log("diskMap refreshing")
+      }, 20000);
+      getInfo.intervals.push([temp,"diskMap"]);
     }
 
     calcFarmPlotMap() {
