@@ -1,12 +1,14 @@
-<template>
+﻿<template>
   <div class="calculatorSimplified">
     <div class="card">
-      <div class="card-header" @click="switchPage(activePage,2)">
-        <div class="card-header-title">
-          <div class="has-text-info">奇亚币收益计算器 </div>
-          <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
+      <router-link to="/calculator">
+        <div class="card-header">
+          <div class="card-header-title">
+            <div class="has-text-info">奇亚币收益计算器 </div>
+            <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
+          </div>
         </div>
-      </div>
+      </router-link>
       <div class="card-content">
         <div class="block">
           <div class="columns">
@@ -99,6 +101,10 @@
     farm = null; 
 
     mounted() {
+      this.load(); 
+    }
+
+    load() {
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {

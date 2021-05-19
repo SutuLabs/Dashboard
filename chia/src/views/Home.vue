@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="home">
     <div class="is-hidden-mobile block">
       <div class="box">
@@ -105,14 +105,16 @@
     </div>
     <div class="block">
       <div class="card">
-        <div class="card-header" @click="switchPage(activePage,3)">
-          <div class="card-header-title">
-            <div class="has-text-info">矿场监控</div>
-            <div class="heading">实时查看并监控矿场工作状态及数据</div>
+        <router-link to="/monitor">
+          <div class="card-header">
+            <div class="card-header-title">
+              <div class="has-text-info">矿场监控</div>
+              <div class="heading">实时查看并监控矿场工作状态及数据</div>
+            </div>
           </div>
-        </div>
+        </router-link>
         <div class="card-content">
-          <diskMap/>
+          <diskMap />
         </div>
       </div>
     </div>
