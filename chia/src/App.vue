@@ -51,6 +51,7 @@
 </template>
 
 <style lang="scss">
+  @import '../node_modules/buefy/dist/buefy.css';
   @import 'bulmaswatch/darkly/_variables.scss';
   @import "bulma/bulma.sass";
   @import 'bulmaswatch/darkly/_overrides.scss';
