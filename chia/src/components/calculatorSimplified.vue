@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="calculatorSimplified">
     <div class="card">
       <div class="card-header" @click="switchPage(activePage,2)">
@@ -151,7 +151,7 @@
       var unitCost = this.basicCalc.unitCost;
       var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
 
-      if (this.basicCalc.unit == "Tib") {
+      if (this.basicCalc.unit == "tib") {
         initSize = this.basicCalc.n;
       } else {
         initSize = this.basicCalc.n * 101.4 / 1024;
