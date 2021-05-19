@@ -1,9 +1,5 @@
 ﻿<template>
   <div id="app">
-    <!--<div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/explorer">About</router-link>
-  </div>-->
     <div class="is-hidden-mobile">
       <b-navbar>
         <template #brand>
@@ -50,7 +46,9 @@
       </b-navbar>
     </div>
 
-    <router-view />
+    <div class="p-4">
+      <router-view />
+    </div>
 
     <div class="is-hidden-tablet">
       <b-navbar :fixed-bottom="true" :mobile-burger="false">
@@ -95,5 +93,16 @@
     width: 25vw;
     display: flex;
     flex-direction: column;
+  }
+
+  .slogan {
+    margin-top: 24px;
+    font-size: small;
+    color: gold;
+  }
+
+  .card-header-title > .heading {
+    padding-left: 20px;
+    padding-top: 8px;
   }
 </style>
