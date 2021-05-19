@@ -350,7 +350,7 @@
       this.calcLoading = false;
       const unitPlotSize = 101.4;
       var nPlot = (this.nPlot == null || this.nPlot < 0) ? 1 : this.nPlot;
-      var rawTotalNetSpace = this.farm.node.space; //EiB
+      var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
       var totalNetSpace = 0;
       totalNetSpace = rawTotalNetSpace * 1024;
       var ownedNetSpace = (nPlot * unitPlotSize) / (rawTotalNetSpace * Math.pow(1024, 3)) * 100;
