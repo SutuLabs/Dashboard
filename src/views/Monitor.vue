@@ -295,6 +295,7 @@
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
+import { Dictionary } from 'vue-router/types/router';
 
   @Component({
     components: {
@@ -438,8 +439,8 @@
           tooltip: {
             theme: "dark",
             y: {
-              formatter: function (val) {
-                return val + " %"
+              formatter: function (val: number) {
+                return val.toString() + " %"
               }
             }
           }
