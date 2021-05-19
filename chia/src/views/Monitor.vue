@@ -1,5 +1,6 @@
 ﻿<template>
   <div class="explorer">
+    <b-loading v-if="farm==null || plot==null || errors==null || events==null" :is-full-page="true" active></b-loading>
     <div v-if="farm!=null" class="box">
       <div class="card-content">
         <div class="content">
@@ -443,7 +444,10 @@
         chartOptions: {
           chart: {
             type: 'bar',
-            height: 150
+            height: 150,
+            animations: {
+              enabled: false
+            }
           },
           plotOptions: {
             bar: {
@@ -510,6 +514,9 @@
           chart: {
             height: 150,
             type: 'radialBar',
+            animations: {
+              enabled: false
+            }
           },
           plotOptions: {
             radialBar: {

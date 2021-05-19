@@ -115,6 +115,9 @@
           chart: {
             height: 300,
             type: 'heatmap',
+            animations: {
+              enabled: false
+            }
           },
           plotOptions: {
             heatmap: {
