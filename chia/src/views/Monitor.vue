@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="explorer">
     <div v-if="farm!=null" class="box">
       <div class="card-content">
@@ -133,29 +133,27 @@
                     </tr>
                   </thead>
                   <tr v-for="job in plot.jobs" v-bind:key="job.id">
-                    <div v-if="job.tempDir==dir">
-                      <td>
-                        <b-progress format="percent" :max="100">
-                          <template #bar>
-                            <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                                            type="is-danger">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 35"
-                                            :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 56"
-                                            :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                            </b-progress-bar>
-                          </template>
-                        </b-progress>
-                      </td>
-                    </div>
-                    <td>{{job.id}}</td>
-                    <td>{{job.wallTime}}</td>
-                    <td>{{job.phase}}</td>
-                    <td>{{job.tempSize}}</td>
+                    <td v-if="job.tempDir==dir">
+                      <b-progress format="percent" :max="100">
+                        <template #bar>
+                          <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                                          type="is-danger">
+                          </b-progress-bar>
+                          <b-progress-bar v-if="job.progress > 35"
+                                          :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
+                          </b-progress-bar>
+                          <b-progress-bar v-if="job.progress > 56"
+                                          :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
+                          </b-progress-bar>
+                          <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                          </b-progress-bar>
+                        </template>
+                      </b-progress>
+                    </td>
+                    <td v-if="job.tempDir==dir">{{job.id}}</td>
+                    <td v-if="job.tempDir==dir">{{job.wallTime}}</td>
+                    <td v-if="job.tempDir==dir">{{job.phase}}</td>
+                    <td v-if="job.tempDir==dir">{{job.tempSize}}</td>
                   </tr>
                 </table>
               </div>
@@ -537,9 +535,7 @@
           },
           fill: {
             colors: [function ({
-              value,
-              seriesIndex,
-              w
+              value
             }) {
               if (value < 55) {
                 return '#00FF00'
