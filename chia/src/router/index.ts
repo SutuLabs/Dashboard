@@ -33,6 +33,11 @@ const routes: Array<RouteConfig> = [
     name: 'About',
     component: () => import('../views/About.vue')
   },
+  {
+    path: '/plottingPerformance',
+    name: 'Plotting Performance',
+    component: () => import('../views/PlottingPerformance.vue')
+  },
 ]
 
 const router = new VueRouter({

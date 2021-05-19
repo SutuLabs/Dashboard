@@ -27,6 +27,9 @@
           <b-navbar-item tag="router-link" :to="{path:'/monitor'}">
             矿场监控
           </b-navbar-item>
+          <b-navbar-item tag="router-link" :to="{path:'/plottingPerformance'}">
+            P盘效率
+          </b-navbar-item>
           <b-navbar-item tag="router-link" :to="{path:'/about'}">
             关于我们
           </b-navbar-item>
