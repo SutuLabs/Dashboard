@@ -7,7 +7,7 @@
     <div class="is-hidden-mobile">
       <b-navbar>
         <template #brand>
-          <b-navbar-item>
+          <b-navbar-item tag="router-link" :to="{path:'/'}">
             <img src="./assets/logo.png">
           </b-navbar-item>
           <div class="slogan">
@@ -46,7 +46,39 @@
         </template>
       </b-navbar>
     </div>
+
     <router-view />
+
+    <div class="is-hidden-tablet">
+      <b-navbar :fixed-bottom="true" :mobile-burger="false">
+        <template #brand>
+          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/'}">
+            <div>
+              <b-icon icon="home"></b-icon>
+            </div>
+            <div>首页</div>
+          </b-navbar-item>
+          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/explorer'}">
+            <div>
+              <b-icon icon="view-column"></b-icon>
+            </div>
+            <div>浏览器</div>
+          </b-navbar-item>
+          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/monitor'}">
+            <div>
+              <b-icon icon="monitor-dashboard"></b-icon>
+            </div>
+            <div>矿场监控</div>
+          </b-navbar-item>
+          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/about'}">
+            <div>
+              <b-icon icon="information"></b-icon>
+            </div>
+            <div>关于</div>
+          </b-navbar-item>
+        </template>
+      </b-navbar>
+    </div>
   </div>
 </template>
 
@@ -56,4 +88,9 @@
   @import "bulma/bulma.sass";
   @import 'bulmaswatch/darkly/_overrides.scss';
 
+  .navbarButton {
+    width: 25vw;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
