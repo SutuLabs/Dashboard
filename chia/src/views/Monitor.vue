@@ -245,7 +245,7 @@
         <div class="column is-half" v-if="errors!=null">
           <nav class="panel">
             <p class="panel-heading">Errors</p>
-            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="err.time">
+            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
               <span class="panel-icon">
                 <i class="fas fa-error" aria-hidden="true"></i>
               </span>
@@ -262,7 +262,7 @@
         <div class="column is-half" v-if="events!=null">
           <nav class="panel">
             <p class="panel-heading">Events</p>
-            <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="evt.time">
+            <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="sortedEvents.indexOf(evt)">
               <b-tag type="is-info is-light">{{evt.time}}</b-tag>
               <span class="has-text-danger" v-if="evt.proofs > 0">
                 {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
