@@ -7,7 +7,7 @@
           <b-field grouped group-multiline>
             <div class="control">
               <b-tooltip :label="'时间: ' + farm.node.time" position="is-bottom">
-                <b-taglist attached>
+              <b-taglist attached>
                   <b-tag type="is-dark">同步状态</b-tag>
                   <b-tag type="is-success" v-if="farm.node.status == 'Full Node Synced'">
                     {{farm.node.status}}
@@ -287,60 +287,60 @@
 
 <style>
   .b-tooltip.is-multiline.is-large .tooltip-content{
-    width: 600px;
-  }
+  width: 600px;
+}
 </style>
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
-  import diskMap from '@/components/diskMap.vue'
+import diskMap from '@/components/diskMap.vue'
 import { Dictionary } from 'vue-router/types/router';
 
-  @Component({
-    components: {
-      diskMap,
-    },
-  })
-  export default class monitor extends Vue {
-    farm = null; 
-    plot = null;
-    errors = null; 
-    events = null;
-    evtNum = 10;
-    errNum = 10;
+@Component({
+  components: {
+    diskMap,
+  },
+})
+export default class monitor extends Vue {
+  farm :any=null;
+  plot :any=null;
+  errors:any=null;
+  events:any=null;
+  evtNum = 10;
+  errNum = 10;
 
-    mounted() {
+  mounted() {
       getInfo.stopRefresh();
       this.load();
       this.autoRefresh(); 
-    }
+  }
 
-    load() {
-      getInfo.getInfo('farmer')
-        .then(response => response.json())
-        .then(json => {
-          this.farm = json;
-          getInfo.sortDisks(this.farm);
-          this.calcCpuMap(this.farm);
-        });
-      getInfo.getInfo('plotter')
-        .then(response => response.json())
-        .then(json => {
-          this.plot = json;
-          getInfo.sortDisks(this.plot);
-          this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase));
-          this.calcCpuMap(this.plot);
-        });
-    }
-    autoRefresh() {
+  load() {
+    getInfo.getInfo('farmer')
+      .then(response => response.json())
+      .then(json => {
+        this.farm = json;
+        getInfo.sortDisks(this.farm);
+        this.calcCpuMap(this.farm);
+      });
+    getInfo.getInfo('plotter')
+      .then(response => response.json())
+      .then(json => {
+        this.plot = json;
+        getInfo.sortDisks(this.plot);
+        this.plot.jobs.forEach((_:any) => (_.progress = this.calcProgress(_.phase)));
+        this.calcCpuMap(this.plot);
+      });
+  }
+  autoRefresh() {
       var temp;
-      temp = setInterval(() => {
+    temp = setInterval(() => {
         getInfo.getInfo('servers')
           .then(response => response.json())
           .then(json => {
-            var f = json.find(_ => _.name == 'Farmer');
-            var p = json.find(_ => _.name == 'Plotter');
+            var f = json.find(_:any => _.name == 'Farmer');
+            var p = json.find(_:any => _.name == 'Plotter');
             getInfo.sortDisks(f);
             getInfo.sortDisks(p);
             Object.assign(this.farm, f);
@@ -360,128 +360,126 @@ import { Dictionary } from 'vue-router/types/router';
           });
       }, 5000);
       getInfo.intervals.push([temp,"monitor"]);
-      temp = setInterval(() => {
+    temp = setInterval(() => {
         getInfo.save();
       }, 5000);
       getInfo.intervals.push([temp,"save"]);
-    }
-    calcProgress(phase) {
+  }
+    calcProgress(phase:any) {
       const p = Number(phase[0]);
       const n = Number(phase[2]);
       if (p == 1) return n * 5;
       if (p == 2) return 35 + n * 3;
       if (p == 3) return 56 + n * 5;
       if (p == 4) return 98;
-    }
-    calcCpuMap(machine) {
-      machine.cpuMap = {
+  }
+  calcCpuMap(machine:any) {
+    machine.cpuMap = {
         data: [{
           name: 'Cpu',
-          data: machine.cpus.map(_ => 100 - _),
+          data: machine.cpus.map((_:any) => 100 - _),
         }],
-        chartOptions: {
-          chart: {
-            type: 'bar',
-            height: 150,
-            animations: {
+      chartOptions: {
+        chart: {
+          type: 'bar',
+          height: 150,
+          animations: {
               enabled: false
             }
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              colors: {
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            colors: {
                 ranges: [{
                   from: 0,
                   to: 100,
                   color: '#00FF01'
                 }]
-              },
-              columnWidth: '55%',
+                },
+              ],
+            },
+            columnWidth: '55%',
               endingShape: 'rounded'
-            },
           },
-          dataLabels: {
+        },
+        dataLabels: {
             enabled: false
-          },
-          stroke: {
-            show: true,
-            width: 2,
+        },
+        stroke: {
+          show: true,
+          width: 2,
             colors: ['transparent']
-          },
-          xaxis: {
-            categories: machine.cpus.map((_, i) => i + 1),
-            labels: {
-              style: {
-                colors: 'white',
+        },
+        xaxis: {
+          categories: machine.cpus.map((_:any, i:number) => i + 1),
+          labels: {
+            style: {
+              colors: 'white',
               }
             }
-          },
-          yaxis: {
-            title: {
-              text: 'CPU Usage',
-              style: {
-                color: 'white',
+        },
+        yaxis: {
+          title: {
+            text: 'CPU Usage',
+            style: {
+              color: 'white',
               }
-            },
-            labels: {
-              style: {
-                colors: 'white',
-              }
-            },
-            max: 100,
-            min: 0,
-            decimalsInFloat: 0,
           },
-          fill: {
+          labels: {
+            style: {
+              colors: 'white',
+              }
+          },
+          max: 100,
+          min: 0,
+          decimalsInFloat: 0,
+        },
+        fill: {
             opacity: 1
-          },
-          tooltip: {
+        },
+        tooltip: {
             theme: "dark",
-            y: {
-              formatter: function (val: number) {
+          y: {
+            formatter: function (val: number) {
                 return val.toString() + " %"
-              }
-            }
-          }
-        }
-      };
-      machine.cpuRadialBar = {
+    }
+    machine.cpuRadialBar = {
         data: [(machine.memory.used / machine.memory.total * 100).toFixed(1)],
-        chartOptions: {
-          chart: {
-            height: 150,
-            type: 'radialBar',
-            animations: {
+      chartOptions: {
+        chart: {
+          height: 150,
+          type: 'radialBar',
+          animations: {
               enabled: false
             }
           },
-          plotOptions: {
-            radialBar: {
+        },
+        plotOptions: {
+          radialBar: {
+            startAngle: -135,
+            endAngle: 135,
+            track: {
+              background: '#A9A9A9',
               startAngle: -135,
               endAngle: 135,
-              track: {
-                background: '#A9A9A9',
-                startAngle: -135,
-                endAngle: 135,
+            },
+            dataLabels: {
+              name: {
+                show: false,
+                  color: "#FFFFFF",
               },
-              dataLabels: {
-                name: {
-                  show: false,
-                  color: "#FFFFFF",
-                },
-                value: {
+              value: {
                   fontSize: "16px",
-                  show: true,
+                show: true,
                   color: "#FFFFFF",
-                },
               },
             },
           },
-          fill: {
-            colors: [function ({
-              value
-            }) {
+        },
+        fill: {
+          colors: [
+            function ({ value }:any) {
               if (value < 55) {
                 return '#00FF00'
               } else if (value >= 55 && value < 80) {
@@ -489,18 +487,19 @@ import { Dictionary } from 'vue-router/types/router';
               } else {
                 return '#FF0000'
               }
-            }],
-          },
-          stroke: {
-            lineCap: "butt"
-          },
-          labels: ['内存情况'],
+            },
+          ],
         },
-      }
+        stroke: {
+            lineCap: "butt"
+        },
+        labels: ['内存情况'],
+      },
     }
-    humanize(size) {
+  }
+    humanize(size:number) {
       var i = Math.floor(Math.log(size) / Math.log(1024));
-      return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+      return (size / Math.pow(1024, i)).toFixed(2)  + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     }
     getDiskProgressType(used, size) {
       const perc = used / size;
@@ -514,23 +513,23 @@ import { Dictionary } from 'vue-router/types/router';
         err = err.split("plot");
         temp = err[0] + err[err.length-1];
         return temp;
-      }
+  }
       else if (err.includes("id")) {
         temp = err.slice(0, err.lastIndexOf("id")) + "<id>" + err.slice(err.indexOf(","), err.length - 1); 
         return temp;
-      }
+  }
       else {
         return err;
-      }
-    }
-    get tempDirSet() {
-      return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
-    }
-    get sortedErrors() {
-      return this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
-    }
-    get sortedEvents() {
-      return this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
     }
   }
+  get tempDirSet() {
+      return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
+  }
+  get sortedErrors() {
+      return this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
+  }
+  get sortedEvents() {
+      return this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
+  }
+}
 </script>
