@@ -68,40 +68,72 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import data from './../assets/ChiaPlottingPerformance.json';
+interface computerInfo {
+  User: string
+  'System Name': string
+  OS: string
+  'Motherboard / SAS Adapter (Server)': string
+  CPU: string
+  DRAM: string
+  'Temp Drive': string
+  'Time Phase 1 (s)': string
+  'Total Time per Plot (s)': string
+  'Time (min)': string
+  'Time (hr)': string
+  'GiB Written': string
+  'GiB/min': string
+  '// Plots': string
+  'TiB/day (all // Plots)': string
+  'Total Price (USD)': string
+  '$/TiB/day': string
+  version: string
+  '-r (Threads)': string
+  '-b (Memory)': string
+  Buckets: string
+  Stagger: string
+  'Stripe Size': string
+  '-e (Bitfield Disabled)': string
+  Comment: string
+  'Time phase 3-4': string
+}
+import { Component, Vue } from 'vue-property-decorator'
+import data from './../assets/ChiaPlottingPerformance.json'
 
-  @Component({
-    filters: {
-      shorten: function (value, len = 10) {
-        if (!value) return ''
+@Component({
+  filters: {
+    shorten: function (value: string, len = 10) {
+      if (!value) return ''
         let padding = '...';
         let left = Math.ceil((len - padding.length) / 2);
         let right = len - padding.length - left;
         return value.length >= len ? value.substr(0, left) + padding + value.substr(-right) : value;
-      },
     },
-  })
-  export default class monitor extends Vue {
-    plottingPerformances = [];
+  },
+})
+export default class monitor extends Vue {
+    plottingPerformances: Array<computerInfo>= [];
     selectedOS = '';
     perPage = 10;
 
-    mounted() {
+  mounted() {
       this.plottingPerformances = data; 
-    }
-    get selectedPerformance() {
-      if (this.selectedOS === 'all') {
+  }
+
+  get selectedPerformance() {
+    if (this.selectedOS === 'all') {
         return this.plottingPerformances;
-      } else if (this.selectedOS === 'Else') {
+    } else if (this.selectedOS === 'Else') {
+      return this.plottingPerformances.filter((_) => {
+        return (
+          _.OS.match('[U|u|lu]buntu') == null &&
+          _.OS.match('[w|W]indows') == null
+        )
+      })
+    } else {
         return this.plottingPerformances.filter(_ => {
-          return _.OS.indexOf('Ubuntu') == -1 && _.OS.indexOf('Windows') == -1;
-        })
-      } else {
-        return this.plottingPerformances.filter(_ => {
-          return _.OS.indexOf(this.selectedOS) > -1;
-        })
-      }
+           return _.OS.indexOf(this.selectedOS.slice(1)) > -1
+      })
     }
   }
+}
 </script>
