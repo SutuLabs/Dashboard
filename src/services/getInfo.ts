@@ -1,12 +1,12 @@
 export default {
-  farm: null, 
-  plot: null, 
+  farm: null,
+  plot: null,
   diskMap: null, 
-  errors: null, 
+  errors: null,
   events: null,
   intervals: [],
 
-  getInfo(path) {
+  getInfo(path: string) {
 
     const url = `http://10.177.0.165:5000/server/${path}`;
     const username = 'test';
@@ -31,8 +31,8 @@ export default {
       events: this.events,
     }));
   },
-  sortDisks(machine) {
-    if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
+  sortDisks(machine: { [id: string]: [] }) {
+    if (machine.disks) machine.disks.sort((a: { [id: string]: string }, b: { [id: string]: string }) => a.path.localeCompare(b.path));
   },
   stopRefresh() {
     for (let i = 0; i < this.intervals.length; i++) {

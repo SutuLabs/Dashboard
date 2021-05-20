@@ -14,8 +14,8 @@
 
   @Component
   export default class diskMap extends Vue {
-    farm = null; 
-    plot = null;
+    farm: any; 
+    plot: any;
     diskMap = {};
 
     mounted() {
@@ -41,11 +41,11 @@
     }
 
     autoRefresh() {
-      var temp;
+      var temp: number;
       temp = setInterval(() => {
         this.load();
       }, 20000);
-      getInfo.intervals.push([temp,"diskMap"]);
+      getInfo.intervals.push([temp, "diskMap"]);
     }
 
     calcFarmPlotMap() {
@@ -155,7 +155,7 @@
           tooltip: {
             theme: "dark",
             y: {
-              formatter: function (value) {
+              formatter: function (value: number) {
                 return colorRanges[value].name
               }
             }
