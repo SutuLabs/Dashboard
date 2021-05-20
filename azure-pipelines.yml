@@ -116,7 +116,7 @@ stages:
           - task: FtpUpload@2
             inputs:
               credentialsOption: 'serviceEndpoint'
-              serverEndpoint: 'chiabee_client_qa_ftp'
+              serverEndpoint: 'chiabee_client_prod_ftp'
               rootDirectory: '$(Pipeline.Workspace)/drop/b'
               filePatterns: '**'
               remoteDirectory: '/'
