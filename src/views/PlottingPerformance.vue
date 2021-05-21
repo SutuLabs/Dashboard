@@ -96,44 +96,43 @@ interface computerInfo {
   Comment: string
   'Time phase 3-4': string
 }
-import { Component, Vue } from 'vue-property-decorator'
-import data from './../assets/ChiaPlottingPerformance.json'
+  import { Component, Vue } from 'vue-property-decorator';
+  import data from './../assets/ChiaPlottingPerformance.json';
 
-@Component({
-  filters: {
-    shorten: function (value: string, len = 10) {
-      if (!value) return ''
+  @Component({
+    filters: {
+      shorten: function (value:any, len = 10) {
+        if (!value) return ''
         let padding = '...';
         let left = Math.ceil((len - padding.length) / 2);
         let right = len - padding.length - left;
         return value.length >= len ? value.substr(0, left) + padding + value.substr(-right) : value;
+      },
     },
-  },
-})
-export default class monitor extends Vue {
-    plottingPerformances: Array<computerInfo>= [];
+  })
+  export default class monitor extends Vue {
+    plottingPerformances:computerInfo[] = [];
     selectedOS = '';
     perPage = 10;
 
-  mounted() {
+    mounted() {
       this.plottingPerformances = data; 
-  }
-
-  get selectedPerformance() {
-    if (this.selectedOS === 'all') {
+    }
+    get selectedPerformance() {
+      if (this.selectedOS === 'all') {
         return this.plottingPerformances;
-    } else if (this.selectedOS === 'Else') {
+      } else if (this.selectedOS === 'Else') {
       return this.plottingPerformances.filter((_) => {
         return (
           _.OS.match('[U|u|lu]buntu') == null &&
           _.OS.match('[w|W]indows') == null
         )
-      })
-    } else {
+        })
+      } else {
         return this.plottingPerformances.filter(_ => {
            return _.OS.indexOf(this.selectedOS.slice(1)) > -1
-      })
+        })
+      }
     }
   }
-}
 </script>
