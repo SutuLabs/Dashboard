@@ -4,7 +4,8 @@ export default {
   diskMap: null, 
   errors: null,
   events: null,
-  intervals: [],
+  intervals:[[new Number,new String]],
+  
 
   getInfo(path: string) {
 
@@ -36,7 +37,7 @@ export default {
   },
   stopRefresh() {
     for (let i = 0; i < this.intervals.length; i++) {
-      clearInterval(this.intervals[i][0]);
+      clearInterval(<number>this.intervals[i][0]);
     }
     this.intervals.length = 0;
   },
