@@ -125,15 +125,15 @@
   import { Component, Vue } from 'vue-property-decorator';
   import calculatorSimplified from '@/components/calculatorSimplified.vue'; // @ is an alias to /src
   import diskMap from '@/components/diskMap.vue';
-import getInfo from '@/services/getInfo'
+  import getInfo from '@/services/getInfo'
 
-@Component({
-  components: {
-    calculatorSimplified,
-    diskMap,
-  },
-})
-export default class Home extends Vue {
+  @Component({
+    components: {
+      calculatorSimplified,
+      diskMap,
+    },
+  })
+  export default class Home extends Vue {
     netInfoList = [{
       title: "当前币价",
       data: "",
@@ -162,18 +162,18 @@ export default class Home extends Vue {
       title: "最新的收割区块高度",
       data: "",
     },
-  ]
-  farm:any = null
-  plot:any = null
+    ];
+    farm :any= null;
+    plot :any= null;
 
-  mounted() {
+    mounted() {
       getInfo.stopRefresh();
       this.load();
       this.autoRefresh();
-  }
+    }
 
-  // TODO: setintervals
-  load() {
+    // TODO: setintervals 
+    load() {
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {
@@ -181,10 +181,10 @@ export default class Home extends Vue {
           getInfo.sortDisks(this.farm);
           this.getNetInfo(this.farm);
         });
-  }
-  autoRefresh() {
-    var temp:number
-    temp = setInterval(() => {
+    }
+    autoRefresh() {
+      var temp;
+      temp = setInterval(() => {
         getInfo.getInfo("farmer")
           .then(response => response.json())
           .then(json => {
@@ -194,12 +194,12 @@ export default class Home extends Vue {
           });
       }, 5000);
       getInfo.intervals.push([temp,"farmer"]);
-    temp = setInterval(() => {
+      temp = setInterval(() => {
         getInfo.save();
       }, 5000);
       getInfo.intervals.push([temp, "save"]);
-  }
-    getNetInfo(farm) {
+    }
+    getNetInfo(farm:any) {
       this.netInfoList = [{
         title: "当前币价",
         data: "TODO",
@@ -229,6 +229,6 @@ export default class Home extends Vue {
         data: farm.node.height,
       },
       ];
+    }
   }
-}
 </script>
