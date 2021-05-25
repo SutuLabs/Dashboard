@@ -118,6 +118,9 @@
             type: 'heatmap',
             animations: {
               enabled: false
+            },
+            toolbar: {
+              show: false,
             }
           },
           plotOptions: {
