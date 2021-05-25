@@ -38,7 +38,11 @@ stages:
         npm install
         npm run build
       displayName: 'npm install and build'
-
+    
+    - task: PublishPipelineArtifact@1
+      inputs:
+        ArtifactName: 'drop'
+        targetPath: '$(Pipeline.Workspace)'
 
 - stage: dev
   displayName: dev
@@ -59,7 +63,7 @@ stages:
             inputs:
               credentialsOption: 'serviceEndpoint'
               serverEndpoint: 'chiabee_client_dev_ftp'
-              rootDirectory: '$(Pipeline.Workspace)/drop/b'
+              rootDirectory: '$(Pipeline.Workspace)/drop'
               filePatterns: '**'
               remoteDirectory: '/'
               clean: false
