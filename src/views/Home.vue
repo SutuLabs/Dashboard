@@ -16,14 +16,7 @@
         <div class="column">
           <div class="box">
             <div class="heading">奇亚币总量</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">总价值</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
+            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO($TOTAL_VALUE TODO)</div>
             <div v-if="!farm" class="title is-5">Loading</div>
           </div>
         </div>
@@ -31,15 +24,8 @@
           <div class="box">
             <div class="heading">收获的奇亚币</div>
             <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">
-              {{farm.farm.totalFarmed}}
+              {{farm.farm.totalFarmed}}($VALUE TODO)
             </div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">收获的奇亚币价值</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
             <div v-if="!farm" class="title is-5">Loading</div>
           </div>
         </div>
@@ -54,6 +40,13 @@
           <div class="box">
             <div class="heading">最新的收割区块高度</div>
             <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.height}}</div>
+            <div v-if="!farm" class="title is-5">Loading</div>
+          </div>
+        </div>
+        <div class="column">
+          <div class="box">
+            <div class="heading">全网耗电量</div>
+            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
             <div v-if="!farm" class="title is-5">Loading</div>
           </div>
         </div>
