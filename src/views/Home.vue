@@ -73,7 +73,7 @@
     <div class="block">
       <calculatorSimplified/>
     </div>
-    <div class="block">
+    <div class="block" hidden>
       <div class="columns">
         <div class="column is-half">
           <div class="box">
