@@ -46,7 +46,7 @@ stages:
 
 - stage: dev
   displayName: dev
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure-pipelines'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   dependsOn:
   - build
   jobs:
@@ -73,7 +73,7 @@ stages:
 
 - stage: qa
   displayName: qa
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure-pipelines'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   dependsOn:
   - build
   - dev
@@ -102,7 +102,7 @@ stages:
 
 - stage: prod
   displayName: prod
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure-pipelines'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   dependsOn:
   - build
   - qa
