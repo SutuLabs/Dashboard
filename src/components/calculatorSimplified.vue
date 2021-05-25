@@ -98,7 +98,7 @@
       chiaPrice: 500,
     };
     averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
-    farm = null; 
+    farm: any; 
 
     mounted() {
       this.load(); 
@@ -115,7 +115,7 @@
         });
     }
 
-    formatTime(time) {
+    formatTime(time: number) {
       var day;
       day = time / (24 * 60);
       if (day < 1) {

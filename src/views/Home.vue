@@ -163,8 +163,8 @@
       data: "",
     },
     ];
-    farm = null;
-    plot = null;
+    farm :any= null;
+    plot :any= null;
 
     mounted() {
       getInfo.stopRefresh();
@@ -199,7 +199,7 @@
       }, 5000);
       getInfo.intervals.push([temp, "save"]);
     }
-    getNetInfo(farm) {
+    getNetInfo(farm:any) {
       this.netInfoList = [{
         title: "当前币价",
         data: "TODO",
