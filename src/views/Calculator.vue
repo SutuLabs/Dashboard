@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="calculator">
     <b-loading v-model="calcLoading" :is-full-page="false"></b-loading>
-    <div class="box" v-if="calculator!=null">
+    <div class="box" v-if="!calcLoading">
       <p class="title is-5">你的算力</p>
       <p>(of size 101.4GiB, k=32)</p>
       <b-field>
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div v-if="calculator!=null">
+    <div v-if="!calcLoading">
       <b-tabs type="is-boxed" expanded>
         <b-tab-item label="Simplified">
           <div class="box">
@@ -266,17 +266,17 @@
 
   @Component
   export default class calculator extends Vue {
-    farm = null;
-    calculator = null; 
+    farm: any;
+    calculator: any; 
     calcLoading = true;
-    nPlot = null;
+    nPlot = "";
     slider = 0;
     sliderValue = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 55, 64, 80, 105, 141, 190, 254, 335, 435, 536, 637, 738, 839, 940, 1041, 1142, 1243, 1344, 1445, 1596, 1747, 1898, 2049, 2200, 2351, 2502, 2653, 2804, 2955, 3226, 3497, 3768, 4039, 4310, 4581, 4852, 5123, 5394, 5665, 6098, 6531, 6964, 7397, 7830, 8263, 8696, 9129, 9562, 10000];
     setSliderFlag = false;
     averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
+    intervals: number[] = [];
 
     mounted() {
-      getInfo.stopRefresh();
       this.load();
       this.autoRefresh();
     }
@@ -301,11 +301,11 @@
             this.calculate();
           });
       }, 5000);
-      getInfo.intervals.push([temp,"farmer"]);
+      this.intervals.push(temp);
       temp = setInterval(() => {
-        getInfo.save();
+        getInfo.save("farm", this.farm);
       }, 5000);
-      getInfo.intervals.push([temp,"save"]);
+      this.intervals.push(temp);
     }
     setSlider() {
       this.setSliderFlag = true;
@@ -323,13 +323,13 @@
     }
     setNPlot() {
       if (!this.setSliderFlag) {
-        this.nPlot = this.sliderValue[this.slider];
+        this.nPlot = this.sliderValue[this.slider].toString();
         this.calculate();
       } else {
         this.setSliderFlag = false;
       }
     }
-    formatTime(time) {
+    formatTime(time: number) {
       var day;
       day = time / (24 * 60);
       if (day < 1) {
@@ -368,7 +368,7 @@
     calculate() {
       this.calcLoading = false;
       const unitPlotSize = 101.4;
-      var nPlot = (this.nPlot == null || this.nPlot < 0) ? 1 : this.nPlot;
+      var nPlot = (this.nPlot == "" || parseInt(this.nPlot) < 0) ? 1 : parseInt(this.nPlot);
       var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
       var totalNetSpace = 0;
       totalNetSpace = rawTotalNetSpace * 1024;
@@ -425,7 +425,7 @@
       var totalEarningData = [];
       var timeFrameCategory = [];
 
-      function get_days(startDate, n, unit) {
+      function get_days(startDate: string, n: number, unit: string) {
         var date1, date2;
         if (startDate == "today") {
           date1 = new Date();
@@ -587,35 +587,35 @@
             theme: "dark",
             y: [{
               title: {
-                formatter: function (val) {
+                formatter: function (val: number) {
                   return val + " (EiB)"
                 }
               },
             },
             {
               title: {
-                formatter: function (val) {
+                formatter: function (val: number) {
                   return val + " (GiB)"
                 }
               },
             },
             {
               title: {
-                formatter: function (val) {
+                formatter: function (val: number) {
                   return val + " (%)"
                 }
               },
             },
             {
               title: {
-                formatter: function (val) {
+                formatter: function (val: number) {
                   return val + " (XCH)"
                 }
               },
             },
             {
               title: {
-                formatter: function (val) {
+                formatter: function (val: number) {
                   return val + " (XCH)"
                 }
               },
@@ -625,4 +625,9 @@
         }
       }
     }
-}</script>
+
+    beforeDestroy() {
+      this.intervals = getInfo.stopRefresh(this.intervals);
+    }
+  }
+</script>

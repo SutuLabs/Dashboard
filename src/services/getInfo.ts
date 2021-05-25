@@ -1,12 +1,6 @@
 export default {
-  farm: null, 
-  plot: null, 
-  diskMap: null, 
-  errors: null, 
-  events: null,
-  intervals: [],
 
-  getInfo(path) {
+  getInfo(path: string) {
 
     const url = `http://10.177.0.165:5000/server/${path}`;
     const username = 'test';
@@ -22,22 +16,19 @@ export default {
       headers: headers,
     });
   },
-  save() {
-    localStorage.setItem("DATA", JSON.stringify({
-      farm: this.farm,
-      plot: this.plot,
-      diskMap: this.diskMap,
-      errors: this.errors,
-      events: this.events,
-    }));
+
+  save(key: string, value: any) {
+    localStorage.setItem(key, JSON.stringify(value));
   },
-  sortDisks(machine) {
-    if (machine.disks) machine.disks.sort((a, b) => a.path.localeCompare(b.path));
+
+  sortDisks(machine: { [id: string]: [] }) {
+    if (machine.disks) machine.disks.sort((a: { [id: string]: string }, b: { [id: string]: string }) => a.path.localeCompare(b.path));
   },
-  stopRefresh() {
-    for (let i = 0; i < this.intervals.length; i++) {
-      clearInterval(this.intervals[i][0]);
+
+  stopRefresh(intervals: number[]) {
+    for (let i = 0; i < intervals.length; i++) {
+      clearInterval(intervals[i]);
     }
-    this.intervals.length = 0;
+    return []; 
   },
 }

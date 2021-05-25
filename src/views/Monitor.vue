@@ -295,7 +295,6 @@
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
-import { Dictionary } from 'vue-router/types/router';
 
   @Component({
     components: {
@@ -303,15 +302,15 @@ import { Dictionary } from 'vue-router/types/router';
     },
   })
   export default class monitor extends Vue {
-    farm = null; 
-    plot = null;
-    errors = null; 
-    events = null;
+    farm :any= null; 
+    plot :any= null;
+    errors :any= null; 
+    events :any= null;
     evtNum = 10;
     errNum = 10;
+    intervals: number[] = [];
 
     mounted() {
-      getInfo.stopRefresh();
       this.load();
       this.autoRefresh(); 
     }
@@ -329,7 +328,7 @@ import { Dictionary } from 'vue-router/types/router';
         .then(json => {
           this.plot = json;
           getInfo.sortDisks(this.plot);
-          this.plot.jobs.forEach(_ => _.progress = this.calcProgress(_.phase));
+          this.plot.jobs.forEach((_:any) => _.progress = this.calcProgress(_.phase));
           this.calcCpuMap(this.plot);
         });
     }
@@ -339,8 +338,8 @@ import { Dictionary } from 'vue-router/types/router';
         getInfo.getInfo('servers')
           .then(response => response.json())
           .then(json => {
-            var f = json.find(_ => _.name == 'Farmer');
-            var p = json.find(_ => _.name == 'Plotter');
+            var f = json.find((_:any) => _.name == 'Farmer');
+            var p = json.find((_:any) => _.name == 'Plotter');
             getInfo.sortDisks(f);
             getInfo.sortDisks(p);
             Object.assign(this.farm, f);
@@ -359,13 +358,16 @@ import { Dictionary } from 'vue-router/types/router';
             this.events = json;
           });
       }, 5000);
-      getInfo.intervals.push([temp,"monitor"]);
+      this.intervals.push(temp);
       temp = setInterval(() => {
-        getInfo.save();
+        getInfo.save("farm", this.farm);
+        getInfo.save("plot", this.plot);
+        getInfo.save("errors", this.errors);
+        getInfo.save("events", this.events);
       }, 5000);
-      getInfo.intervals.push([temp,"save"]);
+      this.intervals.push(temp);
     }
-    calcProgress(phase) {
+    calcProgress(phase:any) {
       const p = Number(phase[0]);
       const n = Number(phase[2]);
       if (p == 1) return n * 5;
@@ -373,11 +375,11 @@ import { Dictionary } from 'vue-router/types/router';
       if (p == 3) return 56 + n * 5;
       if (p == 4) return 98;
     }
-    calcCpuMap(machine) {
+    calcCpuMap(machine:any) {
       machine.cpuMap = {
         data: [{
           name: 'Cpu',
-          data: machine.cpus.map(_ => 100 - _),
+          data: machine.cpus.map((_:any) => 100 - _),
         }],
         chartOptions: {
           chart: {
@@ -410,7 +412,7 @@ import { Dictionary } from 'vue-router/types/router';
             colors: ['transparent']
           },
           xaxis: {
-            categories: machine.cpus.map((_, i) => i + 1),
+            categories: machine.cpus.map((_:any, i:number) => i + 1),
             labels: {
               style: {
                 colors: 'white',
@@ -481,7 +483,7 @@ import { Dictionary } from 'vue-router/types/router';
           fill: {
             colors: [function ({
               value
-            }) {
+            }:any) {
               if (value < 55) {
                 return '#00FF00'
               } else if (value >= 55 && value < 80) {
@@ -498,17 +500,17 @@ import { Dictionary } from 'vue-router/types/router';
         },
       }
     }
-    humanize(size) {
+    humanize(size:number) {
       var i = Math.floor(Math.log(size) / Math.log(1024));
-      return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+      return (size / Math.pow(1024, i)).toFixed(2)  + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     }
-    getDiskProgressType(used, size) {
+    getDiskProgressType(used:number, size:number) {
       const perc = used / size;
       if (perc < 0.5) return 'success';
       if (perc < 0.7) return 'warning';
       return 'danger';
     }
-    shorten(err: string) {
+    shorten(err: any) {
       var temp: string;
       if (err.includes("plot")) {
         err = err.split("plot");
@@ -524,13 +526,17 @@ import { Dictionary } from 'vue-router/types/router';
       }
     }
     get tempDirSet() {
-      return [...new Set(this.plot.jobs.map(_ => _.tempDir))].sort();
+      return [...new Set(this.plot.jobs.map((_:any) => _.tempDir))].sort();
     }
     get sortedErrors() {
-      return this.errors.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
+      return this.errors.sort((a:any, b:any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
     }
     get sortedEvents() {
-      return this.events.sort((a, b) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
+      return this.events.sort((a:any, b:any) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
+    }
+
+    beforeDestroy() {
+      this.intervals = getInfo.stopRefresh(this.intervals);
     }
   }
 </script>

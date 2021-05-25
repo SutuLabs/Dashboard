@@ -1,0 +1,130 @@
+# Node.js with Vue
+# Build a Node.js project that uses Vue.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+name: '$(BuildID).$(date:yyMMdd)'
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - README.md
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  versionNumber: '0.1.$(Build.BuildNumber)'
+  devEnvironment: 'chiabee-dev'
+  qaEnvironment: 'chiabee-qa'
+  prodEnvironment: 'chiabee-prod'
+
+stages:
+- stage: build
+  displayName: build
+  jobs:
+  - job: build
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+        npm run build
+      displayName: 'npm install and build'
+    
+    - task: PublishPipelineArtifact@1
+      inputs:
+        ArtifactName: 'drop'
+        targetPath: '$(Pipeline.Workspace)'
+
+- stage: dev
+  displayName: dev
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  dependsOn:
+  - build
+  jobs:
+  - deployment: devdeploy
+    displayName: devDeploy
+    timeoutInMinutes: 10
+    cancelTimeoutInMinutes: 1
+    environment: $(devEnvironment)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: FtpUpload@2
+            inputs:
+              credentialsOption: 'serviceEndpoint'
+              serverEndpoint: 'chiabee_client_dev_ftp'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
+              filePatterns: '**'
+              remoteDirectory: '/'
+              clean: false
+              cleanContents: false
+              preservePaths: true
+              trustSSL: false
+
+- stage: qa
+  displayName: qa
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  dependsOn:
+  - build
+  - dev
+  jobs:
+  - deployment: qadeploy
+    displayName: qaDeploy
+    timeoutInMinutes: 10
+    cancelTimeoutInMinutes: 1
+    environment: $(qaEnvironment)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: FtpUpload@2
+            inputs:
+              credentialsOption: 'serviceEndpoint'
+              serverEndpoint: 'chiabee_client_qa_ftp'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
+              filePatterns: '**'
+              remoteDirectory: '/'
+              clean: false
+              cleanContents: false
+              preservePaths: true
+              trustSSL: false
+
+- stage: prod
+  displayName: prod
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  dependsOn:
+  - build
+  - qa
+  jobs:
+  - deployment: proddeploy
+    displayName: prodDeploy
+    timeoutInMinutes: 10
+    cancelTimeoutInMinutes: 1
+    environment: $(prodEnvironment)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: FtpUpload@2
+            inputs:
+              credentialsOption: 'serviceEndpoint'
+              serverEndpoint: 'chiabee_client_prod_ftp'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
+              filePatterns: '**'
+              remoteDirectory: '/'
+              clean: false
+              cleanContents: false
+              preservePaths: true
+              trustSSL: false

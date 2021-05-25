@@ -9,7 +9,7 @@
         <div class="column">
           <div class="box">
             <div class="heading">全网容量</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.farm.totalSize}}</div>
+            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.space}}</div>
             <div v-if="!farm" class="title is-5">Loading</div>
           </div>
         </div>
@@ -163,11 +163,10 @@
       data: "",
     },
     ];
-    farm = null;
-    plot = null;
+    farm :any= null;
+    intervals: number[] = [];
 
     mounted() {
-      getInfo.stopRefresh();
       this.load();
       this.autoRefresh();
     }
@@ -193,13 +192,13 @@
             this.getNetInfo(this.farm);
           });
       }, 5000);
-      getInfo.intervals.push([temp,"farmer"]);
+      this.intervals.push(temp);
       temp = setInterval(() => {
-        getInfo.save();
+        getInfo.save("farm", this.farm);
       }, 5000);
-      getInfo.intervals.push([temp, "save"]);
+      this.intervals.push(temp);
     }
-    getNetInfo(farm) {
+    getNetInfo(farm:any) {
       this.netInfoList = [{
         title: "当前币价",
         data: "TODO",
@@ -229,6 +228,10 @@
         data: farm.node.height,
       },
       ];
+    }
+
+    beforeDestroy() {
+      this.intervals = getInfo.stopRefresh(this.intervals);
     }
   }
 </script>
