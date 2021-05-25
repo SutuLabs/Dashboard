@@ -38,7 +38,11 @@ stages:
         npm install
         npm run build
       displayName: 'npm install and build'
-
+    
+    - task: PublishPipelineArtifact@1
+      inputs:
+        ArtifactName: 'drop'
+        targetPath: '$(Pipeline.Workspace)'
 
 - stage: dev
   displayName: dev
@@ -59,7 +63,7 @@ stages:
             inputs:
               credentialsOption: 'serviceEndpoint'
               serverEndpoint: 'chiabee_client_dev_ftp'
-              rootDirectory: '$(Pipeline.Workspace)/drop/b'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
               filePatterns: '**'
               remoteDirectory: '/'
               clean: false
@@ -69,7 +73,7 @@ stages:
 
 - stage: qa
   displayName: qa
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure-pipelines'))
   dependsOn:
   - build
   - dev
@@ -88,7 +92,7 @@ stages:
             inputs:
               credentialsOption: 'serviceEndpoint'
               serverEndpoint: 'chiabee_client_qa_ftp'
-              rootDirectory: '$(Pipeline.Workspace)/drop/b'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
               filePatterns: '**'
               remoteDirectory: '/'
               clean: false
@@ -98,7 +102,7 @@ stages:
 
 - stage: prod
   displayName: prod
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure-pipelines'))
   dependsOn:
   - build
   - qa
@@ -117,7 +121,7 @@ stages:
             inputs:
               credentialsOption: 'serviceEndpoint'
               serverEndpoint: 'chiabee_client_prod_ftp'
-              rootDirectory: '$(Pipeline.Workspace)/drop/b'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
               filePatterns: '**'
               remoteDirectory: '/'
               clean: false
