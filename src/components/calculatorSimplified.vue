@@ -11,14 +11,12 @@
       </router-link>
       <div class="card-content">
         <div class="block">
-          <div class="columns">
-            <div class="column is-one-quarter">
-              <p class="title is-5">输入您拥有的算力或田数</p>
-            </div>
-            <div class="column is-one-quarter">
-              <p v-if="basicCalc.unit=='tib'">（约为{{ (basicCalc.n/101.4*1024).toFixed(0) }}plots）</p>
-              <p v-if="basicCalc.unit=='plots'">（约为{{ (basicCalc.n*101.4/1024).toFixed(0) }}Tib）</p>
-            </div>
+          <div class="block">
+            <p class="title is-5">
+              输入您拥有的算力或田数
+              <span class="is-size-7" v-if="basicCalc.unit=='tib'">（约为{{ (basicCalc.n/101.4*1024).toFixed(0) }}plots）</span>
+              <span class="is-size-7" v-if="basicCalc.unit=='plots'">（约为{{ (basicCalc.n*101.4/1024).toFixed(0) }}Tib）</span>
+            </p>
           </div>
           <b-field>
             <b-input size="is-small" type="number" v-model="basicCalc.n" :lazy="true" v-on:input="basicCalculate()"></b-input>
@@ -30,14 +28,14 @@
         </div>
         <div class="block">
           <div class="columns">
-            <div class="column is-one-quarter">
-              <p class="title is-5">输入您的单T成本</p>
+            <div class="column">
+              <p class="title is-5">
+                输入您的单T成本
+                <span class="is-size-7" v-if="basicCalc.costUnit=='USDT'">（当前平均算力成本为18.09U/TB）</span>
+                <span class="is-size-7" v-if="basicCalc.costUnit=='RMB'">（当前平均算力成本为120.00元/TB）</span>
+              </p>
             </div>
-            <div class="column is-one-quarter">
-              <p v-if="basicCalc.costUnit=='USDT'">（当前平均算力成本为18.09U/TB）</p>
-              <p v-if="basicCalc.costUnit=='RMB'">（当前平均算力成本为120.00元/TB）</p>
-            </div>
-            <div class="column is-one-quarter">
+            <div hidden>
               <p>TODO: 单T成本计算标准</p>
             </div>
           </div>
