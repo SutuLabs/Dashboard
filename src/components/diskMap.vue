@@ -17,6 +17,7 @@
     farm: any; 
     plot: any;
     diskMap = {};
+    intervals: number[] = [];
 
     mounted() {
       this.load();
@@ -45,7 +46,8 @@
       temp = setInterval(() => {
         this.load();
       }, 20000);
-      getInfo.intervals.push([temp, "diskMap"]);
+      this.intervals.push(temp);
+      getInfo.save("diskMap", this.diskMap);
     }
 
     calcFarmPlotMap() {

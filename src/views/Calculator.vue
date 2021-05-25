@@ -274,9 +274,9 @@
     sliderValue = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 55, 64, 80, 105, 141, 190, 254, 335, 435, 536, 637, 738, 839, 940, 1041, 1142, 1243, 1344, 1445, 1596, 1747, 1898, 2049, 2200, 2351, 2502, 2653, 2804, 2955, 3226, 3497, 3768, 4039, 4310, 4581, 4852, 5123, 5394, 5665, 6098, 6531, 6964, 7397, 7830, 8263, 8696, 9129, 9562, 10000];
     setSliderFlag = false;
     averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
+    intervals: number[] = [];
 
     mounted() {
-      getInfo.stopRefresh();
       this.load();
       this.autoRefresh();
     }
@@ -301,11 +301,11 @@
             this.calculate();
           });
       }, 5000);
-      getInfo.intervals.push([temp,"farmer"]);
+      this.intervals.push(temp);
       temp = setInterval(() => {
-        getInfo.save();
+        getInfo.save("farm", this.farm);
       }, 5000);
-      getInfo.intervals.push([temp,"save"]);
+      this.intervals.push(temp);
     }
     setSlider() {
       this.setSliderFlag = true;
@@ -625,4 +625,9 @@
         }
       }
     }
-}</script>
+
+    beforeDestroy() {
+      this.intervals = getInfo.stopRefresh(this.intervals);
+    }
+  }
+</script>

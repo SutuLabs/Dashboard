@@ -295,7 +295,6 @@
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
-import { Dictionary } from 'vue-router/types/router';
 
   @Component({
     components: {
@@ -309,9 +308,9 @@ import { Dictionary } from 'vue-router/types/router';
     events :any= null;
     evtNum = 10;
     errNum = 10;
+    intervals: number[] = [];
 
     mounted() {
-      getInfo.stopRefresh();
       this.load();
       this.autoRefresh(); 
     }
@@ -359,11 +358,14 @@ import { Dictionary } from 'vue-router/types/router';
             this.events = json;
           });
       }, 5000);
-      getInfo.intervals.push([temp,"monitor"]);
+      this.intervals.push(temp);
       temp = setInterval(() => {
-        getInfo.save();
+        getInfo.save("farm", this.farm);
+        getInfo.save("plot", this.plot);
+        getInfo.save("errors", this.errors);
+        getInfo.save("events", this.events);
       }, 5000);
-      getInfo.intervals.push([temp,"save"]);
+      this.intervals.push(temp);
     }
     calcProgress(phase:any) {
       const p = Number(phase[0]);
@@ -531,6 +533,10 @@ import { Dictionary } from 'vue-router/types/router';
     }
     get sortedEvents() {
       return this.events.sort((a:any, b:any) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
+    }
+
+    beforeDestroy() {
+      this.intervals = getInfo.stopRefresh(this.intervals);
     }
   }
 </script>
