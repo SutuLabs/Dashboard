@@ -52,10 +52,10 @@
       if (!this.farm || !this.plot) return;
       const pn = this.farm.farm.plotCount;
       const tt = 12 + 40;
-      const plots = this.plot.jobs.map(_ => Number(_.phase[0])).sort((a, b) => b - a);
-      const series = new Array(10).fill().map((_, rowi) => ({
+      const plots = this.plot.jobs.map((_: any) => Number(_.phase[0])).sort((a: number, b: number) => b - a);
+      const series = new Array(10).fill({}).map((_, rowi) => ({
         name: rowi + 1,
-        data: new Array(tt).fill().map((_, coli) => {
+        data: new Array(tt).fill({}).map((_, coli) => {
           const idx = coli * 10 + rowi;
           if (idx < pn) return 6;
           if (idx - pn >= plots.length) return 0;
