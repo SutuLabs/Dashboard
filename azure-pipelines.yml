@@ -63,7 +63,7 @@ stages:
             inputs:
               credentialsOption: 'serviceEndpoint'
               serverEndpoint: 'chiabee_client_dev_ftp'
-              rootDirectory: '$(Pipeline.Workspace)/drop'
+              rootDirectory: '$(Pipeline.Workspace)/drop/s/dist'
               filePatterns: '**'
               remoteDirectory: '/'
               clean: false
