@@ -1,5 +1,9 @@
 ﻿<template>
   <div class="calculator">
+    <div class="block">
+      <diskSpaceCalculator />
+    </div>
+
     <b-loading v-model="calcLoading" :is-full-page="false"></b-loading>
     <div class="box" v-if="!calcLoading">
       <p class="title is-5">你的算力</p>
@@ -263,8 +267,13 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
+  import diskSpaceCalculator from '@/components/diskSpaceCalculator.vue';
 
-  @Component
+  @Component({
+    components: {
+      diskSpaceCalculator,
+    },
+  })
   export default class calculator extends Vue {
     farm: any;
     calculator: any; 
