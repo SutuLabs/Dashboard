@@ -267,7 +267,7 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
-  import diskSpaceCalculator from '@/components/diskSpaceCalculator';
+  import diskSpaceCalculator from '@/components/diskSpaceCalculator.vue';
 
   @Component({
     components: {
