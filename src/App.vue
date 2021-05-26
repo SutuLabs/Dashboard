@@ -14,9 +14,11 @@
           <b-navbar-item tag="router-link" :to="{path:'/'}">
             首页
           </b-navbar-item>
-          <b-navbar-item tag="router-link" :to="{path:'/explorer'}">
-            区块链浏览器
-          </b-navbar-item>
+          <div hidden>
+            <b-navbar-item tag="router-link" :to="{path:'/explorer'}">
+              区块链浏览器
+            </b-navbar-item>
+          </div>
           <b-navbar-item tag="router-link" :to="{path:'/calculator'}">
             计算器
           </b-navbar-item>
@@ -59,12 +61,14 @@
             </div>
             <div>首页</div>
           </b-navbar-item>
-          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/explorer'}">
-            <div>
-              <b-icon icon="view-column"></b-icon>
-            </div>
-            <div>浏览器</div>
-          </b-navbar-item>
+          <div hidden>
+            <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/explorer'}">
+              <div>
+                <b-icon icon="view-column"></b-icon>
+              </div>
+              <div>浏览器</div>
+            </b-navbar-item>
+          </div>
           <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/monitor'}">
             <div>
               <b-icon icon="monitor-dashboard"></b-icon>

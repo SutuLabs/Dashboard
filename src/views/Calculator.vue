@@ -546,6 +546,9 @@
           chart: {
             type: "line",
             height: 400,
+            toolbar: {
+              show: false,
+            }
           },
           dataLabels: {
             enabled: false,

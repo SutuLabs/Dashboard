@@ -387,6 +387,9 @@
             height: 150,
             animations: {
               enabled: false
+            },
+            toolbar: {
+              show: false,
             }
           },
           plotOptions: {
@@ -456,6 +459,9 @@
             type: 'radialBar',
             animations: {
               enabled: false
+            },
+            toolbar: {
+              show: false,
             }
           },
           plotOptions: {
