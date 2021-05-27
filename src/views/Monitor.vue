@@ -350,9 +350,26 @@
           this.plotters.forEach((plotter: any) => {
             plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
           });
-        }).then(()=>{
+        });
+      getInfo.getInfo('servers')
+        .then(response => response.json())
+        .then(json => {
+          this.farmers.forEach((farmer: any) => {
+            var m = json.find((_: any) => _.name == farmer.name);
+            this.assignMachine(farmer, m);
+            this.calcCpuMap(farmer);
+            getInfo.sortDisks(farmer);
+          });
+          this.farmer = this.farmers[0];
+          this.plotters.forEach((plotter: any) => {
+            var m = json.find((_: any) => _.name == plotter.name);
+            this.assignMachine(plotter, m);
+            this.calcCpuMap(plotter);
+            getInfo.sortDisks(plotter);
+          });
+        }).then(() => {
           this.connectionStatus = 'success'
-        }).catch(()=>{
+        }).catch(() => {
           this.connectionStatus = 'failed'
         });
     }
@@ -382,6 +399,25 @@
     autoRefresh() {
       var temp;
       temp = setInterval(() => {
+        getInfo.getInfo('plotter')
+          .then(response => response.json())
+          .then(json => {
+            this.plotters.forEach((plotter: any) => {
+              var m = json.find((_: any) => _.name == plotter.name);
+              Vue.set(plotter, "jobs", m.jobs);
+              Vue.set(plotter, "fileCounts", m.fileCounts);
+              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+            })
+          });
+        getInfo.getInfo('farmer')
+          .then(response => response.json())
+          .then(json => {
+            this.farmers.forEach((farmer: any) => {
+              var m = json.find((_: any) => _.name == farmer.name);
+              Vue.set(farmer, "farmer", m.farmer);
+              Vue.set(farmer, "node", m.node);
+            })
+          });
         getInfo.getInfo('servers')
           .then(response => response.json())
           .then(json => {
