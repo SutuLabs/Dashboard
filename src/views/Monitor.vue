@@ -127,11 +127,12 @@
                     <thead>
                       <tr></tr>
                       <tr>
-                        <th>--</th>
+                        <th>--------</th>
                         <th>id</th>
                         <th>工作时长 </th>
                         <th>工作进度</th>
                         <th>容量</th>
+                        <th>操作</th>
                       </tr>
                     </thead>
                     <tr v-for="job in plot.jobs" v-bind:key="job.id">
@@ -156,6 +157,9 @@
                       <td>{{job.wallTime}}</td>
                       <td>{{job.phase}}</td>
                       <td>{{job.tempSize}}</td>
+                      <td>
+                        <b-button @click="stopPlot(plot.name, job.id)">停止</b-button>
+                      </td>
                     </tr>
                   </table>
 
@@ -290,6 +294,9 @@
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
   import DiskList from '@/components/DiskList.vue'
+  import {
+    SnackbarProgrammatic as Snackbar
+  } from 'buefy'
 
   @Component({
     components: {
@@ -333,6 +340,23 @@
       Vue.set(vueObj, 'disks', machine.disks);
       Vue.set(vueObj, 'memory', machine.memory);
       Vue.set(vueObj, 'process', machine.process);
+    }
+    stopPlot(name: string, plotId: string) {
+      this.$buefy.dialog.confirm({
+        title: '确认停止任务',
+        message: `停止机器[${name}]上的任务[${plotId}]，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          getInfo.deletePlot(name, plotId)
+            .then(() => {
+              Snackbar.open('删除命令已发送，等待半分钟看结果')
+            }).catch(() => {
+              Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
+            });
+        }
+      })
     }
     autoRefresh() {
       var temp;
