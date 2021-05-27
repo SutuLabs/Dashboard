@@ -101,9 +101,9 @@
       </div>
     </div>
 
-    <div class="box">
+    <!--<div class="box">-->
       <!-- <diskMap /> -->
-    </div>
+    <!--</div>-->
 
     <div class="block">
       <b-collapse class="card" animation="slide" :open="true">
@@ -180,9 +180,9 @@
               {{machine.name}}
             </p>
 
-            <div class="card-content p-4" v-if="machine.cpuMap && false">
-              <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
-              </apexchart>
+            <div class="card-content p-4" v-if="machine.cpuMap">
+              <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
+              </apexchart>-->
 
               <div class="columns is-multiline">
                 <div class="column is-5">
@@ -190,17 +190,20 @@
                 </div>
                 <div class="column is-7 columns is-mobile">
                   <div class="column is-5">
-                    <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
+                    <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                       <div>
                         <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
                         <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
-                          :series="machine.cpuRadialBar.data"></apexchart>
+                                   :series="machine.cpuRadialBar.data"></apexchart>
                       </div>
                       <template v-slot:content>
                         <div>已用：{{machine.memory.used}}GB</div>
                         <div>总共：{{machine.memory.total}}GB</div>
                       </template>
-                    </b-tooltip>
+                    </b-tooltip>-->
+                    <div class="is-size-6 has-text-weight-bold has-text-centered">CPU</div>
+                    <div>已用：{{machine.memory.used}}GB</div>
+                    <div>总共：{{machine.memory.total}}GB</div>
                   </div>
                   <div class="column is-7">
                     <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
