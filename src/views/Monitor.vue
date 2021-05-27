@@ -121,7 +121,7 @@
           <div v-else class="content">
             <div class="columns is-desktop is-multiline is-3">
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
-                <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs</div>
+                <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs [{{plot.fileCounts[0].count}} Moving]</div>
                 <div class="">
                   <table class="table is-striped is-hoverable">
                     <thead>
