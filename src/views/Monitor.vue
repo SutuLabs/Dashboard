@@ -194,74 +194,7 @@
                   </table>
 
                   <div class="card-content p-4" v-if="plot.cpuMap">
-                    <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
-                    </apexchart>-->
-
-                    <div class="columns is-multiline">
-                      <div class="column is-half">
-                        <disk-list :disks="plot.disks" />
-                      </div>
-                      <div class="column is-half columns is-mobile">
-                        <div class="column is-one-quarter">
-                          <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                            <div>
-                              <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
-                              <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
-                                         :series="machine.cpuRadialBar.data"></apexchart>
-                            </div>
-                            <template v-slot:content>
-                              <div>已用：{{plot.memory.used}}GB</div>
-                              <div>总共：{{plot.memory.total}}GB</div>
-                            </template>
-                          </b-tooltip>-->
-                          <div class="block">
-                            <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                              <div>
-                                <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存</div>
-                                <div>{{(plot.memory.used/plot.memory.total*100).toFixed(2)}}%</div>
-                              </div>
-                              <template v-slot:content>
-                                <div>已用：{{plot.memory.used}}GB</div>
-                                <div>总共：{{plot.memory.total}}GB</div>
-                              </template>
-                            </b-tooltip>
-                          </div>
-                        </div>
-                        <div class="column is-one-quarter">
-                          <div class="block">
-                            <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                              <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">CPU</div>
-                              <div>{{calcCpu(plot)}}/{{plot.cpus.length}}</div>
-                              <template v-slot:content>
-                                <div>超过50%</div>
-                              </template>
-                            </b-tooltip>
-                          </div>
-                        </div>
-                        <div class="column is-half">
-                          <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
-                          <template>
-                            <b-taglist attached>
-                              <b-tooltip position="is-bottom" type="is-light" label="进行中">
-                                <b-tag type="is-success">{{plot.process.running}}</b-tag>
-                              </b-tooltip>
-                              <b-tooltip position="is-bottom" type="is-light" label="待进行">
-                                <b-tag type="is-info">{{plot.process.sleeping}}</b-tag>
-                              </b-tooltip>
-                              <b-tooltip position="is-bottom" type="is-light" label="预警">
-                                <b-tag type="is-warning">{{plot.process.stopped}}</b-tag>
-                              </b-tooltip>
-                              <b-tooltip position="is-bottom" type="is-light" label="问题">
-                                <b-tag type="is-danger">{{plot.process.zombie}}</b-tag>
-                              </b-tooltip>
-                              <b-tooltip position="is-bottom" type="is-light" label="总计">
-                                <b-tag type="is-white">{{plot.process.total}}</b-tag>
-                              </b-tooltip>
-                            </b-taglist>
-                          </template>
-                        </div>
-                      </div>
-                    </div>
+                    <cpuInfo name="plot.name" :machine="plot" />
                   </div>
                 </div>
               </div>
@@ -280,74 +213,7 @@
             </p>
 
             <div class="card-content p-4" v-if="machine.cpuMap">
-              <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
-              </apexchart>-->
-
-              <div class="columns is-multiline">
-                <div class="column is-half">
-                  <disk-list :disks="machine.disks" />
-                </div>
-                <div class="column is-half columns is-mobile">
-                  <div class="column is-one-quarter">
-                    <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                      <div>
-                        <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
-                        <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
-                                   :series="machine.cpuRadialBar.data"></apexchart>
-                      </div>
-                      <template v-slot:content>
-                        <div>已用：{{machine.memory.used}}GB</div>
-                        <div>总共：{{machine.memory.total}}GB</div>
-                      </template>
-                    </b-tooltip>-->
-                    <div class="block">
-                      <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                        <div>
-                          <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存</div>
-                          <div>{{(machine.memory.used/machine.memory.total*100).toFixed(2)}}%</div>
-                        </div>
-                        <template v-slot:content>
-                          <div>已用：{{machine.memory.used}}GB</div>
-                          <div>总共：{{machine.memory.total}}GB</div>
-                        </template>
-                      </b-tooltip>
-                    </div>
-                  </div>
-                  <div class="column is-one-quarter">
-                    <div class="block">
-                      <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                        <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">CPU</div>
-                        <div>{{calcCpu(machine)}}/{{machine.cpus.length}}</div>
-                        <template v-slot:content>
-                          <div>超过50%</div>
-                        </template>
-                      </b-tooltip>
-                    </div>
-                  </div>
-                  <div class="column is-half">
-                    <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
-                    <template>
-                      <b-taglist attached>
-                        <b-tooltip position="is-bottom" type="is-light" label="进行中">
-                          <b-tag type="is-success">{{machine.process.running}}</b-tag>
-                        </b-tooltip>
-                        <b-tooltip position="is-bottom" type="is-light" label="待进行">
-                          <b-tag type="is-info">{{machine.process.sleeping}}</b-tag>
-                        </b-tooltip>
-                        <b-tooltip position="is-bottom" type="is-light" label="预警">
-                          <b-tag type="is-warning">{{machine.process.stopped}}</b-tag>
-                        </b-tooltip>
-                        <b-tooltip position="is-bottom" type="is-light" label="问题">
-                          <b-tag type="is-danger">{{machine.process.zombie}}</b-tag>
-                        </b-tooltip>
-                        <b-tooltip position="is-bottom" type="is-light" label="总计">
-                          <b-tag type="is-white">{{machine.process.total}}</b-tag>
-                        </b-tooltip>
-                      </b-taglist>
-                    </template>
-                  </div>
-                </div>
-              </div>
+              <cpuInfo name="machine.name" :machine="machine" />
             </div>
           </nav>
         </div>
@@ -413,6 +279,7 @@
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
   import DiskList from '@/components/DiskList.vue'
+  import cpuInfo from '@/components/cpuInfo.vue'
   import {
     SnackbarProgrammatic as Snackbar
   } from 'buefy'
@@ -421,6 +288,7 @@
     components: {
       diskMap,
       DiskList,
+      cpuInfo,
     },
   })
   export default class monitor extends Vue {
