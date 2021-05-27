@@ -176,7 +176,63 @@
                     </tr>
                   </table>
 
-                  <disk-list :disks="plot.disks" />
+                  <div class="card-content p-4" v-if="plot.cpuMap">
+                    <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
+  </apexchart>-->
+
+                    <div class="columns is-multiline">
+                      <div class="column is-7">
+                        <disk-list :disks="plot.disks" />
+                      </div>
+                      <div class="column is-5 columns is-mobile">
+                        <div class="column is-one-third">
+                          <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
+                            <div>
+                              <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
+                              <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
+                                         :series="machine.cpuRadialBar.data"></apexchart>
+                            </div>
+                            <template v-slot:content>
+                              <div>已用：{{plot.memory.used}}GB</div>
+                              <div>总共：{{plot.memory.total}}GB</div>
+                            </template>
+                          </b-tooltip>-->
+                          <b-tooltip type="is-light" size="is-small" multilined>
+                            <div>
+                              <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">CPU</div>
+                              <div>{{(plot.memory.used/plot.memory.total*100).toFixed(2)}}%</div>
+                            </div>
+                            <template v-slot:content>
+                              <div>已用：{{plot.memory.used}}GB</div>
+                              <div>总共：{{plot.memory.total}}GB</div>
+                            </template>
+                          </b-tooltip>
+                        </div>
+                        <div class="column is-two-third">
+                          <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
+                          <template>
+                            <b-taglist attached>
+                              <b-tooltip position="is-bottom" label="进行中">
+                                <b-tag type="is-success">{{plot.process.running}}</b-tag>
+                              </b-tooltip>
+                              <b-tooltip position="is-bottom" label="待进行">
+                                <b-tag type="is-info">{{plot.process.sleeping}}</b-tag>
+                              </b-tooltip>
+                              <b-tooltip position="is-bottom" label="预警">
+                                <b-tag type="is-warning">{{plot.process.stopped}}</b-tag>
+                              </b-tooltip>
+                              <b-tooltip position="is-bottom" label="问题">
+                                <b-tag type="is-danger">{{plot.process.zombie}}</b-tag>
+                              </b-tooltip>
+                              <b-tooltip position="is-bottom" label="总计">
+                                <b-tag type="is-white">{{plot.process.total}}</b-tag>
+                              </b-tooltip>
+                            </b-taglist>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -198,11 +254,11 @@
               </apexchart>-->
 
               <div class="columns is-multiline">
-                <div class="column is-5">
+                <div class="column is-7">
                   <disk-list :disks="machine.disks" />
                 </div>
-                <div class="column is-7 columns is-mobile">
-                  <div class="column is-5">
+                <div class="column is-5 columns is-mobile">
+                  <div class="column is-one-third">
                     <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                       <div>
                         <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
@@ -214,34 +270,38 @@
                         <div>总共：{{machine.memory.total}}GB</div>
                       </template>
                     </b-tooltip>-->
-                    <div class="is-size-6 has-text-weight-bold has-text-centered">CPU</div>
-                    <div>已用：{{machine.memory.used}}GB</div>
-                    <div>总共：{{machine.memory.total}}GB</div>
+                    <b-tooltip type="is-light" size="is-small" multilined>
+                      <div>
+                        <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">CPU</div>
+                        <div>{{(machine.memory.used/machine.memory.total*100).toFixed(2)}}%</div>
+                      </div>
+                      <template v-slot:content>
+                        <div>已用：{{machine.memory.used}}GB</div>
+                        <div>总共：{{machine.memory.total}}GB</div>
+                      </template>
+                    </b-tooltip>
                   </div>
-                  <div class="column is-7">
+                  <div class="column is-two-third">
                     <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
-                    <table class="table is-fullwidth is-narrow">
-                      <tr>
-                        <td class="has-background-success-dark is-size-7">进行中</td>
-                        <td class="is-size-7">{{machine.process.running}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-background-info-dark is-size-7">待进行</td>
-                        <td class="is-size-7">{{machine.process.sleeping}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-background-warning-dark is-size-7">预警</td>
-                        <td class="is-size-7">{{machine.process.stopped}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-background-danger-dark is-size-7">问题</td>
-                        <td class="is-size-7">{{machine.process.zombie}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-text-white is-size-7">总计</td>
-                        <td class="is-size-7">{{machine.process.total}}</td>
-                      </tr>
-                    </table>
+                    <template>
+                      <b-taglist attached>
+                        <b-tooltip label="进行中">
+                          <b-tag type="is-success">{{machine.process.running}}</b-tag>
+                        </b-tooltip>
+                        <b-tooltip label="待进行">
+                          <b-tag type="is-info">{{machine.process.sleeping}}</b-tag>
+                        </b-tooltip>
+                        <b-tooltip label="预警">
+                          <b-tag type="is-warning">{{machine.process.stopped}}</b-tag>
+                        </b-tooltip>
+                        <b-tooltip label="问题">
+                          <b-tag type="is-danger">{{machine.process.zombie}}</b-tag>
+                        </b-tooltip>
+                        <b-tooltip label="总计">
+                          <b-tag type="is-white">{{machine.process.total}}</b-tag>
+                        </b-tooltip>
+                      </b-taglist>
+                    </template>
                   </div>
                 </div>
               </div>
@@ -386,7 +446,6 @@
         }).then(() => {
           this.connectionStatus = 'success'
         }).catch((e) => {
-          console.log(e);
           this.connectionStatus = 'failed'
         });
     }
@@ -455,7 +514,6 @@
               var m = json.find((_: any) => _.name == harvester.name);
               this.assignMachine(harvester, m);
               this.calcCpuMap(harvester);
-              console.log(this.harvesters);
             })
           }).then(()=>{
             this.connectionStatus = 'success'
