@@ -1,46 +1,45 @@
 ﻿<template>
   <div class="explorer">
-    <b-loading v-if="farm==null || plot==null || errors==null || events==null" :is-full-page="true" active></b-loading>
-    <div v-if="farm!=null" class="box">
+    <div v-if="farmer!=null" class="box">
       <div class="card-content">
         <div class="content">
           <b-field grouped group-multiline>
             <div class="control">
-              <b-tooltip :label="'时间: ' + farm.node.time" position="is-bottom">
+              <b-tooltip :label="'时间: ' + farmer.node.time" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">同步状态</b-tag>
-                  <b-tag type="is-success" v-if="farm.node.status == 'Full Node Synced'">
-                    {{farm.node.status}}
+                  <b-tag type="is-success" v-if="farmer.node.status == 'Full Node Synced'">
+                    {{farmer.node.status}}
                   </b-tag>
-                  <b-tag type="is-danger" v-else>{{farm.node.status}}</b-tag>
+                  <b-tag type="is-danger" v-else>{{farmer.node.status}}</b-tag>
                 </b-taglist>
               </b-tooltip>
             </div>
 
             <div class="control">
-              <b-tooltip :label="'空间: ' + farm.farm.totalSize + '/' + farm.node.space" position="is-bottom">
+              <b-tooltip :label="'空间: ' + farmer.farmer.totalSize + '/' + farmer.node.space" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">农场状态</b-tag>
-                  <b-tag type="is-success" v-if="farm.farm.status == 'Farming'">{{farm.farm.status}}</b-tag>
-                  <b-tag type="is-danger" v-else>{{farm.farm.status}}</b-tag>
+                  <b-tag type="is-success" v-if="farmer.farmer.status == 'Farming'">{{farmer.farmer.status}}</b-tag>
+                  <b-tag type="is-danger" v-else>{{farmer.farmer.status}}</b-tag>
                 </b-taglist>
               </b-tooltip>
             </div>
 
             <div class="control">
-              <b-tooltip :label="'期望成功值: ' + farm.farm.expectedToWin" position="is-bottom">
+              <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">耕田数量</b-tag>
-                  <b-tag type="is-primary">{{farm.farm.plotCount}}</b-tag>
+                  <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
                 </b-taglist>
               </b-tooltip>
             </div>
 
             <div class="control">
-              <b-tooltip :label="'最后挖币高度: ' + farm.farm.lastFarmedHeight" position="is-bottom">
+              <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
                 <b-taglist attached>
                   <b-tag type="is-dark">总共挖币</b-tag>
-                  <b-tag type="is-danger">{{farm.farm.totalFarmed}}</b-tag>
+                  <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
                 </b-taglist>
               </b-tooltip>
             </div>
@@ -58,41 +57,41 @@
               <div class="control">
                 <b-taglist attached>
                   <b-tag type="is-dark">高度</b-tag>
-                  <b-tag type="is-info">{{farm.node.height}}</b-tag>
+                  <b-tag type="is-info">{{farmer.node.height}}</b-tag>
                 </b-taglist>
               </div>
               <div class="control">
                 <b-taglist attached>
                   <b-tag type="is-dark">空间</b-tag>
-                  <b-tag type="is-primary is-light">{{farm.farm.totalSize}}</b-tag>
-                  <b-tag type="is-light">{{farm.node.space}}</b-tag>
+                  <b-tag type="is-primary is-light">{{farmer.farmer.totalSize}}</b-tag>
+                  <b-tag type="is-light">{{farmer.node.space}}</b-tag>
                 </b-taglist>
               </div>
               <div class="control">
                 <b-taglist attached>
                   <b-tag type="is-dark">难度</b-tag>
-                  <b-tag type="is-light">{{farm.node.difficulty}}</b-tag>
+                  <b-tag type="is-light">{{farmer.node.difficulty}}</b-tag>
                 </b-taglist>
               </div>
 
               <div class="control">
                 <b-taglist attached>
                   <b-tag type="is-dark">交易费用</b-tag>
-                  <b-tag type="is-light">{{farm.farm.txFees}}</b-tag>
+                  <b-tag type="is-light">{{farmer.farmer.txFees}}</b-tag>
                 </b-taglist>
               </div>
 
               <div class="control">
                 <b-taglist attached>
                   <b-tag type="is-dark">奖励</b-tag>
-                  <b-tag type="is-light">{{farm.farm.rewards}}</b-tag>
+                  <b-tag type="is-light">{{farmer.farmer.rewards}}</b-tag>
                 </b-taglist>
               </div>
 
               <div class="control">
                 <b-taglist attached>
                   <b-tag type="is-dark">期望成功值</b-tag>
-                  <b-tag type="is-light">{{farm.farm.expectedToWin}}</b-tag>
+                  <b-tag type="is-light">{{farmer.farmer.expectedToWin}}</b-tag>
                 </b-taglist>
               </div>
 
@@ -103,11 +102,11 @@
     </div>
 
     <div class="box">
-      <diskMap />
+      <!-- <diskMap /> -->
     </div>
 
     <div class="block">
-      <b-collapse class="card" animation="slide" :open="false">
+      <b-collapse class="card" animation="slide" :open="true">
         <template #trigger="props">
           <div class="card-header" role="button">
             <p class="card-header-title">Plotting Progress</p>
@@ -117,46 +116,51 @@
           </div>
         </template>
         <div class="card-content">
-          <div v-if="plot==null" class="content">Loading</div>
-          <div v-if="plot!=null" class="content">
-            <div class="title is-5">{{plot.jobs.length}} Jobs</div>
-            <div class="columns is-multiline is-desktop">
-              <div class="column" v-for='dir in tempDirSet' v-bind:key="dir">
-                <table class="table is-striped is-hoverable">
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>{{dir}}</th>
-                      <th>id</th>
-                      <th>工作时长 </th>
-                      <th>工作进度</th>
-                      <th>容量</th>
+          <div v-if="plotters==null" class="content">Loading</div>
+
+          <div v-else class="content">
+            <div class="columns is-desktop is-multiline is-3">
+              <div v-for="plot in plotters" :key="plot.name" class="column is-half">
+                <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs</div>
+                <div class="">
+                  <table class="table is-striped is-hoverable">
+                    <thead>
+                      <tr></tr>
+                      <tr>
+                        <th>--</th>
+                        <th>id</th>
+                        <th>工作时长 </th>
+                        <th>工作进度</th>
+                        <th>容量</th>
+                      </tr>
+                    </thead>
+                    <tr v-for="job in plot.jobs" v-bind:key="job.id">
+                      <td>
+                        <b-progress format="percent" :max="100">
+                          <template #bar>
+                            <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                              type="is-danger">
+                            </b-progress-bar>
+                            <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
+                              type="is-info">
+                            </b-progress-bar>
+                            <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
+                              type="is-warning">
+                            </b-progress-bar>
+                            <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                            </b-progress-bar>
+                          </template>
+                        </b-progress>
+                      </td>
+                      <td>{{job.id}}</td>
+                      <td>{{job.wallTime}}</td>
+                      <td>{{job.phase}}</td>
+                      <td>{{job.tempSize}}</td>
                     </tr>
-                  </thead>
-                  <tr v-for="job in plot.jobs" v-bind:key="job.id">
-                    <td v-if="job.tempDir==dir">
-                      <b-progress format="percent" :max="100">
-                        <template #bar>
-                          <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                                          type="is-danger">
-                          </b-progress-bar>
-                          <b-progress-bar v-if="job.progress > 35"
-                                          :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
-                          </b-progress-bar>
-                          <b-progress-bar v-if="job.progress > 56"
-                                          :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
-                          </b-progress-bar>
-                          <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                          </b-progress-bar>
-                        </template>
-                      </b-progress>
-                    </td>
-                    <td v-if="job.tempDir==dir">{{job.id}}</td>
-                    <td v-if="job.tempDir==dir">{{job.wallTime}}</td>
-                    <td v-if="job.tempDir==dir">{{job.phase}}</td>
-                    <td v-if="job.tempDir==dir">{{job.tempSize}}</td>
-                  </tr>
-                </table>
+                  </table>
+
+                  <disk-list :disks="plot.disks" />
+                </div>
               </div>
             </div>
           </div>
@@ -164,34 +168,21 @@
       </b-collapse>
     </div>
 
-    <div class="block" v-if="plot!=null && farm!=null">
-      <div class="columns is-desktop">
-        <div class="column is-half" v-for="machine in [plot, farm]" v-bind:key="machine.name">
+    <div class="block" v-if="plotters!=null && farmers!=null">
+      <div class="columns is-desktop is-multiline">
+        <div class="column is-half" v-for="machine in [...plotters, ...farmers]" v-bind:key="machine.name">
           <nav class="card">
             <p class="panel-heading">
               {{machine.name}}
             </p>
 
-            <div class="card-content p-4">
+            <div class="card-content p-4" v-if="machine.cpuMap && false">
               <apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
               </apexchart>
 
               <div class="columns is-multiline">
                 <div class="column is-5">
-                  <template>
-                    <div v-for="disk in machine.disks" v-bind:key="disk.path">
-                      <div v-if="disk.size > 1024*1024">
-                        <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
-                                    :max="disk.size" show-value>
-                          <div class="has-text-white">
-                            {{disk.path}}:
-                            {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
-                            [{{Math.floor(disk.available / 106430464)}}]
-                          </div>
-                        </b-progress>
-                      </div>
-                    </div>
-                  </template>
+                  <disk-list :disks="machine.disks" />
                 </div>
                 <div class="column is-7 columns is-mobile">
                   <div class="column is-5">
@@ -199,7 +190,7 @@
                       <div>
                         <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
                         <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
-                                   :series="machine.cpuRadialBar.data"></apexchart>
+                          :series="machine.cpuRadialBar.data"></apexchart>
                       </div>
                       <template v-slot:content>
                         <div>已用：{{machine.memory.used}}GB</div>
@@ -245,7 +236,7 @@
         <div class="column is-half" v-if="errors!=null">
           <nav class="panel">
             <p class="panel-heading">Errors</p>
-            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)"> 
+            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
               <b-tooltip type="is-light" size="is-large" multilined>
                 <b-tag type="is-info is-light">{{err.time}}</b-tag>
                 <span class="has-text-danger">
@@ -286,51 +277,62 @@
 </template>
 
 <style>
-  .b-tooltip.is-multiline.is-large .tooltip-content{
+  .b-tooltip.is-multiline.is-large .tooltip-content {
     width: 600px;
   }
 </style>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import {
+    Component,
+    Vue
+  } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
+  import DiskList from '@/components/DiskList.vue'
 
   @Component({
     components: {
       diskMap,
+      DiskList,
     },
   })
   export default class monitor extends Vue {
-    farm :any= null; 
-    plot :any= null;
-    errors :any= null; 
-    events :any= null;
+    farmers: any = null;
+    farmer: any = null;
+    plotters: any = null;
+    errors: any = null;
+    events: any = null;
     evtNum = 10;
     errNum = 10;
     intervals: number[] = [];
 
     mounted() {
       this.load();
-      this.autoRefresh(); 
+      this.autoRefresh();
     }
 
     load() {
       getInfo.getInfo('farmer')
         .then(response => response.json())
         .then(json => {
-          this.farm = json;
-          getInfo.sortDisks(this.farm);
-          this.calcCpuMap(this.farm);
+          this.farmers = json;
+          this.farmer = this.farmers[0];
         });
       getInfo.getInfo('plotter')
         .then(response => response.json())
         .then(json => {
-          this.plot = json;
-          getInfo.sortDisks(this.plot);
-          this.plot.jobs.forEach((_:any) => _.progress = this.calcProgress(_.phase));
-          this.calcCpuMap(this.plot);
+          this.plotters = json;
+          this.plotters.forEach((plotter: any) => {
+            plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+          });
         });
+    }
+    assignMachine(vueObj: any, machine: any) {
+      Vue.set(vueObj, 'cpus', machine.cpus);
+      Vue.set(vueObj, 'disks', machine.disks);
+      Vue.set(vueObj, 'memory', machine.memory);
+      Vue.set(vueObj, 'process', machine.process);
     }
     autoRefresh() {
       var temp;
@@ -338,14 +340,19 @@
         getInfo.getInfo('servers')
           .then(response => response.json())
           .then(json => {
-            var f = json.find((_:any) => _.name == 'Farmer');
-            var p = json.find((_:any) => _.name == 'Plotter');
-            getInfo.sortDisks(f);
-            getInfo.sortDisks(p);
-            Object.assign(this.farm, f);
-            Object.assign(this.plot, p);
-            this.calcCpuMap(this.farm);
-            this.calcCpuMap(this.plot);
+            this.farmers.forEach((farmer: any) => {
+              var m = json.find((_: any) => _.name == farmer.name);
+              this.assignMachine(farmer, m);
+              this.calcCpuMap(farmer);
+              getInfo.sortDisks(farmer);
+            });
+            this.farmer = this.farmers[0];
+            this.plotters.forEach((plotter: any) => {
+              var m = json.find((_: any) => _.name == plotter.name);
+              this.assignMachine(plotter, m);
+              this.calcCpuMap(plotter);
+              getInfo.sortDisks(plotter);
+            });
           });
         getInfo.getInfo('errors')
           .then(response => response.json())
@@ -359,15 +366,15 @@
           });
       }, 5000);
       this.intervals.push(temp);
-      temp = setInterval(() => {
-        getInfo.save("farm", this.farm);
-        getInfo.save("plot", this.plot);
-        getInfo.save("errors", this.errors);
-        getInfo.save("events", this.events);
-      }, 5000);
-      this.intervals.push(temp);
+      // temp = setInterval(() => {
+      //   getInfo.save("farmer", this.farmer);
+      //   getInfo.save("plot", this.plot);
+      //   getInfo.save("errors", this.errors);
+      //   getInfo.save("events", this.events);
+      // }, 5000);
+      // this.intervals.push(temp);
     }
-    calcProgress(phase:any) {
+    calcProgress(phase: any) {
       const p = Number(phase[0]);
       const n = Number(phase[2]);
       if (p == 1) return n * 5;
@@ -375,11 +382,11 @@
       if (p == 3) return 56 + n * 5;
       if (p == 4) return 98;
     }
-    calcCpuMap(machine:any) {
+    calcCpuMap(machine: any) {
       machine.cpuMap = {
         data: [{
           name: 'Cpu',
-          data: machine.cpus.map((_:any) => 100 - _),
+          data: machine.cpus.map((_: any) => 100 - _),
         }],
         chartOptions: {
           chart: {
@@ -415,7 +422,7 @@
             colors: ['transparent']
           },
           xaxis: {
-            categories: machine.cpus.map((_:any, i:number) => i + 1),
+            categories: machine.cpus.map((_: any, i: number) => i + 1),
             labels: {
               style: {
                 colors: 'white',
@@ -489,7 +496,7 @@
           fill: {
             colors: [function ({
               value
-            }:any) {
+            }: any) {
               if (value < 55) {
                 return '#00FF00'
               } else if (value >= 55 && value < 80) {
@@ -506,39 +513,27 @@
         },
       }
     }
-    humanize(size:number) {
-      var i = Math.floor(Math.log(size) / Math.log(1024));
-      return (size / Math.pow(1024, i)).toFixed(2)  + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-    }
-    getDiskProgressType(used:number, size:number) {
-      const perc = used / size;
-      if (perc < 0.5) return 'success';
-      if (perc < 0.7) return 'warning';
-      return 'danger';
-    }
     shorten(err: any) {
       var temp: string;
       if (err.includes("plot")) {
         err = err.split("plot");
-        temp = err[0] + err[err.length-1];
+        temp = err[0] + err[err.length - 1];
         return temp;
-      }
-      else if (err.includes("id")) {
-        temp = err.slice(0, err.lastIndexOf("id")) + "<id>" + err.slice(err.indexOf(","), err.length - 1); 
+      } else if (err.includes("id")) {
+        temp = err.slice(0, err.lastIndexOf("id")) + "<id>" + err.slice(err.indexOf(","), err.length - 1);
         return temp;
-      }
-      else {
+      } else {
         return err;
       }
     }
-    get tempDirSet() {
-      return [...new Set(this.plot.jobs.map((_:any) => _.tempDir))].sort();
-    }
+    // get tempDirSet() {
+    //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
+    // }
     get sortedErrors() {
-      return this.errors.sort((a:any, b:any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
+      return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
     }
     get sortedEvents() {
-      return this.events.sort((a:any, b:any) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
+      return this.events.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
     }
 
     beforeDestroy() {

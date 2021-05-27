@@ -52,7 +52,7 @@
 
     calcFarmPlotMap() {
       if (!this.farm || !this.plot) return;
-      const pn = this.farm.farm.plotCount;
+      const pn = this.farm.farmer.plotCount;
       const tt = 12 + 40;
       const plots = this.plot.jobs.map((_: any) => Number(_.phase[0])).sort((a: number, b: number) => b - a);
       const series = new Array(10).fill({}).map((_, rowi) => ({
