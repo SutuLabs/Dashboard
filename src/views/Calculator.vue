@@ -294,7 +294,7 @@
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {
-          this.farm = json;
+          this.farm = json[0];
           getInfo.sortDisks(this.farm);
           this.calculate();
         });
@@ -305,7 +305,7 @@
         getInfo.getInfo("farmer")
           .then(response => response.json())
           .then(json => {
-            this.farm = json;
+            this.farm = json[0];
             getInfo.sortDisks(this.farm);
             this.calculate();
           });

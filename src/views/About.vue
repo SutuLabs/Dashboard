@@ -1,5 +1,5 @@
 ﻿<template>
   <div class="about">
-    <h1>上海素图科技有限公司成立于2019年，是上海市科技型中小企业、杨浦区认定区块链企业、同济大学创业基金支持企业。创始团队有来自同济、上海交大、南开等校的硕博士生，依托高校科研实力，主要进行区块链、图像识别、数据库方向的软件开发与技术咨询服务。</h1>
+    <p>chiabee由上海素图科技有限公司开发，了解更多请访问素图科技官网：<a href="https://www.sutu.tech/"  target="_blank">https://www.sutu.tech/</a></p>
   </div>
 </template>

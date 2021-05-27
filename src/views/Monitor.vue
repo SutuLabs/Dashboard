@@ -136,9 +136,26 @@
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
                 <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs [{{plot.fileCounts[0].count}} Moving]</div>
                 <div class="">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Job number</th>
+                        <th>Rsyncd Host</th>
+                        <th>Rsyncd Index</th>
+                        <th>Stagger Minute</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{plot.configuration.jobNumber}}</td>
+                        <td>{{plot.configuration.rsyncdHost}}</td>
+                        <td>{{plot.configuration.rsyncdIndex}}</td>
+                        <td>{{plot.configuration.staggerMinute}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                   <table class="table is-striped is-hoverable">
                     <thead>
-                      <tr></tr>
                       <tr>
                         <th>--------</th>
                         <th>id</th>
@@ -176,7 +193,9 @@
                     </tr>
                   </table>
 
-                  <disk-list :disks="plot.disks" />
+                  <div class="card-content p-4" v-if="plot.cpuMap">
+                    <cpuInfo name="plot.name" :machine="plot" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -185,66 +204,16 @@
       </b-collapse>
     </div>
 
-    <div class="block" v-if="plotters!=null && farmers!=null">
+    <div class="block" v-if="harvesters!=[] && farmers!=null">
       <div class="columns is-desktop is-multiline">
-        <div class="column is-half" v-for="machine in [...plotters, ...farmers]" v-bind:key="machine.name">
+        <div class="column is-half" v-for="machine in [...farmers, ...harvesters]" v-bind:key="machine.name">
           <nav class="card">
             <p class="panel-heading">
               {{machine.name}}
             </p>
 
             <div class="card-content p-4" v-if="machine.cpuMap">
-              <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
-              </apexchart>-->
-
-              <div class="columns is-multiline">
-                <div class="column is-5">
-                  <disk-list :disks="machine.disks" />
-                </div>
-                <div class="column is-7 columns is-mobile">
-                  <div class="column is-5">
-                    <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-                      <div>
-                        <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
-                        <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
-                                   :series="machine.cpuRadialBar.data"></apexchart>
-                      </div>
-                      <template v-slot:content>
-                        <div>已用：{{machine.memory.used}}GB</div>
-                        <div>总共：{{machine.memory.total}}GB</div>
-                      </template>
-                    </b-tooltip>-->
-                    <div class="is-size-6 has-text-weight-bold has-text-centered">CPU</div>
-                    <div>已用：{{machine.memory.used}}GB</div>
-                    <div>总共：{{machine.memory.total}}GB</div>
-                  </div>
-                  <div class="column is-7">
-                    <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
-                    <table class="table is-fullwidth is-narrow">
-                      <tr>
-                        <td class="has-background-success-dark is-size-7">进行中</td>
-                        <td class="is-size-7">{{machine.process.running}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-background-info-dark is-size-7">待进行</td>
-                        <td class="is-size-7">{{machine.process.sleeping}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-background-warning-dark is-size-7">预警</td>
-                        <td class="is-size-7">{{machine.process.stopped}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-background-danger-dark is-size-7">问题</td>
-                        <td class="is-size-7">{{machine.process.zombie}}</td>
-                      </tr>
-                      <tr>
-                        <td class="has-text-white is-size-7">总计</td>
-                        <td class="is-size-7">{{machine.process.total}}</td>
-                      </tr>
-                    </table>
-                  </div>
-                </div>
-              </div>
+              <cpuInfo name="machine.name" :machine="machine" />
             </div>
           </nav>
         </div>
@@ -310,6 +279,7 @@
   import getInfo from '@/services/getInfo';
   import diskMap from '@/components/diskMap.vue'
   import DiskList from '@/components/DiskList.vue'
+  import cpuInfo from '@/components/cpuInfo.vue'
   import {
     SnackbarProgrammatic as Snackbar
   } from 'buefy'
@@ -318,12 +288,14 @@
     components: {
       diskMap,
       DiskList,
+      cpuInfo,
     },
   })
   export default class monitor extends Vue {
     farmers: any = null;
     farmer: any = null;
     plotters: any = null;
+    harvesters: any[] = []; 
     errors: any = null;
     events: any = null;
     evtNum = 10;
@@ -337,36 +309,51 @@
     }
 
     load() {
-      getInfo.getInfo('farmer')
-        .then(response => response.json())
-        .then(json => {
-          this.farmers = json;
-          this.farmer = this.farmers[0];
-        });
-      getInfo.getInfo('plotter')
-        .then(response => response.json())
-        .then(json => {
-          this.plotters = json;
-          this.plotters.forEach((plotter: any) => {
-            plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
-          });
-        });
+      var server: any; 
       getInfo.getInfo('servers')
         .then(response => response.json())
         .then(json => {
-          this.farmers.forEach((farmer: any) => {
-            var m = json.find((_: any) => _.name == farmer.name);
-            this.assignMachine(farmer, m);
-            this.calcCpuMap(farmer);
-            getInfo.sortDisks(farmer);
-          });
-          this.farmer = this.farmers[0];
-          this.plotters.forEach((plotter: any) => {
-            var m = json.find((_: any) => _.name == plotter.name);
-            this.assignMachine(plotter, m);
-            this.calcCpuMap(plotter);
-            getInfo.sortDisks(plotter);
-          });
+          server = json;
+        })
+        .then(() => {
+          getInfo.getInfo('farmer')
+            .then(response => response.json())
+            .then(json => {
+              this.farmers = json;
+            })
+            .then(() => {
+              this.farmers.forEach((farmer: any) => {
+                var m = server.find((_: any) => _.name == farmer.name);
+                this.assignMachine(farmer, m);
+                this.calcCpuMap(farmer);
+                getInfo.sortDisks(farmer);
+              });
+              this.farmer = this.farmers[0];
+            })
+          getInfo.getInfo('plotter')
+            .then(response => response.json())
+            .then(json => {
+              this.plotters = json;
+              this.plotters.forEach((plotter: any) => {
+                plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              });
+            })
+            .then(() => {
+              this.plotters.forEach((plotter: any) => {
+                var m = server.find((_: any) => _.name == plotter.name);
+                this.assignMachine(plotter, m);
+                this.calcCpuMap(plotter);
+                getInfo.sortDisks(plotter);
+              });
+            });
+          server.forEach((machine: any) => {
+            if (/harvester\d/.test(machine.name)) {
+              this.harvesters.push(machine);
+            }
+            this.harvesters.forEach((harvester: any) => {
+              this.calcCpuMap(harvester);
+            })
+          })
         }).then(() => {
           this.connectionStatus = 'success'
         }).catch(() => {
@@ -434,6 +421,11 @@
               this.calcCpuMap(plotter);
               getInfo.sortDisks(plotter);
             });
+            this.harvesters.forEach((harvester: any) => {
+              var m = json.find((_: any) => _.name == harvester.name);
+              this.assignMachine(harvester, m);
+              this.calcCpuMap(harvester);
+            })
           }).then(()=>{
             this.connectionStatus = 'success'
           }).catch(()=>{
