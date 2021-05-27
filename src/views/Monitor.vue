@@ -185,9 +185,9 @@
       </b-collapse>
     </div>
 
-    <div class="block" v-if="plotters!=null && farmers!=null">
+    <div class="block" v-if="harvesters!=[] && farmers!=null">
       <div class="columns is-desktop is-multiline">
-        <div class="column is-half" v-for="machine in [...plotters, ...farmers]" v-bind:key="machine.name">
+        <div class="column is-half" v-for="machine in [...farmers, ...harvesters]" v-bind:key="machine.name">
           <nav class="card">
             <p class="panel-heading">
               {{machine.name}}
@@ -324,6 +324,7 @@
     farmers: any = null;
     farmer: any = null;
     plotters: any = null;
+    harvesters: any[] = []; 
     errors: any = null;
     events: any = null;
     evtNum = 10;
@@ -337,39 +338,55 @@
     }
 
     load() {
-      getInfo.getInfo('farmer')
-        .then(response => response.json())
-        .then(json => {
-          this.farmers = json;
-          this.farmer = this.farmers[0];
-        });
-      getInfo.getInfo('plotter')
-        .then(response => response.json())
-        .then(json => {
-          this.plotters = json;
-          this.plotters.forEach((plotter: any) => {
-            plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
-          });
-        });
+      var server: any; 
       getInfo.getInfo('servers')
         .then(response => response.json())
         .then(json => {
-          this.farmers.forEach((farmer: any) => {
-            var m = json.find((_: any) => _.name == farmer.name);
-            this.assignMachine(farmer, m);
-            this.calcCpuMap(farmer);
-            getInfo.sortDisks(farmer);
-          });
-          this.farmer = this.farmers[0];
-          this.plotters.forEach((plotter: any) => {
-            var m = json.find((_: any) => _.name == plotter.name);
-            this.assignMachine(plotter, m);
-            this.calcCpuMap(plotter);
-            getInfo.sortDisks(plotter);
-          });
+          server = json;
+        })
+        .then(() => {
+          getInfo.getInfo('farmer')
+            .then(response => response.json())
+            .then(json => {
+              this.farmers = json;
+            })
+            .then(() => {
+              this.farmers.forEach((farmer: any) => {
+                var m = server.find((_: any) => _.name == farmer.name);
+                this.assignMachine(farmer, m);
+                this.calcCpuMap(farmer);
+                getInfo.sortDisks(farmer);
+              });
+              this.farmer = this.farmers[0];
+            })
+          getInfo.getInfo('plotter')
+            .then(response => response.json())
+            .then(json => {
+              this.plotters = json;
+              this.plotters.forEach((plotter: any) => {
+                plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              });
+            })
+            .then(() => {
+              this.plotters.forEach((plotter: any) => {
+                var m = server.find((_: any) => _.name == plotter.name);
+                this.assignMachine(plotter, m);
+                this.calcCpuMap(plotter);
+                getInfo.sortDisks(plotter);
+              });
+            });
+          server.forEach((machine: any) => {
+            if (/harvester\d/.test(machine.name)) {
+              this.harvesters.push(machine);
+            }
+            this.harvesters.forEach((harvester: any) => {
+              this.calcCpuMap(harvester);
+            })
+          })
         }).then(() => {
           this.connectionStatus = 'success'
-        }).catch(() => {
+        }).catch((e) => {
+          console.log(e);
           this.connectionStatus = 'failed'
         });
     }
@@ -434,6 +451,12 @@
               this.calcCpuMap(plotter);
               getInfo.sortDisks(plotter);
             });
+            this.harvesters.forEach((harvester: any) => {
+              var m = json.find((_: any) => _.name == harvester.name);
+              this.assignMachine(harvester, m);
+              this.calcCpuMap(harvester);
+              console.log(this.harvesters);
+            })
           }).then(()=>{
             this.connectionStatus = 'success'
           }).catch(()=>{
