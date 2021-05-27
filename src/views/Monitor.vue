@@ -4,6 +4,19 @@
       <div class="card-content">
         <div class="content">
           <b-field grouped group-multiline>
+            <div class="container is-fluid mb-3" >
+              <b-notification v-if="connectionStatus=='failed'" type="is-danger" has-icon aria-close-label="Close notification" role="alert" >
+                无法连接至服务器，请检查您的网络连接或联系管理员！
+              </b-notification>
+            </div>
+            <div class="control">
+            <b-taglist attached>
+                <b-tag type="is-dark">连接状态</b-tag>
+                <b-tag type="is-warning" v-if="connectionStatus=='loading'">连接中...</b-tag>
+                <b-tag type="is-success" v-else-if="connectionStatus=='success'">连接成功</b-tag>
+                <b-tag type="is-danger" v-else>连接失败</b-tag>
+              </b-taglist>
+            </div>
             <div class="control">
               <b-tooltip :label="'时间: ' + farmer.node.time" position="is-bottom">
                 <b-taglist attached>
@@ -312,6 +325,7 @@
     events: any = null;
     evtNum = 10;
     errNum = 10;
+    connectionStatus = 'loading';
     intervals: number[] = [];
 
     mounted() {
@@ -333,6 +347,10 @@
           this.plotters.forEach((plotter: any) => {
             plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
           });
+        }).then(()=>{
+          this.connectionStatus = 'success'
+        }).catch(()=>{
+          this.connectionStatus = 'failed'
         });
     }
     assignMachine(vueObj: any, machine: any) {
@@ -377,6 +395,10 @@
               this.calcCpuMap(plotter);
               getInfo.sortDisks(plotter);
             });
+          }).then(()=>{
+            this.connectionStatus = 'success'
+          }).catch(()=>{
+            this.connectionStatus = 'failed'
           });
         getInfo.getInfo('errors')
           .then(response => response.json())
