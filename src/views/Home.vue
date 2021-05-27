@@ -169,7 +169,7 @@
       },
       {
         title: "全网容量",
-        data: farm.farmer.totalSize,
+        data: farm.node.space,
       },
       {
         title: "奇亚币总量",
