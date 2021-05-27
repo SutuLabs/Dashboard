@@ -140,9 +140,9 @@
                     <thead>
                       <tr>
                         <th>Job number</th>
-                        <th>rsyncdHost</th>
-                        <th>rsyncdIndex</th>
-                        <th>staggerMinute</th>
+                        <th>Rsyncd Host</th>
+                        <th>Rsyncd Index</th>
+                        <th>Stagger Minute</th>
                       </tr>
                     </thead>
                     <tbody>
