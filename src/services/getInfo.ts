@@ -40,6 +40,7 @@ export default {
 
   sortDisks(machine: { [id: string]: [] }) {
     if (machine.disks) machine.disks.sort((a: { [id: string]: string }, b: { [id: string]: string }) => a.path.localeCompare(b.path));
+    return machine;
   },
 
   stopRefresh(intervals: number[]) {
