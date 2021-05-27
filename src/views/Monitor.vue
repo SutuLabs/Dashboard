@@ -590,13 +590,6 @@
         },
       }
     }
-    calcCpu(machine: any) {
-      var count = 0;
-      machine.cpus.forEach((cpu: any) => {
-        if (cpu > 50) count += 1;
-      });
-      return count;
-    }
     shorten(err: any) {
       var temp: string;
       if (err.includes("plot")) {
