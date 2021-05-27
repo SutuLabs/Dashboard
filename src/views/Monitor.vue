@@ -136,9 +136,26 @@
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
                 <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs [{{plot.fileCounts[0].count}} Moving]</div>
                 <div class="">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Job number</th>
+                        <th>rsyncdHost</th>
+                        <th>rsyncdIndex</th>
+                        <th>staggerMinute</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{plot.configuration.jobNumber}}</td>
+                        <td>{{plot.configuration.rsyncdHost}}</td>
+                        <td>{{plot.configuration.rsyncdIndex}}</td>
+                        <td>{{plot.configuration.staggerMinute}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                   <table class="table is-striped is-hoverable">
                     <thead>
-                      <tr></tr>
                       <tr>
                         <th>--------</th>
                         <th>id</th>
