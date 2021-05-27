@@ -6,48 +6,10 @@
         <div class="title is-3 has-text-success has-text-weight-bold">TODO</div>
       </div>
       <div class="columns">
-        <div class="column">
+        <div class="column" v-for="item in netInfoList" :key="netInfoList.indexOf(item)">
           <div class="box">
-            <div class="heading">全网容量</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.space}}</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">奇亚币总量</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO($TOTAL_VALUE TODO)</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">收获的奇亚币</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">
-              {{farm.farm.totalFarmed}}($VALUE TODO)
-            </div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">难度系数</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.difficulty}}</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">最新的收割区块高度</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{farm.node.height}}</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">全网耗电量</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">TODO</div>
-            <div v-if="!farm" class="title is-5">Loading</div>
+            <div class="heading">{{item.title}}</div>
+            <div class="title is-5 has-text-success has-text-weight-bold">{{item.data}}</div>
           </div>
         </div>
       </div>
@@ -63,8 +25,8 @@
         </template>
       </b-carousel-list>
     </div>
-    <div class="block">
-      <calculatorSimplified/>
+    <div class="block" v-if="farm">
+      <calculatorSimplified :farm="farm"/>
     </div>
     <div class="block" hidden>
       <div class="columns">
@@ -107,7 +69,7 @@
           </div>
         </router-link>
         <div class="card-content">
-          <diskMap />
+          <!--<diskMap />-->
         </div>
       </div>
     </div>
@@ -129,31 +91,31 @@
   export default class Home extends Vue {
     netInfoList = [{
       title: "当前币价",
-      data: "",
+      data: "Loading",
     },
     {
       title: "全网容量",
-      data: "",
+      data: "Loading",
     },
     {
       title: "奇亚币总量",
-      data: "",
-    },
-    {
-      title: "总价值",
-      data: "",
+      data: "Loading",
     },
     {
       title: "收获的奇亚币",
-      data: "",
+      data: "Loading",
     },
     {
       title: "难度系数",
-      data: "",
+      data: "Loading",
     },
     {
       title: "最新的收割区块高度",
-      data: "",
+      data: "Loading",
+    },
+    {
+      title: "全网耗电量",
+      data: "Loading",
     },
     ];
     farm :any= null;
@@ -169,9 +131,14 @@
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {
-          this.farm = json;
-          getInfo.sortDisks(this.farm);
+          if (json[0].farmer.status == "Full Node Synced" || json[0].farmer.status == "Farming") {
+            this.farm = json[0];
+          } else if (json[1].farmer.status == "Full Node Synced" || json[1].farmer.status == "Farming") {
+            this.farm = json[1];
+          }
+          this.farm = getInfo.sortDisks(this.farm);
           this.getNetInfo(this.farm);
+
         });
     }
     autoRefresh() {
@@ -180,7 +147,11 @@
         getInfo.getInfo("farmer")
           .then(response => response.json())
           .then(json => {
-            this.farm = json;
+            if (json[0].farmer.status == "Full Node Synced" || json[0].farmer.status == "Farming") {
+              this.farm = json[0];
+            } else if (json[1].farmer.status == "Full Node Synced" || json[1].farmer.status == "Farming") {
+              this.farm = json[1];
+            }
             getInfo.sortDisks(this.farm);
             this.getNetInfo(this.farm);
           });
@@ -198,19 +169,15 @@
       },
       {
         title: "全网容量",
-        data: farm.farm.totalSize,
+        data: farm.farmer.totalSize,
       },
       {
         title: "奇亚币总量",
-        data: "TODO",
-      },
-      {
-        title: "总价值",
-        data: "TODO",
+        data: "TODO($TOTAL_VALUE TODO)",
       },
       {
         title: "收获的奇亚币",
-        data: farm.farm.totalFarmed,
+        data: farm.farmer.totalFarmed + "($VALUE TODO)",
       },
       {
         title: "难度系数",
@@ -219,6 +186,10 @@
       {
         title: "最新的收割区块高度",
         data: farm.node.height,
+      },
+      {
+        title: "全网耗电量",
+        data: "TODO",
       },
       ];
     }
