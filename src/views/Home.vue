@@ -25,8 +25,8 @@
         </template>
       </b-carousel-list>
     </div>
-    <div class="block">
-      <calculatorSimplified/>
+    <div class="block" v-if="farm">
+      <calculatorSimplified :farm="farm"/>
     </div>
     <div class="block" hidden>
       <div class="columns">
@@ -131,13 +131,11 @@
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {
-          console.log(json);
           if (json[0].farmer.status == "Full Node Synced" || json[0].farmer.status == "Farming") {
             this.farm = json[0];
           } else if (json[1].farmer.status == "Full Node Synced" || json[1].farmer.status == "Farming") {
             this.farm = json[1];
           }
-          console.log(this.farm);
           this.farm = getInfo.sortDisks(this.farm);
           this.getNetInfo(this.farm);
 

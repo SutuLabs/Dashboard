@@ -79,11 +79,13 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Prop } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
 
   @Component
   export default class calculatorSimplified extends Vue {
+    @Prop() private farm!: any;
+
     basicCalc = {
       n: 1,
       unit: "tib",
@@ -96,21 +98,13 @@
       chiaPrice: 500,
     };
     averageBlockTime = 18.75; // in seconds (last paragraph in https://docs.google.com/document/d/1tmRIb7lgi4QfKkNaxuKOBHRmwbVlGL4f7EsBDr_5xZE/edit#heading=h.z0v0b3hmk4fl)
-    farm: any; 
 
     mounted() {
       this.load(); 
     }
 
     load() {
-      getInfo.getInfo("farmer")
-        .then(response => response.json())
-        .then(json => {
-          this.farm = json;
-        })
-        .then(_ => {
-          this.basicCalculate();
-        });
+      this.basicCalculate();
     }
 
     formatTime(time: number) {
