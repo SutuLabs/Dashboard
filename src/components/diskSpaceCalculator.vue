@@ -31,7 +31,11 @@
   @Component
   export default class diskSpaceCalculator extends Vue {
     plans = [];
-    diskspace = ""; 
+    diskspace = "2tb"; 
+
+    mounted() {
+      this.calculate();
+    }
 
     calculate() {
       this.plans.length = 0;
