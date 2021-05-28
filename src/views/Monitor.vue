@@ -1,5 +1,8 @@
 ﻿<template>
   <div class="explorer">
+    <b-notification v-if="username==null" type="is-danger" has-icon aria-close-label="Close notification" role="alert" >
+      尚未登录，无法查看！
+    </b-notification>
     <div v-if="farmer!=null" class="box">
       <div class="card-content">
         <div class="content">
@@ -163,91 +166,91 @@
                       <div class="is-size-7">{{plot.fileCounts[0].count}} Moving</div>
                     </div>
                   </div>
-                  <div class="">
+                <div class="">
                     <div class="table-container">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Job number</th>
-                            <th>Rsyncd Host</th>
-                            <th>Rsyncd Index</th>
-                            <th>Stagger Minute</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody v-if="plotPlan">
-                          <tr>
-                            <td>Current</td>
-                            <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
-                            <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
-                            <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
-                            <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>Plan</td>
-                            <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
-                            <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
-                            <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                            <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
-                            <td>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Job number</th>
+                        <th>Rsyncd Host</th>
+                        <th>Rsyncd Index</th>
+                        <th>Stagger Minute</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody v-if="plotPlan">
+                      <tr>
+                        <td>Current</td>
+                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Plan</td>
+                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
+                        <td>
                               <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                     </div>
                     <div>
-                      <table v-if="!hideJobs" class="table is-striped is-hoverable">
-                        <thead>
-                          <tr>
+                  <table v-if="!hideJobs" class="table is-striped is-hoverable">
+                    <thead>
+                      <tr>
                             <th class="is-hidden-mobile"></th>
-                            <th>id</th>
-                            <th>工作时长 </th>
-                            <th>工作进度</th>
-                            <th>容量</th>
-                            <th>操作</th>
-                          </tr>
-                        </thead>
+                        <th>id</th>
+                        <th>工作时长 </th>
+                        <th>工作进度</th>
+                        <th>容量</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
                         <tbody>
-                          <tr v-for="job in plot.jobs" v-bind:key="job.id">
+                    <tr v-for="job in plot.jobs" v-bind:key="job.id">
                             <td class="is-hidden-mobile" width="25%">
-                              <b-progress format="percent" :max="100">
-                                <template #bar>
-                                  <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                                                  type="is-danger">
-                                  </b-progress-bar>
-                                  <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
-                                                  type="is-info">
-                                  </b-progress-bar>
-                                  <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
-                                                  type="is-warning">
-                                  </b-progress-bar>
-                                  <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                                  </b-progress-bar>
-                                </template>
-                              </b-progress>
-                            </td>
-                            <td>{{job.id}}</td>
+                        <b-progress format="percent" :max="100">
+                          <template #bar>
+                            <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                              type="is-danger">
+                            </b-progress-bar>
+                            <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
+                              type="is-info">
+                            </b-progress-bar>
+                            <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
+                              type="is-warning">
+                            </b-progress-bar>
+                            <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                            </b-progress-bar>
+                          </template>
+                        </b-progress>
+                      </td>
+                      <td>{{job.id}}</td>
                             <td>{{(job.wallTime).split(':')[0]}}<span class="has-text-grey"> h </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span></td>
-                            <td>{{job.phase}}</td>
-                            <td>{{job.tempSize}}</td>
-                            <td>
+                      <td>{{job.phase}}</td>
+                      <td>{{job.tempSize}}</td>
+                      <td>
                               <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
-                            </td>
-                          </tr>
+                      </td>
+                    </tr>
                         </tbody>
-                      </table>
+                  </table>
 
                       <div class="p-4" v-if="plot.cpuMap">
-                        <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
-                      </div>
-                    </div>
+                    <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
           </div>
         </div>
       </b-collapse>
