@@ -139,6 +139,9 @@
               <div class="control">
                 <b-switch v-model="hideProcess">Hide Process</b-switch>
               </div>
+              <div class="control">
+                <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+              </div>
             </b-field>
             <div class="columns is-desktop is-multiline is-3">
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
@@ -147,18 +150,32 @@
                   <table class="table">
                     <thead>
                       <tr>
+                        <th></th>
                         <th>Job number</th>
                         <th>Rsyncd Host</th>
                         <th>Rsyncd Index</th>
                         <th>Stagger Minute</th>
+                        <th></th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="plotPlan">
                       <tr>
-                        <td>{{plot.configuration.jobNumber}}</td>
-                        <td>{{plot.configuration.rsyncdHost}}</td>
-                        <td>{{plot.configuration.rsyncdIndex}}</td>
-                        <td>{{plot.configuration.staggerMinute}}</td>
+                        <td>Current</td>
+                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Plan</td>
+                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
+                        <td>
+                          <b-button @click="applyPlotPlan([plot.name])">Apply</b-button>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -312,6 +329,7 @@
     intervals: number[] = [];
     hideJobs = false;
     hideProcess = false;
+    plotPlan: any = null;
 
     mounted() {
       this.load();
@@ -370,6 +388,24 @@
         }).catch(() => {
           this.connectionStatus = 'failed'
         });
+      getInfo.getInfo('errors')
+        .then(response => response.json())
+        .then(json => {
+          this.errors = json;
+        });
+      getInfo.getInfo('events')
+        .then(response => response.json())
+        .then(json => {
+          this.events = json;
+        });
+      getInfo.getPlotPlan("GET")
+        .then(response => response.json())
+        .then(json => {
+          this.plotPlan = {}
+          json.forEach((plan: any) => {
+            this.plotPlan[plan.name] = plan.plan;
+          })
+        })
     }
     assignMachine(vueObj: any, machine: any) {
       Vue.set(vueObj, 'cpus', machine.cpus);
@@ -453,6 +489,13 @@
           .then(json => {
             this.events = json;
           });
+        getInfo.getPlotPlan("GET")
+          .then(response => response.json())
+          .then(json => {
+            json.forEach((plan: any) => {
+              this.plotPlan[plan.name] = plan.plan;
+            })
+          })
       }, 5000);
       this.intervals.push(temp);
       // temp = setInterval(() => {
@@ -614,6 +657,37 @@
       } else {
         return err;
       }
+    }
+    applyPlotPlan(plotList: string[]) {
+      var plans: any[] = [];
+      plotList.forEach((plot: string) => {
+        plans.push({
+          name: plot,
+          plan: this.plotPlan[plot],
+        })
+      })
+      this.$buefy.dialog.confirm({
+        title: '确认应用计划',
+        message: `应用机器[${plotList}]的计划，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          getInfo.getPlotPlan("POST", plans)
+            .then(() => {
+              Snackbar.open('应用成功')
+            }).catch(() => {
+              Snackbar.open('应用失败')
+            });
+        }
+      })
+    }
+    togglePlanClass(plot: any, key: string) {
+      var condition = {
+        'has-text-success': plot.configuration[key] != this.plotPlan[plot.name][key],
+        'has-text-grey': plot.configuration[key] == this.plotPlan[plot.name][key]
+      }
+      return condition;
     }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
