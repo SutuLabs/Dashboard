@@ -1,5 +1,5 @@
-<template>
+﻿<template>
   <div class="explorer">
-    This is the explorer
+    开发中，敬请期待。
   </div>
 </template>

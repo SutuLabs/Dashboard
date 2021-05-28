@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="home">
     <div class="is-hidden-mobile block">
-      <div class="box">
+      <div class="box is-hidden">
         <div class="heading">当前币价</div>
         <div class="title is-3 has-text-success has-text-weight-bold">TODO</div>
       </div>
@@ -26,7 +26,19 @@
       </b-carousel-list>
     </div>
     <div class="block" v-if="farm">
-      <calculatorSimplified :farm="farm"/>
+      <div class="card">
+        <router-link to="/calculator">
+          <div class="card-header">
+            <div class="card-header-title">
+              <div class="has-text-info">奇亚币收益计算器 </div>
+              <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
+            </div>
+          </div>
+        </router-link>
+        <div class="card-content">
+          <calculatorSimplified :farm="farm" />
+        </div>
+      </div>
     </div>
     <div class="block" hidden>
       <div class="columns">
@@ -97,14 +109,14 @@
       title: "全网容量",
       data: "Loading",
     },
-    {
+    /*{
       title: "奇亚币总量",
       data: "Loading",
     },
     {
       title: "收获的奇亚币",
       data: "Loading",
-    },
+    },*/
     {
       title: "难度系数",
       data: "Loading",
@@ -113,10 +125,10 @@
       title: "最新的收割区块高度",
       data: "Loading",
     },
-    {
+    /*{
       title: "全网耗电量",
       data: "Loading",
-    },
+    },*/
     ];
     farm :any= null;
     intervals: number[] = [];
@@ -171,14 +183,14 @@
         title: "全网容量",
         data: farm.node.space,
       },
-      {
+      /*{
         title: "奇亚币总量",
         data: "TODO($TOTAL_VALUE TODO)",
       },
       {
         title: "收获的奇亚币",
         data: farm.farmer.totalFarmed + "($VALUE TODO)",
-      },
+      },*/
       {
         title: "难度系数",
         data: farm.node.difficulty,
@@ -187,10 +199,10 @@
         title: "最新的收割区块高度",
         data: farm.node.height,
       },
-      {
+      /*{
         title: "全网耗电量",
         data: "TODO",
-      },
+      },*/
       ];
     }
 
