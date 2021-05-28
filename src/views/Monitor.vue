@@ -132,6 +132,11 @@
           <div v-if="plotters==null" class="content">Loading</div>
 
           <div v-else class="content">
+            <b-field>
+              <div class="control">
+                <b-switch v-model="hideJobs">Hide Jobs</b-switch>
+              </div>
+            </b-field>
             <div class="columns is-desktop is-multiline is-3">
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
                 <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs [{{plot.fileCounts[0].count}} Moving]</div>
@@ -154,7 +159,7 @@
                       </tr>
                     </tbody>
                   </table>
-                  <table class="table is-striped is-hoverable">
+                  <table v-if="!hideJobs" class="table is-striped is-hoverable">
                     <thead>
                       <tr>
                         <th>--------</th>
@@ -302,6 +307,7 @@
     errNum = 10;
     connectionStatus = 'loading';
     intervals: number[] = [];
+    hideJobs = false;
 
     mounted() {
       this.load();
