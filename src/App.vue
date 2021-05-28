@@ -29,6 +29,12 @@
           <b-navbar-item tag="router-link" :to="{path:'/about'}">
             关于我们
           </b-navbar-item>
+          <b-navbar-item v-if="!login" tag="router-link" :to="{path:'/login'}">
+            登录
+          </b-navbar-item>
+          <b-navbar-item v-else @click="quit">
+            退出登录
+          </b-navbar-item>
         </template>
       </b-navbar>
     </div>
@@ -77,12 +83,38 @@
             </div>
             <div>关于</div>
           </b-navbar-item>
+           <b-navbar-item v-if="!login" class="navbarButton" tag="router-link" :to="{path:'/login'}">
+            <div>
+              <b-icon icon="account"></b-icon>
+            </div>
+            <div>登录</div>
+          </b-navbar-item>
+          <b-navbar-item v-else @click="quit" class="navbarButton">
+            <div>
+              <b-icon icon="account"></b-icon>
+            </div>
+            <div>退出登录</div>
+          </b-navbar-item>
         </template>
       </b-navbar>
     </div>
   </div>
 </template>
 
+
+<script lang="ts">
+  import { Component,Vue } from 'vue-property-decorator'
+  @Component
+  export default class App extends Vue {
+    login = localStorage.getItem('username') ? true : false
+     quit(){
+       localStorage.removeItem('username')
+       localStorage.removeItem('password')
+       this.login = false
+       this.$router.go(0)     //Vue无法响应localStorage改变，刷新使页面响应更新 
+    }
+  }
+</script>
 <style lang="scss">
   @import '../node_modules/buefy/dist/buefy.css';
   @import 'bulmaswatch/darkly/_variables.scss';

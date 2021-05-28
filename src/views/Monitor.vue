@@ -57,6 +57,14 @@
               </b-tooltip>
             </div>
 
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">用户</b-tag>
+                <b-tag v-if='username' type="is-info">{{username}}</b-tag>
+                <b-tag v-else type="is-danger">未登录</b-tag>
+              </b-taglist>
+            </div>
+
           </b-field>
 
           <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
@@ -346,6 +354,7 @@
     hideJobs = false;
     hideProcess = false;
     plotPlan: any = null;
+    username = localStorage.getItem('username');
     plottingProgressOpen = false;
 
     mounted() {
