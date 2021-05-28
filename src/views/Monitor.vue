@@ -132,6 +132,14 @@
           <div v-if="plotters==null" class="content">Loading</div>
 
           <div v-else class="content">
+            <b-field grouped group-multiline>
+              <div class="control">
+                <b-switch v-model="hideJobs">Hide Jobs</b-switch>
+              </div>
+              <div class="control">
+                <b-switch v-model="hideProcess">Hide Process</b-switch>
+              </div>
+            </b-field>
             <div class="columns is-desktop is-multiline is-3">
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
                 <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs [{{plot.fileCounts[0].count}} Moving]</div>
@@ -154,7 +162,7 @@
                       </tr>
                     </tbody>
                   </table>
-                  <table class="table is-striped is-hoverable">
+                  <table v-if="!hideJobs" class="table is-striped is-hoverable">
                     <thead>
                       <tr>
                         <th>--------</th>
@@ -194,7 +202,7 @@
                   </table>
 
                   <div class="card-content p-4" v-if="plot.cpuMap">
-                    <cpuInfo name="plot.name" :machine="plot" />
+                    <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
                   </div>
                 </div>
               </div>
@@ -213,7 +221,7 @@
             </p>
 
             <div class="card-content p-4" v-if="machine.cpuMap">
-              <cpuInfo name="machine.name" :machine="machine" />
+              <cpu-info name="machine.name" :machine="machine" />
             </div>
           </nav>
         </div>
@@ -302,6 +310,8 @@
     errNum = 10;
     connectionStatus = 'loading';
     intervals: number[] = [];
+    hideJobs = false;
+    hideProcess = false;
 
     mounted() {
       this.load();
