@@ -1,58 +1,44 @@
 export default {
+  baseUrl: `http://10.177.0.165:5000`,
 
   getInfo(path: string) {
-
-    const url = `http://10.177.0.165:5000/server/${path}`;
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
-
-    const headers = new Headers();
-
-    headers.append('Content-Type', 'text/json');
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+    const url = `${this.baseUrl}/server/${path}`;
 
     return fetch(url, {
       method: 'GET',
-      headers: headers,
+      headers: this.getHeaders(),
     });
   },
 
   deletePlot(machineName: string, plotId: string) {
-
-    const url = `http://10.177.0.165:5000/server/plot?name=${machineName}&id=${plotId}`;
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
-
-    const headers = new Headers();
-
-    headers.append('Content-Type', 'text/json');
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+    const url = `${this.baseUrl}/server/plot?name=${machineName}&id=${plotId}`;
 
     return fetch(url, {
       method: 'DELETE',
-      headers: headers,
+      headers: this.getHeaders(),
     });
   },
 
   getPlotPlan() {
-
-    const url = `http://10.177.0.165:5000/server/plotplan`;
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
-
-    const headers = new Headers();
-
-    headers.append('Content-Type', 'text/json');
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+    const url = `${this.baseUrl}/server/plotplan`;
 
     return fetch(url, {
       method: 'GET',
-      headers: headers,
+      headers: this.getHeaders(),
     });
   },
 
   applyPlotPlan(plans?: any[]) {
-    const url = `http://10.177.0.165:5000/server/plotplan`;
+    const url = `${this.baseUrl}/server/plotplan`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(plans),
+    });
+  },
+
+  getHeaders() {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
 
@@ -61,11 +47,7 @@ export default {
     headers.append('Content-Type', 'text/json');
     headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
-    return fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(plans),
-    });
+    return headers;
   },
 
   save(key: string, value: any) {
