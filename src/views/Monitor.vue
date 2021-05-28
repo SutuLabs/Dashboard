@@ -362,6 +362,7 @@
             }
             this.harvesters.forEach((harvester: any) => {
               this.calcCpuMap(harvester);
+              getInfo.sortDisks(harvester);
             })
           })
         }).then(() => {
@@ -435,6 +436,7 @@
               var m = json.find((_: any) => _.name == harvester.name);
               this.assignMachine(harvester, m);
               this.calcCpuMap(harvester);
+              getInfo.sortDisks(harvester);
             })
           }).then(()=>{
             this.connectionStatus = 'success'

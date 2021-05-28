@@ -136,7 +136,7 @@
           } else if (json[1].farmer.status == "Full Node Synced" || json[1].farmer.status == "Farming") {
             this.farm = json[1];
           }
-          this.farm = getInfo.sortDisks(this.farm);
+          getInfo.sortDisks(this.farm);
           this.getNetInfo(this.farm);
 
         });
