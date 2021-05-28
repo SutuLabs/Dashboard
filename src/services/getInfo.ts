@@ -3,8 +3,8 @@ export default {
   getInfo(path: string) {
 
     const url = `http://10.177.0.165:5000/server/${path}`;
-    const username = 'test';
-    const password = 'test';
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
 
     const headers = new Headers();
 
@@ -20,8 +20,8 @@ export default {
   deletePlot(machineName: string, plotId: string) {
 
     const url = `http://10.177.0.165:5000/server/plot?name=${machineName}&id=${plotId}`;
-    const username = 'test';
-    const password = 'test';
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
 
     const headers = new Headers();
 
@@ -37,8 +37,8 @@ export default {
   getPlotPlan(method: string, plans?: any[]) {
 
     const url = `http://10.177.0.165:5000/server/plotplan` + ((plans == undefined) ? `` : `/${plans}`);
-    const username = 'test';
-    const password = "test";
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
 
     const headers = new Headers();
 
@@ -63,6 +63,6 @@ export default {
     for (let i = 0; i < intervals.length; i++) {
       clearInterval(intervals[i]);
     }
-    return [];
+    return []; 
   },
 }
