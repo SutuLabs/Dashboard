@@ -38,6 +38,11 @@ const routes: Array<RouteConfig> = [
     name: 'Plotting Performance',
     component: () => import(/* webpackChunkName: "plottingPerformance" */ '../views/PlottingPerformance.vue')
   },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+  }
 ]
 
 const router = new VueRouter({
