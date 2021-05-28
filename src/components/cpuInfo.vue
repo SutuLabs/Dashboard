@@ -89,7 +89,7 @@
     calcCpu(machine: any) {
       var count = 0;
       machine.cpus.forEach((cpu: any) => {
-        if (cpu > 50) count += 1;
+        if (cpu < 50) count += 1;
       });
       return count;
     }
