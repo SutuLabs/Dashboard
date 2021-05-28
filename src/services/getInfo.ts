@@ -34,6 +34,23 @@ export default {
     });
   },
 
+  getPlotPlan() {
+
+    const url = `http://10.177.0.165:5000/server/plotplan`;
+    const username = 'test';
+    const password = "test";
+
+    const headers = new Headers();
+
+    headers.append('Content-Type', 'text/json');
+    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+
+    return fetch(url, {
+      method: 'GET',
+      headers: headers,
+    });
+  },
+
   save(key: string, value: any) {
     localStorage.setItem(key, JSON.stringify(value));
   },
@@ -46,6 +63,6 @@ export default {
     for (let i = 0; i < intervals.length; i++) {
       clearInterval(intervals[i]);
     }
-    return []; 
+    return [];
   },
 }

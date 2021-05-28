@@ -147,6 +147,7 @@
                   <table class="table">
                     <thead>
                       <tr>
+                        <th></th>
                         <th>Job number</th>
                         <th>Rsyncd Host</th>
                         <th>Rsyncd Index</th>
@@ -155,10 +156,18 @@
                     </thead>
                     <tbody>
                       <tr>
+                        <td>Current</td>
                         <td>{{plot.configuration.jobNumber}}</td>
                         <td>{{plot.configuration.rsyncdHost}}</td>
                         <td>{{plot.configuration.rsyncdIndex}}</td>
                         <td>{{plot.configuration.staggerMinute}}</td>
+                      </tr>
+                      <tr>
+                        <td>Plan</td>
+                        <td>{{plotPlan[plot.name].jobNumber}}</td>
+                        <td>{{plotPlan[plot.name].rsyncdHost}}</td>
+                        <td>{{plotPlan[plot.name].rsyncdIndex}}</td>
+                        <td>{{plotPlan[plot.name].staggerMinute}}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -312,6 +321,7 @@
     intervals: number[] = [];
     hideJobs = false;
     hideProcess = false;
+    plotPlan: any = null;
 
     mounted() {
       this.load();
@@ -370,6 +380,24 @@
         }).catch(() => {
           this.connectionStatus = 'failed'
         });
+      getInfo.getInfo('errors')
+        .then(response => response.json())
+        .then(json => {
+          this.errors = json;
+        });
+      getInfo.getInfo('events')
+        .then(response => response.json())
+        .then(json => {
+          this.events = json;
+        });
+      getInfo.getPlotPlan()
+        .then(response => response.json())
+        .then(json => {
+          this.plotPlan = {}
+          json.forEach((plan: any) => {
+            this.plotPlan[plan.name] = plan.plan;
+          })
+        })
     }
     assignMachine(vueObj: any, machine: any) {
       Vue.set(vueObj, 'cpus', machine.cpus);
@@ -453,6 +481,13 @@
           .then(json => {
             this.events = json;
           });
+        getInfo.getPlotPlan()
+          .then(response => response.json())
+          .then(json => {
+            json.forEach((plan: any) => {
+              this.plotPlan[plan.name] = plan.plan;
+            })
+          })
       }, 5000);
       this.intervals.push(temp);
       // temp = setInterval(() => {
