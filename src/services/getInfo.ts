@@ -1,42 +1,44 @@
 export default {
+  baseUrl: `http://10.177.0.165:5000`,
 
   getInfo(path: string) {
-
-    const url = `http://10.177.0.165:5000/server/${path}`;
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
-
-    const headers = new Headers();
-
-    headers.append('Content-Type', 'text/json');
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+    const url = `${this.baseUrl}/server/${path}`;
 
     return fetch(url, {
       method: 'GET',
-      headers: headers,
+      headers: this.getHeaders(),
     });
   },
 
   deletePlot(machineName: string, plotId: string) {
-
-    const url = `http://10.177.0.165:5000/server/plot?name=${machineName}&id=${plotId}`;
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
-
-    const headers = new Headers();
-
-    headers.append('Content-Type', 'text/json');
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+    const url = `${this.baseUrl}/server/plot?name=${machineName}&id=${plotId}`;
 
     return fetch(url, {
       method: 'DELETE',
-      headers: headers,
+      headers: this.getHeaders(),
     });
   },
 
-  getPlotPlan(method: string, plans?: any[]) {
+  getPlotPlan() {
+    const url = `${this.baseUrl}/server/plotplan`;
 
-    const url = `http://10.177.0.165:5000/server/plotplan` + ((plans == undefined) ? `` : `/${plans}`);
+    return fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+  },
+
+  applyPlotPlan(plans?: any[]) {
+    const url = `${this.baseUrl}/server/plotplan`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(plans),
+    });
+  },
+
+  getHeaders() {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
 
@@ -45,10 +47,7 @@ export default {
     headers.append('Content-Type', 'text/json');
     headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
-    return fetch(url, {
-      method: method,
-      headers: headers,
-    });
+    return headers;
   },
 
   save(key: string, value: any) {
@@ -63,6 +62,6 @@ export default {
     for (let i = 0; i < intervals.length; i++) {
       clearInterval(intervals[i]);
     }
-    return []; 
+    return [];
   },
 }
