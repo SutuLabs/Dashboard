@@ -3,7 +3,7 @@
     <b-collapse class="card" animation="slide" :open="true">
       <template #trigger="props">
         <div class="card-header" role="button">
-          <p class="card-header-title">Chia plotting performance</p>
+          <p class="card-header-title">P盘效率</p>
           <a class="card-header-icon">
             <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
           </a>
@@ -12,7 +12,7 @@
       <div class="card-content">
         <b-dropdown aria-role="list" v-model="selectedOS">
           <template #trigger>
-            <b-button type="is-primary">Select OS</b-button>
+            <b-button type="is-primary">选择操作系统</b-button>
           </template>
           <b-dropdown-item value="all">All</b-dropdown-item>
           <b-dropdown-item value="WSL">WSL</b-dropdown-item>
@@ -21,10 +21,10 @@
           <b-dropdown-item value="Else">Else</b-dropdown-item>
         </b-dropdown>
         <b-select class="is-inline-block" v-model="perPage">
-          <option value="10">10 per page</option>
-          <option value="20">20 per page</option>
-          <option value="50">50 per page</option>
-          <option value="100">100 per page</option>
+          <option value="10">10个每页</option>
+          <option value="20">20个每页</option>
+          <option value="50">50个每页</option>
+          <option value="100">100个每页</option>
         </b-select>
         <template>
           <b-table :data="selectedPerformance" :row-class="(row) =>'has-background-dark'" :mobile-cards="false"
