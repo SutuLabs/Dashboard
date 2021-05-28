@@ -398,7 +398,7 @@
         .then(json => {
           this.events = json;
         });
-      getInfo.getPlotPlan()
+      getInfo.getPlotPlan("GET")
         .then(response => response.json())
         .then(json => {
           this.plotPlan = {}
@@ -489,7 +489,7 @@
           .then(json => {
             this.events = json;
           });
-        getInfo.getPlotPlan()
+        getInfo.getPlotPlan("GET")
           .then(response => response.json())
           .then(json => {
             json.forEach((plan: any) => {
@@ -673,9 +673,9 @@
         confirmText: '确定',
         type: 'is-success',
         onConfirm: () => {
-          getInfo.applyPlotPlan(plans)
+          getInfo.getPlotPlan("POST", plans)
             .then(() => {
-              Snackbar.open('应用命令已发送')
+              Snackbar.open('应用成功')
             }).catch(() => {
               Snackbar.open('应用失败')
             });

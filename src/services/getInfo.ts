@@ -34,9 +34,9 @@ export default {
     });
   },
 
-  getPlotPlan() {
+  getPlotPlan(method: string, plans?: any[]) {
 
-    const url = `http://10.177.0.165:5000/server/plotplan`;
+    const url = `http://10.177.0.165:5000/server/plotplan` + ((plans == undefined) ? `` : `/${plans}`);
     const username = 'test';
     const password = "test";
 
@@ -46,23 +46,7 @@ export default {
     headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
     return fetch(url, {
-      method: 'GET',
-      headers: headers,
-    });
-  },
-
-  applyPlotPlan(plans: any[]) {
-    const url = `http://10.177.0.165:5000/server/plotplan/${plans}`;
-    const username = 'test';
-    const password = "test";
-
-    const headers = new Headers();
-
-    headers.append('Content-Type', 'text/json');
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
-
-    return fetch(url, {
-      method: 'POST',
+      method: method,
       headers: headers,
     });
   },
