@@ -5,260 +5,274 @@
     </div>
 
     <b-loading v-model="calcLoading" :is-full-page="false"></b-loading>
-    <div class="box" v-if="!calcLoading">
-      <p class="title is-5">你的算力</p>
-      <p>(of size 101.4GiB, k=32)</p>
-      <b-field>
-        <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false"
-                  :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()">
-        </b-slider>
-      </b-field>
-      <div class="columns">
-        <div class="column">
-          <b-field>
-            <b-input size="is-small" v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input>
-            <p class="control">
-              <span class="button is-small">块农田</span>
-            </p>
-          </b-field>
-        </div>
-        <!-- TODO -->
-        <div v-if="calculator" class="column" style="visibility: hidden;">
-          <b-field>
-            <p class="control">
-              <span class="button is-small">Assume 1 XCH =</span>
-            </p>
-            <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
-            <p class="control">
-              <span class="button is-small">USD</span>
-            </p>
-          </b-field>
+
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">
+          <div class="has-text-info">奇亚币收益计算器 </div>
+          <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
         </div>
       </div>
-    </div>
+      <div class="card-content">
+        <div v-if="!calcLoading">
+          <b-tabs type="is-boxed" expanded>
+            <b-tab-item label="Simplified">
+              <calculatorSimplified :farm="farm" />
+            </b-tab-item>
 
-    <div v-if="!calcLoading">
-      <b-tabs type="is-boxed" expanded>
-        <b-tab-item label="Simplified">
-          <div class="box">
-            <div class="title is-4">Network</div>
-            <nav class="level">
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Total network space</div>
-                  <div class="title is-5">{{ calculator.totalNetSpace }}PiB</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Owned network space</div>
-                  <div class="title is-5">{{ calculator.ownedNetSpace }}%</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Expected time to win</div>
-                  <div class="title is-5">{{ calculator.expectTimeWin }}</div>
-                </div>
-              </div>
-            </nav>
-          </div>
-          <div class="box">
-            <div class="title is-4">Estimated Earnings</div>
-            <nav class="level">
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Hourly XCH</div>
-                  <div class="title is-5">{{ calculator.estimatedEarning.XCH.hour.toFixed(2) }}/hour</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Daily XCH</div>
-                  <div class="title is-5">{{ calculator.estimatedEarning.XCH.day.toFixed(2) }}/day</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Monthly XCH</div>
-                  <div class="title is-5">{{ calculator.estimatedEarning.XCH.month.toFixed(2) }}/month</div>
-                </div>
-              </div>
-            </nav>
-            <nav class="level">
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Hourly USD</div>
-                  <div class="title is-5">${{ calculator.estimatedEarning.USD.hour.toFixed(2) }}/hour</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Daily USD</div>
-                  <div class="title is-5">${{ calculator.estimatedEarning.USD.day.toFixed(2) }}/day</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">Monthly USD</div>
-                  <div class="title is-5">${{ calculator.estimatedEarning.USD.month.toFixed(2) }}/month</div>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </b-tab-item>
-
-        <b-tab-item label="Advanced" id="advanced">
-          <div class="box">
-            <div class="title is-4">Earnings over time</div>
-            <div class="columns">
-              <div class="column is-half">
-                <b-field horizontal label="Time Frame">
-                  <b-select size="is-small" v-model="calculator.timeFrameUnit" v-on:input="calculate()">
-                    <option value="1month">1 Month</option>
-                    <option value="3month">3 Months</option>
-                    <option value="6month">6 Months</option>
-                    <option value="1year">1 Year</option>
-                    <option value="3year">3 Years</option>
-                    <option value="5year">5 Years</option>
-                  </b-select>
-                </b-field>
-              </div>
-              <div class="column is-half">
-                <b-field horizontal label="Start Date">
-                  <b-select size="is-small" v-model="calculator.startDate" v-on:input="calculate()">
-                    <option value="today">Today</option>
-                    <option value="mainet">Mainnet Launch</option>
-                  </b-select>
-                </b-field>
-              </div>
-            </div>
-          </div>
-          <div v-if="calculator.calculatorMap">
-            <apexchart height="400" :options="calculator.calculatorMap.chartOptions"
-                       :series="calculator.calculatorMap.series"></apexchart>
-          </div>
-          <div class="box">
-            <div class="title is-4">Plots</div>
-            <div class="columns">
-              <div class="column is-one-third">
-                <b-field label="Initial size of plots">
-                  <b-input size="is-small" :lazy="true" expanded v-model="calculator.initSize"
-                           v-on:input="calculate()" disabled></b-input>
-                  <b-select size="is-small" v-model="calculator.initSizeUnit" disabled>
-                    <option value="gib">GiB</option>
-                  </b-select>
-                </b-field>
-              </div>
-              <div class="column is-one-third">
-                <b-field label="Plotting Speed">
-                  <b-input size="is-small" :lazy="true" expanded v-model="calculator.plottingSpeed"
-                           v-on:input="calculate()"></b-input>
-                  <b-select size="is-small" v-model="calculator.plottingSpeedUnit">
-                    <option value="gib">GiB</option>
-                  </b-select>
-                </b-field>
-                <div>Space plotted per day</div>
-              </div>
-              <div class="column is-one-third">
-                <b-field label="Max size of plots">
-                  <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize"
-                           v-on:input="calculate()" :disabled="calculator.unlimited"></b-input>
-                  <b-select size="is-small" v-model="calculator.maxSizeUnit" :disabled="calculator.unlimited">
-                    <option value="gib">GiB</option>
-                  </b-select>
-                </b-field>
+            <b-tab-item label="Advanced" id="advanced">
+              <div class="box" v-if="!calcLoading">
+                <p class="title is-5">你的算力</p>
+                <p>(of size 101.4GiB, k=32)</p>
                 <b-field>
-                  <b-checkbox v-model="calculator.unlimited" v-on:input="calculate()">Unlimited</b-checkbox>
+                  <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false"
+                            :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()">
+                  </b-slider>
                 </b-field>
+                <div class="columns">
+                  <div class="column">
+                    <b-field>
+                      <b-input size="is-small" v-model="nPlot" :lazy="true" v-on:input="setSlider()"></b-input>
+                      <p class="control">
+                        <span class="button is-small">块农田</span>
+                      </p>
+                    </b-field>
+                  </div>
+                  <!-- TODO -->
+                  <div v-if="calculator" class="column" style="visibility: hidden;">
+                    <b-field>
+                      <p class="control">
+                        <span class="button is-small">Assume 1 XCH =</span>
+                      </p>
+                      <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
+                      <p class="control">
+                        <span class="button is-small">USD</span>
+                      </p>
+                    </b-field>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="box">
-            <div class="title is-4">Network Space</div>
-            <div class="columns">
-              <div class="column is-one-third">
-                <b-field label="Initial size of network">
-                  <b-input size="is-small" :lazy="true" expanded v-model="calculator.initNetSize"
-                           v-on:input="calculate()"></b-input>
-                  <b-select size="is-small" v-model="calculator.initNetSizeUnit">
-                    <option value="eib">EiB</option>
-                  </b-select>
-                </b-field>
+
+              <div class="box">
+                <div class="title is-4">Earnings over time</div>
+                <div class="columns">
+                  <div class="column is-half">
+                    <b-field horizontal label="Time Frame">
+                      <b-select size="is-small" v-model="calculator.timeFrameUnit" v-on:input="calculate()">
+                        <option value="1month">1 Month</option>
+                        <option value="3month">3 Months</option>
+                        <option value="6month">6 Months</option>
+                        <option value="1year">1 Year</option>
+                        <option value="3year">3 Years</option>
+                        <option value="5year">5 Years</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                  <div class="column is-half">
+                    <b-field horizontal label="Start Date">
+                      <b-select size="is-small" v-model="calculator.startDate" v-on:input="calculate()">
+                        <option value="today">Today</option>
+                        <option value="mainet">Mainnet Launch</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                </div>
               </div>
-              <div class="column is-one-third">
-                <b-field label="Network growth">
+              <div v-if="calculator.calculatorMap">
+                <apexchart height="400" :options="calculator.calculatorMap.chartOptions"
+                           :series="calculator.calculatorMap.series"></apexchart>
+              </div>
+              <div class="box">
+                <div class="title is-4">Plots</div>
+                <div class="columns">
+                  <div class="column is-one-third">
+                    <b-field label="Initial size of plots">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.initSize"
+                               v-on:input="calculate()" disabled></b-input>
+                      <b-select size="is-small" v-model="calculator.initSizeUnit" disabled>
+                        <option value="gib">GiB</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                  <div class="column is-one-third">
+                    <b-field label="Plotting Speed">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.plottingSpeed"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.plottingSpeedUnit">
+                        <option value="gib">GiB</option>
+                      </b-select>
+                    </b-field>
+                    <div>Space plotted per day</div>
+                  </div>
+                  <div class="column is-one-third">
+                    <b-field label="Max size of plots">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize"
+                               v-on:input="calculate()" :disabled="calculator.unlimited"></b-input>
+                      <b-select size="is-small" v-model="calculator.maxSizeUnit" :disabled="calculator.unlimited">
+                        <option value="gib">GiB</option>
+                      </b-select>
+                    </b-field>
+                    <b-field>
+                      <b-checkbox v-model="calculator.unlimited" v-on:input="calculate()">Unlimited</b-checkbox>
+                    </b-field>
+                  </div>
+                </div>
+              </div>
+              <div class="box">
+                <div class="title is-4">Network Space</div>
+                <div class="columns">
+                  <div class="column is-one-third">
+                    <b-field label="Initial size of network">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.initNetSize"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.initNetSizeUnit">
+                        <option value="eib">EiB</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                  <div class="column is-one-third">
+                    <b-field label="Network growth">
+                      <p class="control">
+                        <span class="button  is-small">%</span>
+                      </p>
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.growthRate"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.growthRatePeriod">
+                        <option value="weekly">Weekly</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                  <div class="column is-one-third">
+                    <b-field>
+                      <b-checkbox v-model="calculator.unbounded" v-on:input="calculate()">Unbounded growth</b-checkbox>
+                    </b-field>
+                  </div>
+                </div>
+                <div class="columns">
+                  <div class="column is-one-third">
+                    <b-field label="Days of exponential growth">
+                      <b-input size="is-small" :lazy="true" v-model="calculator.exponentialGrowth"
+                               v-on:input="calculate()"></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column is-one-third">
+                    <b-field label="Days of stabilization">
+                      <b-input size="is-small" :lazy="true" v-model="calculator.stabilization" v-on:input="calculate()">
+                      </b-input>
+                    </b-field>
+                  </div>
+                  <div class="column is-one-third">
+                    <b-field label="Stabilized daily growth">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.stableDaily"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.stableDailyUnit">
+                        <option value="pib">PiB</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                </div>
+              </div>
+              <div class="box">
+                <div class="title is-4">Estimated Total Earnings</div>
+                <nav class="level">
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">XCH after {{ calculator.timeFrame }} months</div>
+                      <div class="title is-5">{{ calculator.totalXCH.toFixed(2) }}</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">USD after {{ calculator.timeFrame }} {{ calculator.timeFrameUnit }}</div>
+                      <div class="title is-5">${{ calculator.totalEarningUSD.toFixed(2) }}</div>
+                    </div>
+                  </div>
+                </nav>
+              </div>
+
+              <div class="box">
+                <div class="title is-4">Network</div>
+                <nav class="level">
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Total network space</div>
+                      <div class="title is-5">{{ calculator.totalNetSpace }}PiB</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Owned network space</div>
+                      <div class="title is-5">{{ calculator.ownedNetSpace }}%</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Expected time to win</div>
+                      <div class="title is-5">{{ calculator.expectTimeWin }}</div>
+                    </div>
+                  </div>
+                </nav>
+              </div>
+              <div class="box">
+                <div class="title is-4">Estimated Earnings</div>
+                <nav class="level">
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Hourly XCH</div>
+                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.hour.toFixed(2) }}/hour</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Daily XCH</div>
+                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.day.toFixed(2) }}/day</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Monthly XCH</div>
+                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.month.toFixed(2) }}/month</div>
+                    </div>
+                  </div>
+                </nav>
+                <nav class="level">
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Hourly USD</div>
+                      <div class="title is-5">${{ calculator.estimatedEarning.USD.hour.toFixed(2) }}/hour</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Daily USD</div>
+                      <div class="title is-5">${{ calculator.estimatedEarning.USD.day.toFixed(2) }}/day</div>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <div class="heading">Monthly USD</div>
+                      <div class="title is-5">${{ calculator.estimatedEarning.USD.month.toFixed(2) }}/month</div>
+                    </div>
+                  </div>
+                </nav>
+              </div>
+
+              <div class="box">
+                <div class="title is-4">Exchange Rate</div>
+                <b-field>
                   <p class="control">
-                    <span class="button  is-small">%</span>
+                    <span class="button  is-small">Assume 1 XCH =</span>
                   </p>
-                  <b-input size="is-small" :lazy="true" expanded v-model="calculator.growthRate"
-                           v-on:input="calculate()"></b-input>
-                  <b-select size="is-small" v-model="calculator.growthRatePeriod">
-                    <option value="weekly">Weekly</option>
-                  </b-select>
+                  <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
+                  <p class="control">
+                    <span class="button  is-small">USD</span>
+                  </p>
                 </b-field>
               </div>
-              <div class="column is-one-third">
-                <b-field>
-                  <b-checkbox v-model="calculator.unbounded" v-on:input="calculate()">Unbounded growth</b-checkbox>
-                </b-field>
-              </div>
-            </div>
-            <div class="columns">
-              <div class="column is-one-third">
-                <b-field label="Days of exponential growth">
-                  <b-input size="is-small" :lazy="true" v-model="calculator.exponentialGrowth"
-                           v-on:input="calculate()"></b-input>
-                </b-field>
-              </div>
-              <div class="column is-one-third">
-                <b-field label="Days of stabilization">
-                  <b-input size="is-small" :lazy="true" v-model="calculator.stabilization" v-on:input="calculate()">
-                  </b-input>
-                </b-field>
-              </div>
-              <div class="column is-one-third">
-                <b-field label="Stabilized daily growth">
-                  <b-input size="is-small" :lazy="true" expanded v-model="calculator.stableDaily"
-                           v-on:input="calculate()"></b-input>
-                  <b-select size="is-small" v-model="calculator.stableDailyUnit">
-                    <option value="pib">PiB</option>
-                  </b-select>
-                </b-field>
-              </div>
-            </div>
-          </div>
-          <div class="box">
-            <div class="title is-4">Estimated Total Earnings</div>
-            <nav class="level">
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">XCH after {{ calculator.timeFrame }} months</div>
-                  <div class="title is-5">{{ calculator.totalXCH.toFixed(2) }}</div>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <div class="heading">USD after {{ calculator.timeFrame }} {{ calculator.timeFrameUnit }}</div>
-                  <div class="title is-5">${{ calculator.totalEarningUSD.toFixed(2) }}</div>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </b-tab-item>
-      </b-tabs>
-
-      <div class="box">
-        <div class="title is-4">Exchange Rate</div>
-        <b-field>
-          <p class="control">
-            <span class="button  is-small">Assume 1 XCH =</span>
-          </p>
-          <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
-          <p class="control">
-            <span class="button  is-small">USD</span>
-          </p>
-        </b-field>
+            </b-tab-item>
+          </b-tabs>
+        </div>
       </div>
     </div>
   </div>
@@ -268,10 +282,12 @@
   import { Component, Vue } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
   import diskSpaceCalculator from '@/components/diskSpaceCalculator.vue';
+  import calculatorSimplified from '@/components/calculatorSimplified.vue';
 
   @Component({
     components: {
       diskSpaceCalculator,
+      calculatorSimplified
     },
   })
   export default class calculator extends Vue {

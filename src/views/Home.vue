@@ -26,7 +26,19 @@
       </b-carousel-list>
     </div>
     <div class="block" v-if="farm">
-      <calculatorSimplified :farm="farm"/>
+      <div class="card">
+        <router-link to="/calculator">
+          <div class="card-header">
+            <div class="card-header-title">
+              <div class="has-text-info">奇亚币收益计算器 </div>
+              <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
+            </div>
+          </div>
+        </router-link>
+        <div class="card-content">
+          <calculatorSimplified :farm="farm" />
+        </div>
+      </div>
     </div>
     <div class="block" hidden>
       <div class="columns">

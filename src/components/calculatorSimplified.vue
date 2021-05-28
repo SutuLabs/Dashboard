@@ -1,77 +1,65 @@
 ﻿<template>
   <div class="calculatorSimplified">
-    <div class="card">
-      <router-link to="/calculator">
-        <div class="card-header">
-          <div class="card-header-title">
-            <div class="has-text-info">奇亚币收益计算器 </div>
-            <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
-          </div>
+    <div class="block">
+      <div class="block">
+        <p class="title is-5">
+          输入您拥有的算力或田数
+          <span class="is-size-7" v-if="basicCalc.unit=='tib'">（约为{{ (basicCalc.n/101.4*1024).toFixed(0) }}plots）</span>
+          <span class="is-size-7" v-if="basicCalc.unit=='plots'">（约为{{ (basicCalc.n*101.4/1024).toFixed(0) }}Tib）</span>
+        </p>
+      </div>
+      <b-field>
+        <b-input size="is-small" type="number" v-model="basicCalc.n" :lazy="true" v-on:input="basicCalculate()"></b-input>
+        <b-select size="is-small" v-model="basicCalc.unit" v-on:input="basicCalculate()">
+          <option value="tib">TiB</option>
+          <option value="plots">Plots</option>
+        </b-select>
+      </b-field>
+    </div>
+    <div class="block">
+      <div class="columns">
+        <div class="column">
+          <p class="title is-5">
+            输入您的单T成本
+            <span class="is-size-7" v-if="basicCalc.costUnit=='USDT'">（当前平均算力成本为18.09U/TB）</span>
+            <span class="is-size-7" v-if="basicCalc.costUnit=='RMB'">（当前平均算力成本为120.00元/TB）</span>
+          </p>
         </div>
-      </router-link>
-      <div class="card-content">
-        <div class="block">
-          <div class="block">
-            <p class="title is-5">
-              输入您拥有的算力或田数
-              <span class="is-size-7" v-if="basicCalc.unit=='tib'">（约为{{ (basicCalc.n/101.4*1024).toFixed(0) }}plots）</span>
-              <span class="is-size-7" v-if="basicCalc.unit=='plots'">（约为{{ (basicCalc.n*101.4/1024).toFixed(0) }}Tib）</span>
-            </p>
-          </div>
-          <b-field>
-            <b-input size="is-small" type="number" v-model="basicCalc.n" :lazy="true" v-on:input="basicCalculate()"></b-input>
-            <b-select size="is-small" v-model="basicCalc.unit" v-on:input="basicCalculate()">
-              <option value="tib">TiB</option>
-              <option value="plots">Plots</option>
-            </b-select>
-          </b-field>
+        <div hidden>
+          <p>TODO: 单T成本计算标准</p>
         </div>
-        <div class="block">
-          <div class="columns">
-            <div class="column">
-              <p class="title is-5">
-                输入您的单T成本
-                <span class="is-size-7" v-if="basicCalc.costUnit=='USDT'">（当前平均算力成本为18.09U/TB）</span>
-                <span class="is-size-7" v-if="basicCalc.costUnit=='RMB'">（当前平均算力成本为120.00元/TB）</span>
-              </p>
-            </div>
-            <div hidden>
-              <p>TODO: 单T成本计算标准</p>
-            </div>
-          </div>
-          <b-field>
-            <b-input size="is-small" v-model="basicCalc.unitCost" :lazy="true" v-on:input="basicCalculate()">
-            </b-input>
-            <b-select size="is-small" v-model="basicCalc.costUnit" v-on:input="basicCalculate()">
-              <option value="USDT">USDT</option>
-              <option value="RMB">RMB</option>
-            </b-select>
-            <p class="control">
-              <span class="button is-small">/TB</span>
-            </p>
-          </b-field>
+      </div>
+      <b-field>
+        <b-input size="is-small" v-model="basicCalc.unitCost" :lazy="true" v-on:input="basicCalculate()">
+        </b-input>
+        <b-select size="is-small" v-model="basicCalc.costUnit" v-on:input="basicCalculate()">
+          <option value="USDT">USDT</option>
+          <option value="RMB">RMB</option>
+        </b-select>
+        <p class="control">
+          <span class="button is-small">/TB</span>
+        </p>
+      </b-field>
+    </div>
+    <div class="columns">
+      <div class="column is-one-third">
+        <div class="box">
+          <div class="heading">预计爆块时间</div>
+          <div class="title is-5">{{ basicCalc.estimatedTime }}</div>
         </div>
-        <div class="columns">
-          <div class="column is-one-third">
-            <div class="box">
-              <div class="heading">预计爆块时间</div>
-              <div class="title is-5">{{ basicCalc.estimatedTime }}</div>
-            </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box">
-              <div class="heading">日均收益</div>
-              <div class="title is-5">{{ basicCalc.dailyEarningXCH.toFixed(2) }}</div>
-              <div v-if="basicCalc.costUnit=='USDT'">约{{ basicCalc.dailyEarning.toFixed(2) }}USDT/天</div>
-              <div v-if="basicCalc.costUnit=='RMB'">约{{ basicCalc.dailyEarning.toFixed(2) }}元/天</div>
-            </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box">
-              <div class="heading">预计回本时间</div>
-              <div class="title is-5">{{ basicCalc.timeToEarnCost.toFixed(0) }}天</div>
-            </div>
-          </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box">
+          <div class="heading">日均收益</div>
+          <div class="title is-5">{{ basicCalc.dailyEarningXCH.toFixed(2) }}</div>
+          <div v-if="basicCalc.costUnit=='USDT'">约{{ basicCalc.dailyEarning.toFixed(2) }}USDT/天</div>
+          <div v-if="basicCalc.costUnit=='RMB'">约{{ basicCalc.dailyEarning.toFixed(2) }}元/天</div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box">
+          <div class="heading">预计回本时间</div>
+          <div class="title is-5">{{ basicCalc.timeToEarnCost.toFixed(0) }}天</div>
         </div>
       </div>
     </div>
