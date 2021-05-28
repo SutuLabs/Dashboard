@@ -139,6 +139,9 @@
               <div class="control">
                 <b-switch v-model="hideProcess">Hide Process</b-switch>
               </div>
+              <div class="control">
+                <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+              </div>
             </b-field>
             <div class="columns is-desktop is-multiline is-3">
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
@@ -152,6 +155,7 @@
                         <th>Rsyncd Host</th>
                         <th>Rsyncd Index</th>
                         <th>Stagger Minute</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -161,13 +165,17 @@
                         <td>{{plot.configuration.rsyncdHost}}</td>
                         <td>{{plot.configuration.rsyncdIndex}}</td>
                         <td>{{plot.configuration.staggerMinute}}</td>
+                        <td></td>
                       </tr>
-                      <tr>
+                      <tr v-if="plotPlan">
                         <td>Plan</td>
                         <td>{{plotPlan[plot.name].jobNumber}}</td>
                         <td>{{plotPlan[plot.name].rsyncdHost}}</td>
                         <td>{{plotPlan[plot.name].rsyncdIndex}}</td>
                         <td>{{plotPlan[plot.name].staggerMinute}}</td>
+                        <td>
+                          <b-button @click="applyPlotPlan([plot.name])">Apply</b-button>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -393,6 +401,7 @@
       getInfo.getPlotPlan()
         .then(response => response.json())
         .then(json => {
+          console.log(json);
           this.plotPlan = {}
           json.forEach((plan: any) => {
             this.plotPlan[plan.name] = plan.plan;
@@ -649,6 +658,30 @@
       } else {
         return err;
       }
+    }
+    applyPlotPlan(plotList: string[]) {
+      var plans: any[] = [];
+      plotList.forEach((plot: string) => {
+        plans.push({
+          name: plot,
+          plan: this.plotPlan[plot],
+        })
+      })
+      this.$buefy.dialog.confirm({
+        title: '确认应用计划',
+        message: `应用机器[${plotList}]的计划，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          getInfo.applyPlotPlan(plans)
+            .then(() => {
+              Snackbar.open('应用命令已发送')
+            }).catch(() => {
+              Snackbar.open('应用失败')
+            });
+        }
+      })
     }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();

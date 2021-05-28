@@ -51,6 +51,22 @@ export default {
     });
   },
 
+  applyPlotPlan(plans: any[]) {
+    const url = `http://10.177.0.165:5000/server/plotplan/${plans}`;
+    const username = 'test';
+    const password = "test";
+
+    const headers = new Headers();
+
+    headers.append('Content-Type', 'text/json');
+    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+
+    return fetch(url, {
+      method: 'POST',
+      headers: headers,
+    });
+  },
+
   save(key: string, value: any) {
     localStorage.setItem(key, JSON.stringify(value));
   },
