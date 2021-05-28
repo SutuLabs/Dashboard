@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="home">
     <div class="is-hidden-mobile block">
-      <div class="box">
+      <div class="box is-hidden">
         <div class="heading">当前币价</div>
         <div class="title is-3 has-text-success has-text-weight-bold">TODO</div>
       </div>
@@ -97,14 +97,14 @@
       title: "全网容量",
       data: "Loading",
     },
-    {
+    /*{
       title: "奇亚币总量",
       data: "Loading",
     },
     {
       title: "收获的奇亚币",
       data: "Loading",
-    },
+    },*/
     {
       title: "难度系数",
       data: "Loading",
@@ -113,10 +113,10 @@
       title: "最新的收割区块高度",
       data: "Loading",
     },
-    {
+    /*{
       title: "全网耗电量",
       data: "Loading",
-    },
+    },*/
     ];
     farm :any= null;
     intervals: number[] = [];
@@ -171,14 +171,14 @@
         title: "全网容量",
         data: farm.node.space,
       },
-      {
+      /*{
         title: "奇亚币总量",
         data: "TODO($TOTAL_VALUE TODO)",
       },
       {
         title: "收获的奇亚币",
         data: farm.farmer.totalFarmed + "($VALUE TODO)",
-      },
+      },*/
       {
         title: "难度系数",
         data: farm.node.difficulty,
@@ -187,10 +187,10 @@
         title: "最新的收割区块高度",
         data: farm.node.height,
       },
-      {
+      /*{
         title: "全网耗电量",
         data: "TODO",
-      },
+      },*/
       ];
     }
 
