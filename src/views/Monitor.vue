@@ -158,21 +158,21 @@
                         <th></th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="plotPlan">
                       <tr>
                         <td>Current</td>
-                        <td>{{plot.configuration.jobNumber}}</td>
-                        <td>{{plot.configuration.rsyncdHost}}</td>
-                        <td>{{plot.configuration.rsyncdIndex}}</td>
-                        <td>{{plot.configuration.staggerMinute}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</td>
                         <td></td>
                       </tr>
-                      <tr v-if="plotPlan">
+                      <tr>
                         <td>Plan</td>
-                        <td>{{plotPlan[plot.name].jobNumber}}</td>
-                        <td>{{plotPlan[plot.name].rsyncdHost}}</td>
-                        <td>{{plotPlan[plot.name].rsyncdIndex}}</td>
-                        <td>{{plotPlan[plot.name].staggerMinute}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
                         <td>
                           <b-button @click="applyPlotPlan([plot.name])">Apply</b-button>
                         </td>
@@ -401,7 +401,6 @@
       getInfo.getPlotPlan()
         .then(response => response.json())
         .then(json => {
-          console.log(json);
           this.plotPlan = {}
           json.forEach((plan: any) => {
             this.plotPlan[plan.name] = plan.plan;
@@ -682,6 +681,13 @@
             });
         }
       })
+    }
+    togglePlanClass(plot: any, key: string) {
+      var condition = {
+        'has-text-success': plot.configuration[key] != this.plotPlan[plot.name][key],
+        'has-text-grey': plot.configuration[key] == this.plotPlan[plot.name][key]
+      }
+      return condition;
     }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
