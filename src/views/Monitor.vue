@@ -129,6 +129,46 @@
       <!-- <diskMap /> -->
     <!--</div>-->
 
+    <div id="summary" class="box">
+      <div v-if="plotters != null && plotPlan != null" class="table-container">
+        <table class="table is-narrow is-striped is-hoverable" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Job number</th>
+              <th>Moving</th>
+              <th>Configuration</th>
+              <th style="width: 30%;">Disk Space</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="plot in plotters" :key="plot.name">
+              <td>{{plot.name}}</td>
+              <td>{{plot.jobs.length}}</td>
+              <td>{{plot.fileCounts[0].count}}</td>
+              <td class="has-text-grey">
+                <span :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</span> /
+                <span :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</span> /
+                <span :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</span> /
+                <span :class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</span>m
+              </td>
+              <td v-if="plot.disks" :set="disk = getLargestDisk(plot.disks)">
+                <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used" :max="disk.size"
+                            show-value>
+                  <div class="has-text-white">
+                    {{disk.path}}:
+                    {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
+                    [{{humanize((disk.available)*1024)}}/{{Math.floor(disk.available / 106430464)}}]
+                  </div>
+                </b-progress>
+              </td>
+              <td v-else>No disks found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="block">
       <b-collapse class="card" animation="slide" :open.sync="plottingProgressOpen">
         <template #trigger="props">
@@ -168,33 +208,33 @@
                   </div>
                 <div class="">
                     <div class="table-container">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>Job number</th>
-                        <th>Rsyncd Host</th>
-                        <th>Rsyncd Index</th>
-                        <th>Stagger Minute</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody v-if="plotPlan">
-                      <tr>
-                        <td>Current</td>
-                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
-                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
-                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
-                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td>Plan</td>
-                        <td v-bind:class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
-                        <td v-bind:class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
-                        <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                        <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
-                        <td>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Job number</th>
+                            <th>Rsyncd Host</th>
+                            <th>Rsyncd Index</th>
+                            <th>Stagger Minute</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody v-if="plotPlan">
+                          <tr>
+                            <td>Current</td>
+                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
+                            <td :class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</td>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td>Plan</td>
+                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                            <td :class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
+                            <td>
                               <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
                         </td>
                       </tr>
@@ -723,6 +763,29 @@
       }
       return condition;
     }
+    getLargestDisk(disks: any[]) {
+      if (disks && disks.length == 0) {
+        return null;
+      } else {
+        var maxSize = 0;
+        for (var i = 0; i < disks.length; i++) {
+          if (disks[i].size > disks[maxSize].size) {
+            maxSize = i;
+          }
+        }
+        return disks[maxSize];
+      }
+    }
+    getDiskProgressType(used: number, size: number) {
+      const perc = used / size;
+      if (perc < 0.5) return 'success';
+      if (perc < 0.7) return 'warning';
+      return 'danger';
+    }
+    humanize(size: number) {
+      var i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
     // }
@@ -739,3 +802,12 @@
     }
   }
 </script>
+
+<style>
+  #summary progress {
+    margin: 0;
+  }
+  #summary .progress-wrapper {
+    margin: 0.2em 0;
+  }
+</style>
