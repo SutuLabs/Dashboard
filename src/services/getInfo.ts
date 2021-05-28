@@ -34,9 +34,9 @@ export default {
     });
   },
 
-  getPlotPlan(method: string, plans?: any[]) {
+  getPlotPlan() {
 
-    const url = `http://10.177.0.165:5000/server/plotplan` + ((plans == undefined) ? `` : `/${plans}`);
+    const url = `http://10.177.0.165:5000/server/plotplan`;
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
 
@@ -46,8 +46,25 @@ export default {
     headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
     return fetch(url, {
-      method: method,
+      method: 'GET',
       headers: headers,
+    });
+  },
+
+  applyPlotPlan(plans?: any[]) {
+    const url = `http://10.177.0.165:5000/server/plotplan`;
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
+
+    const headers = new Headers();
+
+    headers.append('Content-Type', 'text/json');
+    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+
+    return fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(plans),
     });
   },
 
@@ -63,6 +80,6 @@ export default {
     for (let i = 0; i < intervals.length; i++) {
       clearInterval(intervals[i]);
     }
-    return []; 
+    return [];
   },
 }
