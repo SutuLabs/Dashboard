@@ -145,8 +145,15 @@
             </b-field>
             <div class="columns is-desktop is-multiline is-3">
               <div v-for="plot in plotters" :key="plot.name" class="column is-half">
+                <div class="card-header">
+                  <div class="card-header-title">
+                    <div class="">{{plot.name}} </div>
+                    <div class="heading has-text-info">{{plot.jobs.length}} Jobs</div>
+                    <div class="">{{plot.fileCounts[0].count}} Moving</div>
+                  </div>
+                </div>
                 <div class="title">[{{plot.name}}]: {{plot.jobs.length}} Jobs [{{plot.fileCounts[0].count}} Moving]</div>
-                <div class="">
+                <div class="table-container">
                   <table class="table">
                     <thead>
                       <tr>
@@ -174,15 +181,17 @@
                         <td v-bind:class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
                         <td v-bind:class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}</td>
                         <td>
-                          <b-button @click="applyPlotPlan([plot.name])">Apply</b-button>
+                          <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
                         </td>
                       </tr>
                     </tbody>
                   </table>
+                </div>
+                <div>
                   <table v-if="!hideJobs" class="table is-striped is-hoverable">
                     <thead>
                       <tr>
-                        <th>--------</th>
+                        <th class="is-hidden-mobile"></th>
                         <th>id</th>
                         <th>工作时长 </th>
                         <th>工作进度</th>
@@ -190,32 +199,34 @@
                         <th>操作</th>
                       </tr>
                     </thead>
-                    <tr v-for="job in plot.jobs" v-bind:key="job.id">
-                      <td>
-                        <b-progress format="percent" :max="100">
-                          <template #bar>
-                            <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                              type="is-danger">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
-                              type="is-info">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
-                              type="is-warning">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                            </b-progress-bar>
-                          </template>
-                        </b-progress>
-                      </td>
-                      <td>{{job.id}}</td>
-                      <td>{{job.wallTime}}</td>
-                      <td>{{job.phase}}</td>
-                      <td>{{job.tempSize}}</td>
-                      <td>
-                        <b-button @click="stopPlot(plot.name, job.id)">停止</b-button>
-                      </td>
-                    </tr>
+                    <tbody>
+                      <tr v-for="job in plot.jobs" v-bind:key="job.id">
+                        <td class="is-hidden-mobile" width="25%">
+                          <b-progress format="percent" :max="100">
+                            <template #bar>
+                              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                                              type="is-danger">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
+                                              type="is-info">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
+                                              type="is-warning">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                              </b-progress-bar>
+                            </template>
+                          </b-progress>
+                        </td>
+                        <td>{{job.id}}</td>
+                        <td>{{(job.wallTime).split(':')[0]}}<span class="has-text-grey">h</span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey">min</span></td>
+                        <td>{{job.phase}}</td>
+                        <td>{{job.tempSize}}</td>
+                        <td>
+                          <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
+                        </td>
+                      </tr>
+                    </tbody>
                   </table>
 
                   <div class="card-content p-4" v-if="plot.cpuMap">
@@ -379,6 +390,7 @@
               this.harvesters.push(machine);
             }
             this.harvesters.forEach((harvester: any) => {
+              console.log(harvester);
               this.calcCpuMap(harvester);
               getInfo.sortDisks(harvester);
             })
