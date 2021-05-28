@@ -45,7 +45,7 @@
               </b-tooltip>
             </div>
           </div>
-          <div class="column is-half">
+          <div v-if="!hideProcess" class="column is-half">
             <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
             <template>
               <b-taglist attached>
@@ -84,6 +84,7 @@
   })
   export default class cpuInfo extends Vue {
     @Prop() private machine!: any;
+    @Prop() private hideProcess!: boolean;
 
     calcCpu(machine: any) {
       var count = 0;
