@@ -17,14 +17,14 @@
       <div class="card-content">
         <div v-if="!calcLoading">
           <b-tabs type="is-boxed" expanded>
-            <b-tab-item label="Simplified">
+            <b-tab-item label="初级版">
               <calculatorSimplified :farm="farm" />
             </b-tab-item>
 
-            <b-tab-item label="Advanced" id="advanced">
+            <b-tab-item label="高级版" id="advanced">
               <div class="box" v-if="!calcLoading">
                 <p class="title is-5">你的算力</p>
-                <p>(of size 101.4GiB, k=32)</p>
+                <p>k=32，每块田大小为101.4GB</p>
                 <b-field>
                   <b-slider size="is-small" v-model="slider" :min="0" :max="99" :tooltip="false"
                             :custom-formatter="(val) => this.sliderValue[parseInt(val)].toString()" v-on:input="setNPlot()">
@@ -43,7 +43,7 @@
                   <div v-if="calculator" class="column" style="visibility: hidden;">
                     <b-field>
                       <p class="control">
-                        <span class="button is-small">Assume 1 XCH =</span>
+                        <span class="button is-small">假设 1 XCH =</span>
                       </p>
                       <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
                       <p class="control">
@@ -55,24 +55,24 @@
               </div>
 
               <div class="box">
-                <div class="title is-4">Earnings over time</div>
+                <div class="title is-4">收益</div>
                 <div class="columns">
                   <div class="column is-half">
-                    <b-field horizontal label="Time Frame">
+                    <b-field horizontal label="时间范围">
                       <b-select size="is-small" v-model="calculator.timeFrameUnit" v-on:input="calculate()">
-                        <option value="1month">1 Month</option>
-                        <option value="3month">3 Months</option>
-                        <option value="6month">6 Months</option>
-                        <option value="1year">1 Year</option>
-                        <option value="3year">3 Years</option>
-                        <option value="5year">5 Years</option>
+                        <option value="1month">1 月</option>
+                        <option value="3month">3 月</option>
+                        <option value="6month">6 月</option>
+                        <option value="1year">1 年</option>
+                        <option value="3year">3 年</option>
+                        <option value="5year">5 年</option>
                       </b-select>
                     </b-field>
                   </div>
                   <div class="column is-half">
-                    <b-field horizontal label="Start Date">
+                    <b-field horizontal label="开始时间">
                       <b-select size="is-small" v-model="calculator.startDate" v-on:input="calculate()">
-                        <option value="today">Today</option>
+                        <option value="today">今日</option>
                         <option value="mainet">Mainnet Launch</option>
                       </b-select>
                     </b-field>
@@ -87,7 +87,7 @@
                 <div class="title is-4">Plots</div>
                 <div class="columns">
                   <div class="column is-one-third">
-                    <b-field label="Initial size of plots">
+                    <b-field label="初始容量">
                       <b-input size="is-small" :lazy="true" expanded v-model="calculator.initSize"
                                v-on:input="calculate()" disabled></b-input>
                       <b-select size="is-small" v-model="calculator.initSizeUnit" disabled>
@@ -96,17 +96,17 @@
                     </b-field>
                   </div>
                   <div class="column is-one-third">
-                    <b-field label="Plotting Speed">
+                    <b-field label="每日增长速度">
                       <b-input size="is-small" :lazy="true" expanded v-model="calculator.plottingSpeed"
                                v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.plottingSpeedUnit">
                         <option value="gib">GiB</option>
                       </b-select>
                     </b-field>
-                    <div>Space plotted per day</div>
+                    <div>空间/天</div>
                   </div>
                   <div class="column is-one-third">
-                    <b-field label="Max size of plots">
+                    <b-field label="最大增长至">
                       <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize"
                                v-on:input="calculate()" :disabled="calculator.unlimited"></b-input>
                       <b-select size="is-small" v-model="calculator.maxSizeUnit" :disabled="calculator.unlimited">
@@ -114,16 +114,16 @@
                       </b-select>
                     </b-field>
                     <b-field>
-                      <b-checkbox v-model="calculator.unlimited" v-on:input="calculate()">Unlimited</b-checkbox>
+                      <b-checkbox v-model="calculator.unlimited" v-on:input="calculate()">无限增长</b-checkbox>
                     </b-field>
                   </div>
                 </div>
               </div>
               <div class="box">
-                <div class="title is-4">Network Space</div>
+                <div class="title is-4">网络容量</div>
                 <div class="columns">
                   <div class="column is-one-third">
-                    <b-field label="Initial size of network">
+                    <b-field label="初始容量">
                       <b-input size="is-small" :lazy="true" expanded v-model="calculator.initNetSize"
                                v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.initNetSizeUnit">
@@ -132,38 +132,38 @@
                     </b-field>
                   </div>
                   <div class="column is-one-third">
-                    <b-field label="Network growth">
+                    <b-field label="指数增长速率">
                       <p class="control">
                         <span class="button  is-small">%</span>
                       </p>
                       <b-input size="is-small" :lazy="true" expanded v-model="calculator.growthRate"
                                v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.growthRatePeriod">
-                        <option value="weekly">Weekly</option>
+                        <option value="weekly">每周</option>
                       </b-select>
                     </b-field>
                   </div>
                   <div class="column is-one-third">
                     <b-field>
-                      <b-checkbox v-model="calculator.unbounded" v-on:input="calculate()">Unbounded growth</b-checkbox>
+                      <b-checkbox v-model="calculator.unbounded" v-on:input="calculate()">无限增长</b-checkbox>
                     </b-field>
                   </div>
                 </div>
                 <div class="columns">
                   <div class="column is-one-third">
-                    <b-field label="Days of exponential growth">
+                    <b-field label="指数增长天数">
                       <b-input size="is-small" :lazy="true" v-model="calculator.exponentialGrowth"
                                v-on:input="calculate()"></b-input>
                     </b-field>
                   </div>
                   <div class="column is-one-third">
-                    <b-field label="Days of stabilization">
+                    <b-field label="稳定增长天数">
                       <b-input size="is-small" :lazy="true" v-model="calculator.stabilization" v-on:input="calculate()">
                       </b-input>
                     </b-field>
                   </div>
                   <div class="column is-one-third">
-                    <b-field label="Stabilized daily growth">
+                    <b-field label="每天稳定增长容量">
                       <b-input size="is-small" :lazy="true" expanded v-model="calculator.stableDaily"
                                v-on:input="calculate()"></b-input>
                       <b-select size="is-small" v-model="calculator.stableDailyUnit">
@@ -174,17 +174,17 @@
                 </div>
               </div>
               <div class="box">
-                <div class="title is-4">Estimated Total Earnings</div>
+                <div class="title is-4">预估总收益</div>
                 <nav class="level">
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">XCH after {{ calculator.timeFrame }} months</div>
+                      <div class="heading">{{ calculator.timeFrame }}个月后收入奇亚币（XCH）数量</div>
                       <div class="title is-5">{{ calculator.totalXCH.toFixed(2) }}</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">USD after {{ calculator.timeFrame }} {{ calculator.timeFrameUnit }}</div>
+                      <div class="heading">{{ calculator.timeFrame }}个月后收入美元（USD）数量</div>
                       <div class="title is-5">${{ calculator.totalEarningUSD.toFixed(2) }}</div>
                     </div>
                   </div>
@@ -192,77 +192,77 @@
               </div>
 
               <div class="box">
-                <div class="title is-4">Network</div>
+                <div class="title is-4">网络</div>
                 <nav class="level">
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Total network space</div>
+                      <div class="heading">全部网络空间</div>
                       <div class="title is-5">{{ calculator.totalNetSpace }}PiB</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Owned network space</div>
+                      <div class="heading">拥有网络空间</div>
                       <div class="title is-5">{{ calculator.ownedNetSpace }}%</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Expected time to win</div>
+                      <div class="heading">期望成功值</div>
                       <div class="title is-5">{{ calculator.expectTimeWin }}</div>
                     </div>
                   </div>
                 </nav>
               </div>
               <div class="box">
-                <div class="title is-4">Estimated Earnings</div>
+                <div class="title is-4">预估收益</div>
                 <nav class="level">
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Hourly XCH</div>
-                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.hour.toFixed(2) }}/hour</div>
+                      <div class="heading">每时 XCH</div>
+                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.hour.toFixed(2) }}/时</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Daily XCH</div>
-                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.day.toFixed(2) }}/day</div>
+                      <div class="heading">每天 XCH</div>
+                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.day.toFixed(2) }}/日</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Monthly XCH</div>
-                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.month.toFixed(2) }}/month</div>
+                      <div class="heading">每月 XCH</div>
+                      <div class="title is-5">{{ calculator.estimatedEarning.XCH.month.toFixed(2) }}/月</div>
                     </div>
                   </div>
                 </nav>
                 <nav class="level">
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Hourly USD</div>
-                      <div class="title is-5">${{ calculator.estimatedEarning.USD.hour.toFixed(2) }}/hour</div>
+                      <div class="heading">每时 USD</div>
+                      <div class="title is-5">${{ calculator.estimatedEarning.USD.hour.toFixed(2) }}/时</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Daily USD</div>
-                      <div class="title is-5">${{ calculator.estimatedEarning.USD.day.toFixed(2) }}/day</div>
+                      <div class="heading">每天 USD</div>
+                      <div class="title is-5">${{ calculator.estimatedEarning.USD.day.toFixed(2) }}/日</div>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
                     <div>
-                      <div class="heading">Monthly USD</div>
-                      <div class="title is-5">${{ calculator.estimatedEarning.USD.month.toFixed(2) }}/month</div>
+                      <div class="heading">每月 USD</div>
+                      <div class="title is-5">${{ calculator.estimatedEarning.USD.month.toFixed(2) }}/月</div>
                     </div>
                   </div>
                 </nav>
               </div>
 
               <div class="box">
-                <div class="title is-4">Exchange Rate</div>
+                <div class="title is-4">汇率</div>
                 <b-field>
                   <p class="control">
-                    <span class="button  is-small">Assume 1 XCH =</span>
+                    <span class="button  is-small">假设 1 XCH =</span>
                   </p>
                   <b-input size="is-small" v-model="calculator.XCHprice" :lazy="true" v-on:input="calculate()"></b-input>
                   <p class="control">
@@ -538,23 +538,23 @@
 
       this.calculator.calculatorMap = {
         series: [{
-          name: "Network Space",
+          name: "网络容量",
           data: netSpaceData,
         },
         {
-          name: "Size of Plots",
+          name: "农田大小",
           data: plotSizeData,
         },
         {
-          name: "Owned Space",
+          name: "拥有的空间",
           data: ownedSpaceData,
         },
         {
-          name: "Daily Earning",
+          name: "每日收益",
           data: dailyEarningData,
         },
         {
-          name: "Total Earning",
+          name: "总收益",
           data: totalEarningData,
         }
         ],
