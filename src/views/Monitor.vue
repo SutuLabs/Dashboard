@@ -497,6 +497,7 @@
       Vue.set(vueObj, 'disks', machine.disks);
       Vue.set(vueObj, 'memory', machine.memory);
       Vue.set(vueObj, 'process', machine.process);
+      Vue.set(vueObj, 'networkIoSpeed', machine.networkIoSpeed);
     }
     stopPlot(name: string, plotId: string) {
       this.$buefy.dialog.confirm({
