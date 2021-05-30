@@ -45,6 +45,17 @@
               </b-tooltip>
             </div>
           </div>
+          <div class="column is-one-quarter">
+            <div class="block">
+              <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
+                <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">Network</div>
+                <div>{{humanize(machine.networkIoSpeed)}}</div>
+                <template v-slot:content>
+                  <div>{{machine.networkIoSpeed}}</div>
+                </template>
+              </b-tooltip>
+            </div>
+          </div>
           <div v-if="!hideProcess" class="column is-half">
             <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
             <template>
@@ -92,6 +103,11 @@
         if (cpu < 50) count += 1;
       });
       return count;
+    }
+
+    humanize(size: number) {
+      var i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     }
   }
 </script>
