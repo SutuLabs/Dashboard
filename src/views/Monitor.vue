@@ -317,6 +317,47 @@
       </div>
     </div>
 
+    <div class="block">
+      <div id="harvesters" class="card">
+        <div class="card-header">
+          <div class="card-header-title">Harvester</div>
+        </div>
+        <div v-if="harvesters == null" class="card-content">Loading</div>
+        <div v-else class="card-content">
+          <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped>
+            <b-table-column field="name" label="Name" width="40" v-slot="props">
+              {{ props.row.name }}
+            </b-table-column>
+            <b-table-column field="network" label="Network" width="40" v-slot="props">
+              {{ humanize(props.row.networkIoSpeed) }}
+            </b-table-column>
+            <b-table-column label="Disk Space" width="30%" v-slot="props">
+              <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
+                <div class="summary-progress">
+                  <disk-list :disks="[getLargestDisk(props.row.disks)]" />
+                </div>
+              </template>
+              <template v-else>
+                No disks found
+              </template>
+            </b-table-column>
+
+            <template slot="detail" slot-scope="props">
+              <tr :set="plot = props.row">
+                <td colspan="5">
+                  <div class="box">
+                    <div class="p-4" v-if="plot.cpuMap">
+                      <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </b-table>
+        </div>
+      </div>
+    </div>
+
     <div class="block" id="errors">
       <div class="columns is-desktop">
         <div class="column is-half" v-if="errors!=null">
@@ -782,6 +823,10 @@
         return disks[maxSize];
       }
     }
+    humanize(size: number) {
+      var i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
     // }
@@ -800,11 +845,19 @@
 </script>
 
 <style>
-  #summary .summary-progress progress {
+  #plotters .summary-progress progress {
     margin: 0;
   }
 
-  #summary .summary-progress .progress-wrapper {
+  #plotters .summary-progress .progress-wrapper {
+    margin: 0.2em 0;
+  }
+
+  #harvesters .summary-progress progress {
+    margin: 0;
+  }
+
+  #harvesters .summary-progress .progress-wrapper {
     margin: 0.2em 0;
   }
 </style>
