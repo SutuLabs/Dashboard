@@ -1,287 +1,291 @@
-<template>
+﻿<template>
   <div class="explorer">
     <b-notification v-if="username==null" type="is-danger" has-icon aria-close-label="Close notification" role="alert">
       尚未登录，无法查看！
     </b-notification>
-    <div v-if="farmer!=null" class="box">
-      <div class="card-content">
-        <div class="content">
-          <b-field grouped group-multiline>
-            <div class="container is-fluid mb-3">
-              <b-notification v-if="connectionStatus=='failed'" type="is-danger" has-icon
-                aria-close-label="Close notification" role="alert">
-                无法连接至服务器，请检查您的网络连接或联系管理员！
-              </b-notification>
-            </div>
-            <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">连接状态</b-tag>
-                <b-tag type="is-warning" v-if="connectionStatus=='loading'">连接中...</b-tag>
-                <b-tag type="is-success" v-else-if="connectionStatus=='success'">连接成功</b-tag>
-                <b-tag type="is-danger" v-else>连接失败</b-tag>
-              </b-taglist>
-            </div>
-            <div class="control">
-              <b-tooltip :label="'时间: ' + farmer.node.time" position="is-bottom">
-                <b-taglist attached>
-                  <b-tag type="is-dark">同步状态</b-tag>
-                  <b-tag type="is-success" v-if="farmer.node.status == 'Full Node Synced'">
-                    {{farmer.node.status}}
-                  </b-tag>
-                  <b-tag type="is-danger" v-else>{{farmer.node.status}}</b-tag>
-                </b-taglist>
-              </b-tooltip>
-            </div>
 
-            <div class="control">
-              <b-tooltip :label="'空间: ' + farmer.farmer.totalSize + '/' + farmer.node.space" position="is-bottom">
-                <b-taglist attached>
-                  <b-tag type="is-dark">农场状态</b-tag>
-                  <b-tag type="is-success" v-if="farmer.farmer.status == 'Farming'">{{farmer.farmer.status}}</b-tag>
-                  <b-tag type="is-danger" v-else>{{farmer.farmer.status}}</b-tag>
-                </b-taglist>
-              </b-tooltip>
-            </div>
-
-            <div class="control">
-              <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
-                <b-taglist attached>
-                  <b-tag type="is-dark">耕田数量</b-tag>
-                  <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
-                </b-taglist>
-              </b-tooltip>
-            </div>
-
-            <div class="control">
-              <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
-                <b-taglist attached>
-                  <b-tag type="is-dark">总共挖币</b-tag>
-                  <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
-                </b-taglist>
-              </b-tooltip>
-            </div>
-
-            <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">Farmer</b-tag>
-                <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
-              </b-taglist>
-            </div>
-
-            <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">Plotter</b-tag>
-                <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
-              </b-taglist>
-            </div>
-
-            <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">Harvester</b-tag>
-                <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
-              </b-taglist>
-            </div>
-
-            <div class="control">
-              <b-taglist attached>
-                <b-tag type="is-dark">用户</b-tag>
-                <b-tag v-if='username' type="is-info">{{username}}</b-tag>
-                <b-tag v-else type="is-danger">未登录</b-tag>
-              </b-taglist>
-            </div>
-
-          </b-field>
-
-          <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
-            <template #trigger="props">
-              <a aria-controls="contentIdForA11y1">
-                <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
-                {{ !props.open ? '显示全部' : '隐藏' }}
-              </a>
-            </template>
+    <div v-else>
+      <div v-if="farmer!=null" class="box">
+        <div class="card-content">
+          <div class="content">
             <b-field grouped group-multiline>
-              <div class="control">
-                <b-taglist attached>
-                  <b-tag type="is-dark">高度</b-tag>
-                  <b-tag type="is-info">{{farmer.node.height}}</b-tag>
-                </b-taglist>
+              <div class="container is-fluid mb-3">
+                <b-notification v-if="connectionStatus=='failed'" type="is-danger" has-icon
+                                aria-close-label="Close notification" role="alert">
+                  无法连接至服务器，请检查您的网络连接或联系管理员！
+                </b-notification>
               </div>
               <div class="control">
                 <b-taglist attached>
-                  <b-tag type="is-dark">空间</b-tag>
-                  <b-tag type="is-primary is-light">{{farmer.farmer.totalSize}}</b-tag>
-                  <b-tag type="is-light">{{farmer.node.space}}</b-tag>
+                  <b-tag type="is-dark">连接状态</b-tag>
+                  <b-tag type="is-warning" v-if="connectionStatus=='loading'">连接中...</b-tag>
+                  <b-tag type="is-success" v-else-if="connectionStatus=='success'">连接成功</b-tag>
+                  <b-tag type="is-danger" v-else>连接失败</b-tag>
                 </b-taglist>
               </div>
               <div class="control">
+                <b-tooltip :label="'时间: ' + farmer.node.time" position="is-bottom">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">同步状态</b-tag>
+                    <b-tag type="is-success" v-if="farmer.node.status == 'Full Node Synced'">
+                      {{farmer.node.status}}
+                    </b-tag>
+                    <b-tag type="is-danger" v-else>{{farmer.node.status}}</b-tag>
+                  </b-taglist>
+                </b-tooltip>
+              </div>
+
+              <div class="control">
+                <b-tooltip :label="'空间: ' + farmer.farmer.totalSize + '/' + farmer.node.space" position="is-bottom">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">农场状态</b-tag>
+                    <b-tag type="is-success" v-if="farmer.farmer.status == 'Farming'">{{farmer.farmer.status}}</b-tag>
+                    <b-tag type="is-danger" v-else>{{farmer.farmer.status}}</b-tag>
+                  </b-taglist>
+                </b-tooltip>
+              </div>
+
+              <div class="control">
+                <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">耕田数量</b-tag>
+                    <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
+                  </b-taglist>
+                </b-tooltip>
+              </div>
+
+              <div class="control">
+                <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">总共挖币</b-tag>
+                    <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
+                  </b-taglist>
+                </b-tooltip>
+              </div>
+
+              <div class="control">
                 <b-taglist attached>
-                  <b-tag type="is-dark">难度</b-tag>
-                  <b-tag type="is-light">{{farmer.node.difficulty}}</b-tag>
+                  <b-tag type="is-dark">Farmer</b-tag>
+                  <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
                 </b-taglist>
               </div>
 
               <div class="control">
                 <b-taglist attached>
-                  <b-tag type="is-dark">交易费用</b-tag>
-                  <b-tag type="is-light">{{farmer.farmer.txFees}}</b-tag>
+                  <b-tag type="is-dark">Plotter</b-tag>
+                  <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
                 </b-taglist>
               </div>
 
               <div class="control">
                 <b-taglist attached>
-                  <b-tag type="is-dark">奖励</b-tag>
-                  <b-tag type="is-light">{{farmer.farmer.rewards}}</b-tag>
+                  <b-tag type="is-dark">Harvester</b-tag>
+                  <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
                 </b-taglist>
               </div>
 
               <div class="control">
                 <b-taglist attached>
-                  <b-tag type="is-dark">期望成功值</b-tag>
-                  <b-tag type="is-light">{{farmer.farmer.expectedToWin}}</b-tag>
+                  <b-tag type="is-dark">用户</b-tag>
+                  <b-tag v-if='username' type="is-info">{{username}}</b-tag>
+                  <b-tag v-else type="is-danger">未登录</b-tag>
                 </b-taglist>
               </div>
 
             </b-field>
-          </b-collapse>
+
+            <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
+              <template #trigger="props">
+                <a aria-controls="contentIdForA11y1">
+                  <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                  {{ !props.open ? '显示全部' : '隐藏' }}
+                </a>
+              </template>
+              <b-field grouped group-multiline>
+                <div class="control">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">高度</b-tag>
+                    <b-tag type="is-info">{{farmer.node.height}}</b-tag>
+                  </b-taglist>
+                </div>
+                <div class="control">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">空间</b-tag>
+                    <b-tag type="is-primary is-light">{{farmer.farmer.totalSize}}</b-tag>
+                    <b-tag type="is-light">{{farmer.node.space}}</b-tag>
+                  </b-taglist>
+                </div>
+                <div class="control">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">难度</b-tag>
+                    <b-tag type="is-light">{{farmer.node.difficulty}}</b-tag>
+                  </b-taglist>
+                </div>
+
+                <div class="control">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">交易费用</b-tag>
+                    <b-tag type="is-light">{{farmer.farmer.txFees}}</b-tag>
+                  </b-taglist>
+                </div>
+
+                <div class="control">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">奖励</b-tag>
+                    <b-tag type="is-light">{{farmer.farmer.rewards}}</b-tag>
+                  </b-taglist>
+                </div>
+
+                <div class="control">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">期望成功值</b-tag>
+                    <b-tag type="is-light">{{farmer.farmer.expectedToWin}}</b-tag>
+                  </b-taglist>
+                </div>
+
+              </b-field>
+            </b-collapse>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!--<div class="box">-->
-    <!-- <diskMap /> -->
-    <!--</div>-->
+      <!--<div class="box">-->
+      <!-- <diskMap /> -->
+      <!--</div>-->
 
-    <div class="block">
-      <div id="plotters" class="card">
-        <div class="card-header">
-          <div class="card-header-title">Plotter</div>
-        </div>
-        <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
-        <div v-else class="card-content">
-          <b-field grouped group-multiline>
-            <div class="control">
-              <b-switch v-model="hideJobs">Hide Jobs</b-switch>
-            </div>
-            <div class="control">
-              <b-switch v-model="hideProcess">Hide Process</b-switch>
-            </div>
-            <div class="control">
-              <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
-            </div>
-          </b-field>
+      <div class="block">
+        <div id="plotters" class="card">
+          <div class="card-header">
+            <div class="card-header-title">Plotter</div>
+          </div>
+          <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
+          <div v-else class="card-content">
+            <b-field grouped group-multiline>
+              <div class="control">
+                <b-switch v-model="hideJobs">Hide Jobs</b-switch>
+              </div>
+              <div class="control">
+                <b-switch v-model="hideProcess">Hide Process</b-switch>
+              </div>
+              <div class="control">
+                <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+              </div>
+            </b-field>
 
-          <b-table :data="plotters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped>
-            <b-table-column field="name" label="Name" width="40" v-slot="props">
-              {{ props.row.name }}
-            </b-table-column>
-            <b-table-column label="Jobs" width="40" v-slot="props">
-              <template>
-                {{props.row.jobs.length}} /
-                <span :class="togglePlanClass(props.row, 'jobNumber')">{{props.row.configuration.jobNumber}}</span>
-                <span class="has-text-grey">
-                  [
-                </span>
-                <span :class="togglePlanClass(props.row, 'staggerMinute')">{{props.row.configuration.staggerMinute}}</span>
-                <span class="has-text-grey">
-                  m]
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="Moving" width="40" v-slot="props">
-              <template>
-                {{props.row.fileCounts[0].count}}
-                <span class="has-text-grey">-></span>
-                <span :class="togglePlanClass(props.row, 'rsyncdHost')">{{props.row.configuration.rsyncdHost}}</span>
-                <span class="has-text-grey">@</span>
-                <span :class="togglePlanClass(props.row, 'rsyncdIndex')">{{props.row.configuration.rsyncdIndex}}</span>
-              </template>
-            </b-table-column>
-            <b-table-column label="Plotting Progress" width="50" v-slot="props">
-              {{ plottingProgress(props.row.jobs)}}
-            </b-table-column>
-            <b-table-column label="Disk Space" width="30%" v-slot="props">
-              <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
-                <div class="summary-progress">
-                  <disk-list :disks="[getLargestDisk(props.row.disks)]" />
+            <b-table :data="plotters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable striped>
+              <b-table-column field="name" label="Name" width="40" v-slot="props">
+                {{ props.row.name }}
+              </b-table-column>
+              <b-table-column label="Jobs" width="40" v-slot="props">
+                <template>
+                  {{props.row.jobs.length}} /
+                  <span :class="togglePlanClass(props.row, 'jobNumber')">{{props.row.configuration.jobNumber}}</span>
+                  <span class="has-text-grey">
+                    [
+                  </span>
+                  <span :class="togglePlanClass(props.row, 'staggerMinute')">{{props.row.configuration.staggerMinute}}</span>
+                  <span class="has-text-grey">
+                    m]
+                  </span>
+                </template>
+              </b-table-column>
+              <b-table-column label="Moving" width="40" v-slot="props">
+                <template>
+                  {{props.row.fileCounts[0].count}}
+                  <span class="has-text-grey">-></span>
+                  <span :class="togglePlanClass(props.row, 'rsyncdHost')">{{props.row.configuration.rsyncdHost}}</span>
+                  <span class="has-text-grey">@</span>
+                  <span :class="togglePlanClass(props.row, 'rsyncdIndex')">{{props.row.configuration.rsyncdIndex}}</span>
+                </template>
+              </b-table-column>
+              <b-table-column label="Plotting Progress" width="50" v-slot="props">
+                <div style="font-family: Consolas">
+                  {{ plottingProgress(props.row.jobs)}}
                 </div>
-              </template>
-              <template v-else>
-                No disks found
-              </template>
-            </b-table-column>
+              </b-table-column>
+              <b-table-column label="Disk Space" width="30%" v-slot="props">
+                <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
+                  <div class="summary-progress">
+                    <disk-list :disks="[getLargestDisk(props.row.disks)]" />
+                  </div>
+                </template>
+                <template v-else>
+                  No disks found
+                </template>
+              </b-table-column>
 
-            <template slot="detail" slot-scope="props">
-              <tr :set="plot = props.row">
-                <td colspan="6">
-                  <div class="">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th></th>
-                          <th>Job number</th>
-                          <th>Rsyncd Host</th>
-                          <th>Rsyncd Index</th>
-                          <th>Stagger Minute</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody v-if="plotPlan">
-                        <tr>
-                          <td>Current</td>
-                          <td :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
-                          <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
-                          <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
-                          <td :class="togglePlanClass(plot, 'staggerMinute')">
-                            {{plot.configuration.staggerMinute}}
-                          </td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>Plan</td>
-                          <td :class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
-                          <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
-                          <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                          <td :class="togglePlanClass(plot, 'staggerMinute')">
-                            {{plotPlan[plot.name].staggerMinute}}
-                          </td>
-                          <td>
-                            <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+              <template slot="detail" slot-scope="props">
+                <tr :set="plot = props.row">
+                  <td colspan="6">
+                    <div class="table-container">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Job number</th>
+                            <th>Rsyncd Host</th>
+                            <th>Rsyncd Index</th>
+                            <th>Stagger Minute</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody v-if="plotPlan">
+                          <tr>
+                            <td>Current</td>
+                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
+                            <td :class="togglePlanClass(plot, 'staggerMinute')">
+                              {{plot.configuration.staggerMinute}}
+                            </td>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td>Plan</td>
+                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
+                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                            <td :class="togglePlanClass(plot, 'staggerMinute')">
+                              {{plotPlan[plot.name].staggerMinute}}
+                            </td>
+                            <td>
+                              <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-                    <table v-if="!hideJobs" class="table is-striped is-hoverable">
-                      <thead>
-                        <tr>
-                          <th class="is-hidden-mobile"></th>
-                          <th>id</th>
-                          <th>工作时长 </th>
-                          <th>工作进度</th>
-                          <th>容量</th>
-                          <th>操作</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="job in plot.jobs" v-bind:key="job.id">
-                          <td class="is-hidden-mobile" width="25%">
-                            <b-progress format="percent" :max="100">
-                              <template #bar>
-                                <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                                                type="is-danger">
-                                </b-progress-bar>
-                                <b-progress-bar v-if="job.progress > 35"
-                                                :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
-                                </b-progress-bar>
-                                <b-progress-bar v-if="job.progress > 56"
-                                                :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
-                                </b-progress-bar>
-                                <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                                </b-progress-bar>
-                              </template>
-                            </b-progress>
-                          </td>
-                          <td>{{job.id}}</td>
+                      <table v-if="!hideJobs" class="table is-striped is-hoverable">
+                        <thead>
+                          <tr>
+                            <th class="is-hidden-mobile"></th>
+                            <th>id</th>
+                            <th>工作时长 </th>
+                            <th>工作进度</th>
+                            <th>容量</th>
+                            <th>操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="job in plot.jobs" v-bind:key="job.id">
+                            <td class="is-hidden-mobile" width="25%">
+                              <b-progress format="percent" :max="100">
+                                <template #bar>
+                                  <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                                                  type="is-danger">
+                                  </b-progress-bar>
+                                  <b-progress-bar v-if="job.progress > 35"
+                                                  :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
+                                  </b-progress-bar>
+                                  <b-progress-bar v-if="job.progress > 56"
+                                                  :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
+                                  </b-progress-bar>
+                                  <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                                  </b-progress-bar>
+                                </template>
+                              </b-progress>
+                            </td>
+                            <td>{{job.id}}</td>
                             <td v-if="job.wallTime.includes(':')">
                               {{(job.wallTime).split(':')[0]}}<span class="has-text-grey">
                                 h
@@ -290,55 +294,55 @@
                             <td v-else>
                               {{job.wallTime.slice(0,-1)}}<span class="has-text-grey">s</span>
                             </td>
-                          <td>{{job.phase}}</td>
-                          <td>{{job.tempSize}}</td>
-                          <td>
-                            <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                            <td>{{job.phase}}</td>
+                            <td>{{job.tempSize}}</td>
+                            <td>
+                              <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-                    <div class="p-4" v-if="plot.cpuMap">
-                      <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
+                      <div class="p-4" v-if="plot.cpuMap">
+                        <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            </template>
-          </b-table>
+                  </td>
+                </tr>
+              </template>
+            </b-table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="block" v-if="farmers!=null">
-      <div class="columns is-desktop is-multiline">
-        <div class="column is-half" v-for="machine in farmers" v-bind:key="machine.name">
-          <nav class="card">
-            <p class="panel-heading">
-              {{machine.name}}
-            </p>
+      <div class="block" v-if="farmers!=null">
+        <div class="columns is-desktop is-multiline">
+          <div class="column is-half" v-for="machine in farmers" v-bind:key="machine.name">
+            <nav class="card">
+              <p class="panel-heading">
+                {{machine.name}}
+              </p>
 
-            <div class="card-content p-4" v-if="machine.cpuMap">
-              <cpu-info name="machine.name" :machine="machine" />
-            </div>
-          </nav>
+              <div class="card-content p-4" v-if="machine.cpuMap">
+                <cpu-info name="machine.name" :machine="machine" />
+              </div>
+            </nav>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="block">
-      <div id="harvesters" class="card">
-        <div class="card-header">
-          <div class="card-header-title">Harvester</div>
-        </div>
-        <div v-if="harvesters == null" class="card-content">Loading</div>
-        <div v-else class="card-content">
-          <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped>
-            <b-table-column field="name" label="Name" width="40" v-slot="props">
-              {{ props.row.name }}
-            </b-table-column>
-            <b-table-column field="network" label="Network" width="40" v-slot="props">
+      <div class="block">
+        <div id="harvesters" class="card">
+          <div class="card-header">
+            <div class="card-header-title">Harvester</div>
+          </div>
+          <div v-if="harvesters == null" class="card-content">Loading</div>
+          <div v-else class="card-content">
+            <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable striped>
+              <b-table-column field="name" label="Name" width="40" v-slot="props">
+                {{ props.row.name }}
+              </b-table-column>
+              <b-table-column field="network" label="Network" width="40" v-slot="props">
                 <div v-if="parseFloat(props.row.networkIoSpeed) > 10240">{{ humanize(props.row.networkIoSpeed) }}</div>
                 <div v-else>No active data transfer</div>
               </b-table-column>
@@ -353,64 +357,64 @@
                 </template>
               </b-table-column>
 
-            <template slot="detail" slot-scope="props">
-              <tr :set="plot = props.row">
-                <td colspan="5">
-                  <div class="box">
-                    <div class="p-4" v-if="plot.cpuMap">
-                      <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
+              <template slot="detail" slot-scope="props">
+                <tr :set="plot = props.row">
+                  <td colspan="5">
+                    <div class="box">
+                      <div class="p-4" v-if="plot.cpuMap">
+                        <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            </template>
-          </b-table>
+                  </td>
+                </tr>
+              </template>
+            </b-table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="block" id="errors">
-      <div class="columns is-desktop">
-        <div class="column is-half" v-if="errors!=null">
-          <nav class="panel">
-            <p class="panel-heading">Errors</p>
-            <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
-              <b-tooltip type="is-light" size="is-large" multilined>
-                <b-tag type="is-info is-light">{{err.time}}</b-tag>
-                <span class="has-text-danger">
-                  {{shorten(err.error)}}
+      <div class="block" id="errors">
+        <div class="columns is-desktop">
+          <div class="column is-half" v-if="errors!=null">
+            <nav class="panel">
+              <p class="panel-heading">Errors</p>
+              <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
+                <b-tooltip type="is-light" size="is-large" multilined>
+                  <b-tag type="is-info is-light">{{err.time}}</b-tag>
+                  <span class="has-text-danger">
+                    {{shorten(err.error)}}
+                  </span>
+                  <template v-slot:content>
+                    <p class="is-size-7">{{err.error}}</p>
+                  </template>
+                </b-tooltip>
+              </div>
+            </nav>
+            <b-button rounded @click="errNum+=10" :disabled="errNum>=errors.length">Expand</b-button>
+            <b-button rounded @click="errNum=10" :disabled="errNum==10">Shrink</b-button>
+          </div>
+
+          <div class="column is-half" v-if="events!=null">
+            <nav class="panel">
+              <p class="panel-heading">Events</p>
+              <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="sortedEvents.indexOf(evt)">
+                <b-tag type="is-info is-light">{{evt.time}}</b-tag>
+                <span class="has-text-danger" v-if="evt.proofs > 0">
+                  {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
+                  {{evt.duration}} s
                 </span>
-                <template v-slot:content>
-                  <p class="is-size-7">{{err.error}}</p>
-                </template>
-              </b-tooltip>
-            </div>
-          </nav>
-          <b-button rounded @click="errNum+=10" :disabled="errNum>=errors.length">Expand</b-button>
-          <b-button rounded @click="errNum=10" :disabled="errNum==10">Shrink</b-button>
-        </div>
-
-        <div class="column is-half" v-if="events!=null">
-          <nav class="panel">
-            <p class="panel-heading">Events</p>
-            <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="sortedEvents.indexOf(evt)">
-              <b-tag type="is-info is-light">{{evt.time}}</b-tag>
-              <span class="has-text-danger" v-if="evt.proofs > 0">
-                {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
-                {{evt.duration}} s
-              </span>
-              <span class="has-text-info" v-else>
-                {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
-                {{evt.duration}} s
-              </span>
-            </div>
-          </nav>
-          <b-button rounded @click="evtNum+=10" :disabled="evtNum>=events.length">Expand</b-button>
-          <b-button rounded @click="evtNum=10" :disabled="evtNum==10">Shrink</b-button>
+                <span class="has-text-info" v-else>
+                  {{evt.eligibleNumber}}/{{evt.total}} 个图块被选中，发现 {{evt.proofs}} 个证明, 时长:
+                  {{evt.duration}} s
+                </span>
+              </div>
+            </nav>
+            <b-button rounded @click="evtNum+=10" :disabled="evtNum>=events.length">Expand</b-button>
+            <b-button rounded @click="evtNum=10" :disabled="evtNum==10">Shrink</b-button>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
