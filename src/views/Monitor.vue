@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="explorer">
     <b-notification v-if="username==null" type="is-danger" has-icon aria-close-label="Close notification" role="alert">
       尚未登录，无法查看！
@@ -59,6 +59,27 @@
                   <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
                 </b-taglist>
               </b-tooltip>
+            </div>
+
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">Farmer</b-tag>
+                <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
+              </b-taglist>
+            </div>
+
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">Plotter</b-tag>
+                <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
+              </b-taglist>
+            </div>
+
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">Harvester</b-tag>
+                <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
+              </b-taglist>
             </div>
 
             <div class="control">
