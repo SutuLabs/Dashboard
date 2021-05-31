@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="explorer">
     <b-notification v-if="username==null" type="is-danger" has-icon aria-close-label="Close notification" role="alert">
       尚未登录，无法查看！
@@ -834,21 +834,24 @@
       var i = Math.floor(Math.log(size) / Math.log(1024));
       return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     }
-    plottingProgress(jobs: any) {
+    plottingProgress(jobs: {
+      phase: string;
+    }[]) {
       if (!jobs) { return "No jobs" }
-      var summary = {
-        '1': new Array(7).fill(0),
-        '2': new Array(6).fill(0),
-        '3': new Array(6).fill(0),
-        '4': new Array(1).fill(0),
-      }
+      var summary = [
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0],
+      ]
       const symbols = [' _ ', ' . ', ' : '];
       for (var i = 0; i < jobs.length; i++) {
-        summary[jobs[i].phase.split(':')[0]][parseInt(jobs[i].phase.split(':')[1])-1] += 1;
+        var phase = jobs[i].phase.split(':')
+        summary[parseInt(phase[0])-1][parseInt(phase[1])-1] += 1;
       }
       var result = "["
-      for (const key in summary) {
-        result = result + key
+      for (var key = 0; key < 4; key++) {
+        result = result + (key+1).toString()
         for (i = 0; i < summary[key].length; i++) {
           if (summary[key][i] < 3) {
             result = result + symbols[summary[key][i]]
