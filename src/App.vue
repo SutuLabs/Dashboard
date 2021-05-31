@@ -48,6 +48,12 @@
           <div class="slogan">
             Chiabee，为矿场提供更专业的技术服务。
           </div>
+          <b-navbar-item v-if="!login" tag="router-link" :to="{path:'/login'}">
+            登录
+          </b-navbar-item>
+          <b-navbar-item v-else @click="quit">
+            退出登录
+          </b-navbar-item>
         </template>
       </b-navbar>
     </div>
