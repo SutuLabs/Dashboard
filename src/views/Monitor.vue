@@ -131,180 +131,153 @@
     <!--</div>-->
 
     <div id="summary" class="box">
-      <div v-if="plotters != null && plotPlan != null" class="table-container">
-        <table class="table is-narrow is-striped is-hoverable" style="width: 100%;">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Jobs</th>
-              <th>Moving</th>
-              <th style="width: 30%;">Disk Space</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="plot in plotters" :key="plot.name">
-              <td>{{plot.name}}</td>
-              <td>{{plot.jobs.length}} /
-                <span :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</span>
-                <span class="has-text-grey">
-                  [
-                </span>
-                <span :class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}</span>
-                <span class="has-text-grey">
-                  m]
-                </span>
-              </td>
-              <td>{{plot.fileCounts[0].count}}
-                <span class="has-text-grey">-></span>
-                <span :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</span>
-                <span class="has-text-grey">@</span>
-                <span :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</span>
-              </td>
-              <td v-if="plot.disks" :set="disk = getLargestDisk(plot.disks)">
-                <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used"
-                  :max="disk.size" show-value>
-                  <div class="has-text-white">
-                    {{disk.path}}:
-                    {{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}
-                    [{{humanize((disk.available)*1024)}}/{{Math.floor(disk.available / 106430464)}}]
-                  </div>
-                </b-progress>
-              </td>
-              <td v-else>No disks found</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="block">
-      <b-collapse class="card" animation="slide" :open.sync="plottingProgressOpen">
-        <template #trigger="props">
-          <div class="card-header" role="button">
-            <p class="card-header-title">Plotting Progress</p>
-            <a class="card-header-icon">
-              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-            </a>
+      <div v-if="plotters == null || plotPlan == null">Loading</div>
+      <div v-else>
+        <b-field grouped group-multiline>
+          <div class="control">
+            <b-switch v-model="hideJobs">Hide Jobs</b-switch>
           </div>
-        </template>
-        <div class="card-content has-background-black">
-          <div v-if="plotters==null" class="content">Loading</div>
+          <div class="control">
+            <b-switch v-model="hideProcess">Hide Process</b-switch>
+          </div>
+          <div class="control">
+            <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+          </div>
+        </b-field>
 
-          <div v-else class="content">
-            <b-field grouped group-multiline>
-              <div class="control">
-                <b-switch v-model="hideJobs">Hide Jobs</b-switch>
+        <b-table :data="plotters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped>
+          <b-table-column field="name" label="Name" width="40" v-slot="props">
+            {{ props.row.name }}
+          </b-table-column>
+          <b-table-column label="Jobs" width="40" v-slot="props">
+            <template>
+              {{props.row.jobs.length}} /
+              <span :class="togglePlanClass(props.row, 'jobNumber')">{{props.row.configuration.jobNumber}}</span>
+              <span class="has-text-grey">
+                [
+              </span>
+              <span :class="togglePlanClass(props.row, 'staggerMinute')">{{props.row.configuration.staggerMinute}}</span>
+              <span class="has-text-grey">
+                m]
+              </span>
+            </template>
+          </b-table-column>
+          <b-table-column label="Moving" width="40" v-slot="props">
+            <template>
+              {{props.row.fileCounts[0].count}}
+              <span class="has-text-grey">-></span>
+              <span :class="togglePlanClass(props.row, 'rsyncdHost')">{{props.row.configuration.rsyncdHost}}</span>
+              <span class="has-text-grey">@</span>
+              <span :class="togglePlanClass(props.row, 'rsyncdIndex')">{{props.row.configuration.rsyncdIndex}}</span>
+            </template>
+          </b-table-column>
+          <b-table-column label="Disk Space" width="30%" v-slot="props">
+            <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)"> 
+              <div class="summary-progress">
+                <disk-list :disks="[getLargestDisk(props.row.disks)]" />
               </div>
-              <div class="control">
-                <b-switch v-model="hideProcess">Hide Process</b-switch>
-              </div>
-              <div class="control">
-                <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
-              </div>
-            </b-field>
-            <div class="columns is-desktop is-multiline is-3">
-              <div v-for="plot in plotters" :key="plot.name" class="column is-half">
+            </template>
+            <template v-else>
+              No disks found
+            </template>
+          </b-table-column>
+
+          <template slot="detail" slot-scope="props">
+            <tr :set="plot = props.row">
+              <td colspan="5">
                 <div class="card">
-                  <div class="card-header">
-                    <div class="card-header-title">
-                      <div class="">{{plot.name}} </div>
-                      <div class="heading has-text-info">{{plot.jobs.length}} Jobs</div>
-                    </div>
-                    <div class="p-4">
-                      <div class="is-size-7">{{plot.fileCounts[0].count}} Moving</div>
-                    </div>
-                  </div>
-                  <div class="">
-                    <div class="table-container">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Job number</th>
-                            <th>Rsyncd Host</th>
-                            <th>Rsyncd Index</th>
-                            <th>Stagger Minute</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody v-if="plotPlan">
-                          <tr>
-                            <td>Current</td>
-                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
-                            <td :class="togglePlanClass(plot, 'staggerMinute')">{{plot.configuration.staggerMinute}}
-                            </td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>Plan</td>
-                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                            <td :class="togglePlanClass(plot, 'staggerMinute')">{{plotPlan[plot.name].staggerMinute}}
-                            </td>
-                            <td>
-                              <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div>
-                      <table v-if="!hideJobs" class="table is-striped is-hoverable">
-                        <thead>
-                          <tr>
-                            <th class="is-hidden-mobile"></th>
-                            <th>id</th>
-                            <th>工作时长 </th>
-                            <th>工作进度</th>
-                            <th>容量</th>
-                            <th>操作</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="job in plot.jobs" v-bind:key="job.id">
-                            <td class="is-hidden-mobile" width="25%">
-                              <b-progress format="percent" :max="100">
-                                <template #bar>
-                                  <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                                    type="is-danger">
-                                  </b-progress-bar>
-                                  <b-progress-bar v-if="job.progress > 35"
-                                    :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
-                                  </b-progress-bar>
-                                  <b-progress-bar v-if="job.progress > 56"
-                                    :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
-                                  </b-progress-bar>
-                                  <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                                  </b-progress-bar>
-                                </template>
-                              </b-progress>
-                            </td>
-                            <td>{{job.id}}</td>
-                            <td>{{(job.wallTime).split(':')[0]}}<span class="has-text-grey"> h
-                              </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span></td>
-                            <td>{{job.phase}}</td>
-                            <td>{{job.tempSize}}</td>
-                            <td>
-                              <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Job number</th>
+                        <th>Rsyncd Host</th>
+                        <th>Rsyncd Index</th>
+                        <th>Stagger Minute</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody v-if="plotPlan">
+                      <tr>
+                        <td>Current</td>
+                        <td :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
+                        <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
+                        <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
+                        <td :class="togglePlanClass(plot, 'staggerMinute')">
+                          {{plot.configuration.staggerMinute}}
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Plan</td>
+                        <td :class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
+                        <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
+                        <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                        <td :class="togglePlanClass(plot, 'staggerMinute')">
+                          {{plotPlan[plot.name].staggerMinute}}
+                        </td>
+                        <td>
+                          <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div>
+                  <table v-if="!hideJobs" class="table is-striped is-hoverable">
+                    <thead>
+                      <tr>
+                        <th class="is-hidden-mobile"></th>
+                        <th>id</th>
+                        <th>工作时长 </th>
+                        <th>工作进度</th>
+                        <th>容量</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="job in plot.jobs" v-bind:key="job.id">
+                        <td class="is-hidden-mobile" width="25%">
+                          <b-progress format="percent" :max="100">
+                            <template #bar>
+                              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                                              type="is-danger">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 35"
+                                              :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 56"
+                                              :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                              </b-progress-bar>
+                            </template>
+                          </b-progress>
+                        </td>
+                        <td>{{job.id}}</td>
+                        <td>
+                          {{(job.wallTime).split(':')[0]}}<span class="has-text-grey">
+                            h
+                          </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span>
+                        </td>
+                        <td>{{job.phase}}</td>
+                        <td>{{job.tempSize}}</td>
+                        <td>
+                          <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-                      <div class="p-4" v-if="plot.cpuMap">
-                        <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
-                      </div>
-                    </div>
+                  <div class="p-4" v-if="plot.cpuMap">
+                    <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </b-collapse>
+              </td>
+            </tr>
+          </template>
+        </b-table>
+      </div>
     </div>
 
     <div class="block" v-if="harvesters!=[] && farmers!=null">
@@ -788,16 +761,6 @@
         return disks[maxSize];
       }
     }
-    getDiskProgressType(used: number, size: number) {
-      const perc = used / size;
-      if (perc < 0.5) return 'success';
-      if (perc < 0.7) return 'warning';
-      return 'danger';
-    }
-    humanize(size: number) {
-      var i = Math.floor(Math.log(size) / Math.log(1024));
-      return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-    }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
     // }
@@ -816,11 +779,11 @@
 </script>
 
 <style>
-  #summary progress {
+  #summary .summary-progress progress {
     margin: 0;
   }
 
-  #summary .progress-wrapper {
+  #summary .summary-progress .progress-wrapper {
     margin: 0.2em 0;
   }
 </style>
