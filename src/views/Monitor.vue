@@ -339,18 +339,19 @@
               {{ props.row.name }}
             </b-table-column>
             <b-table-column field="network" label="Network" width="40" v-slot="props">
-              {{ humanize(props.row.networkIoSpeed) }}
-            </b-table-column>
-            <b-table-column label="Disk Space" width="30%" v-slot="props">
-              <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
-                <div class="summary-progress">
-                  <disk-list :disks="[getLargestDisk(props.row.disks)]" />
-                </div>
-              </template>
-              <template v-else>
-                No disks found
-              </template>
-            </b-table-column>
+                <div v-if="parseFloat(props.row.networkIoSpeed) > 10240">{{ humanize(props.row.networkIoSpeed) }}</div>
+                <div v-else>No active data transfer</div>
+              </b-table-column>
+              <b-table-column label="Disk Space" width="30%" v-slot="props">
+                <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
+                  <div class="summary-progress">
+                    <disk-list :disks="[getLargestDisk(props.row.disks)]" />
+                  </div>
+                </template>
+                <template v-else>
+                  No disks found
+                </template>
+              </b-table-column>
 
             <template slot="detail" slot-scope="props">
               <tr :set="plot = props.row">
