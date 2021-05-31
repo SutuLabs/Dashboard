@@ -282,11 +282,14 @@
                             </b-progress>
                           </td>
                           <td>{{job.id}}</td>
-                          <td>
-                            {{(job.wallTime).split(':')[0]}}<span class="has-text-grey">
-                              h
-                            </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span>
-                          </td>
+                            <td v-if="job.wallTime.includes(':')">
+                              {{(job.wallTime).split(':')[0]}}<span class="has-text-grey">
+                                h
+                              </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span>
+                            </td>
+                            <td v-else>
+                              {{job.wallTime.slice(0,-1)}}<span class="has-text-grey">s</span>
+                            </td>
                           <td>{{job.phase}}</td>
                           <td>{{job.tempSize}}</td>
                           <td>
