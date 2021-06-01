@@ -43,7 +43,7 @@
       <b-navbar :mobile-burger="false">
         <template #brand>
           <b-navbar-item>
-            <img src="logo.png">
+            <img src="./assets/logo.png">
           </b-navbar-item>
           <div class="slogan">
             Chiabee，为矿场提供更专业的技术服务。
