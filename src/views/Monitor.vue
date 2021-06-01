@@ -180,11 +180,11 @@
                 <template>
                   {{props.row.jobs.length}} 
                   <span class="is-hidden-mobile">
-                    <span :class="togglePlanClass(props.row, 'jobNumber')">/{{props.row.configuration.jobNumber}}</span>
+                    <span :class="isDiffPlotPlan(props.row, ['jobNumber']) ? 'has-text-success':'has-text-grey'">/{{props.row.configuration.jobNumber}}</span>
                     <span class="has-text-grey">
                       [
                     </span>
-                    <span :class="togglePlanClass(props.row, 'staggerMinute')">{{props.row.configuration.staggerMinute}}</span>
+                    <span :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-success':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
                     <span class="has-text-grey">
                       min]
                     </span>
@@ -196,9 +196,9 @@
                   {{props.row.fileCounts[0].count}}
                   <span class="is-hidden-mobile">
                     <span class="has-text-grey">-></span>
-                    <span :class="togglePlanClass(props.row, 'rsyncdHost')">{{props.row.configuration.rsyncdHost}}</span>
+                    <span :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-success':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</span>
                     <span class="has-text-grey">@</span>
-                    <span :class="togglePlanClass(props.row, 'rsyncdIndex')">{{props.row.configuration.rsyncdIndex}}</span>
+                    <span :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-success':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
                   </span>
                 </template>
               </b-table-column>
@@ -236,24 +236,24 @@
                         <tbody v-if="plotPlan">
                           <tr>
                             <td>Current</td>
-                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plot.configuration.jobNumber}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plot.configuration.rsyncdHost}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plot.configuration.rsyncdIndex}}</td>
-                            <td :class="togglePlanClass(plot, 'staggerMinute')">
+                            <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-success':'has-text-grey'">{{plot.configuration.jobNumber}}</td>
+                            <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-success':'has-text-grey'">{{plot.configuration.rsyncdHost}}</td>
+                            <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-success':'has-text-grey'">{{plot.configuration.rsyncdIndex}}</td>
+                            <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-success':'has-text-grey'">
                               {{plot.configuration.staggerMinute}}
                             </td>
                             <td></td>
                           </tr>
                           <tr>
                             <td>Plan</td>
-                            <td :class="togglePlanClass(plot, 'jobNumber')">{{plotPlan[plot.name].jobNumber}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdHost')">{{plotPlan[plot.name].rsyncdHost}}</td>
-                            <td :class="togglePlanClass(plot, 'rsyncdIndex')">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                            <td :class="togglePlanClass(plot, 'staggerMinute')">
+                            <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-success':'has-text-grey'">{{plotPlan[plot.name].jobNumber}}</td>
+                            <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-success':'has-text-grey'">{{plotPlan[plot.name].rsyncdHost}}</td>
+                            <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-success':'has-text-grey'">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                            <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-success':'has-text-grey'">
                               {{plotPlan[plot.name].staggerMinute}}
                             </td>
                             <td>
-                              <b-button size="is-small" @click="applyPlotPlan([plot.name])">Apply</b-button>
+                              <b-button size="is-small" @click="applyPlotPlan([plot.name])" :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">Apply</b-button>
                             </td>
                           </tr>
                         </tbody>
@@ -829,12 +829,14 @@
         }
       })
     }
-    togglePlanClass(plot: any, key: string) {
-      var condition = {
-        'has-text-success': plot.configuration[key] != this.plotPlan[plot.name][key],
-        'has-text-grey': plot.configuration[key] == this.plotPlan[plot.name][key]
+    isDiffPlotPlan(plot: any, keys: string[]) {
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (plot.configuration[key] != this.plotPlan[plot.name][key]) {
+          return true;
+        }
       }
-      return condition;
+      return false;
     }
     getLargestDisk(disks: any[]) {
       if (disks && disks.length == 0) {
