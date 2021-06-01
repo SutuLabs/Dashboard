@@ -6,7 +6,7 @@
 
     <div v-else>
       <div v-if="farmer!=null" class="box">
-        <div class="card-content">
+        <div>
           <div class="content">
             <b-field grouped group-multiline>
               <div class="container is-fluid mb-3">
@@ -159,7 +159,7 @@
             <div class="card-header-title">Plotter</div>
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
-          <div v-else class="card-content">
+          <div v-else :class="{'card-content': !isMobile, 'p-2': isMobile}">
             <b-field grouped group-multiline>
               <div class="control">
                 <b-switch v-model="hideJobs">Hide Jobs</b-switch>
@@ -172,34 +172,38 @@
               </div>
             </b-field>
 
-            <b-table :data="plotters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable striped>
+            <b-table :data="plotters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row :striped="!isMobile" :narrowed="isMobile" :mobile-cards="false">
               <b-table-column field="name" label="Name" width="40" v-slot="props">
                 {{ props.row.name }}
               </b-table-column>
               <b-table-column label="Jobs" width="40" v-slot="props">
                 <template>
-                  {{props.row.jobs.length}} /
-                  <span :class="togglePlanClass(props.row, 'jobNumber')">{{props.row.configuration.jobNumber}}</span>
-                  <span class="has-text-grey">
-                    [
-                  </span>
-                  <span :class="togglePlanClass(props.row, 'staggerMinute')">{{props.row.configuration.staggerMinute}}</span>
-                  <span class="has-text-grey">
-                    m]
+                  {{props.row.jobs.length}} 
+                  <span class="is-hidden-mobile">
+                    <span :class="togglePlanClass(props.row, 'jobNumber')">/{{props.row.configuration.jobNumber}}</span>
+                    <span class="has-text-grey">
+                      [
+                    </span>
+                    <span :class="togglePlanClass(props.row, 'staggerMinute')">{{props.row.configuration.staggerMinute}}</span>
+                    <span class="has-text-grey">
+                      min]
+                    </span>
                   </span>
                 </template>
               </b-table-column>
               <b-table-column label="Moving" width="40" v-slot="props">
                 <template>
                   {{props.row.fileCounts[0].count}}
-                  <span class="has-text-grey">-></span>
-                  <span :class="togglePlanClass(props.row, 'rsyncdHost')">{{props.row.configuration.rsyncdHost}}</span>
-                  <span class="has-text-grey">@</span>
-                  <span :class="togglePlanClass(props.row, 'rsyncdIndex')">{{props.row.configuration.rsyncdIndex}}</span>
+                  <span class="is-hidden-mobile">
+                    <span class="has-text-grey">-></span>
+                    <span :class="togglePlanClass(props.row, 'rsyncdHost')">{{props.row.configuration.rsyncdHost}}</span>
+                    <span class="has-text-grey">@</span>
+                    <span :class="togglePlanClass(props.row, 'rsyncdIndex')">{{props.row.configuration.rsyncdIndex}}</span>
+                  </span>
                 </template>
               </b-table-column>
-              <b-table-column label="Plotting Progress" width="50" v-slot="props">
-                <div style="font-family: Consolas">
+              <b-table-column label="Plotting Progress" width="20%" v-slot="props" :visible="!isMobile">
+                <div style="font-family: Courier New, Courier, monospace">
                   {{ plottingProgress(props.row.jobs)}}
                 </div>
               </b-table-column>
@@ -216,9 +220,9 @@
 
               <template slot="detail" slot-scope="props">
                 <tr :set="plot = props.row">
-                  <td colspan="6">
-                    <div class="table-container">
-                      <table class="table">
+                  <td class="detail" colspan="6">
+                    <div class="table-container pt-2">
+                      <table class="table is-striped">
                         <thead>
                           <tr>
                             <th></th>
@@ -254,8 +258,10 @@
                           </tr>
                         </tbody>
                       </table>
+                    </div>
 
-                      <table v-if="!hideJobs" class="table is-striped is-hoverable">
+                    <div v-if="!hideJobs" class="table-container">
+                      <table class="table is-striped is-hoverable">
                         <thead>
                           <tr>
                             <th class="is-hidden-mobile"></th>
@@ -302,11 +308,12 @@
                           </tr>
                         </tbody>
                       </table>
-
-                      <div class="p-4" v-if="plot.cpuMap">
-                        <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
-                      </div>
                     </div>
+
+                    <div class="block" v-if="plot.cpuMap">
+                      <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
+                    </div>
+
                   </td>
                 </tr>
               </template>
@@ -337,8 +344,8 @@
             <div class="card-header-title">Harvester</div>
           </div>
           <div v-if="harvesters == null" class="card-content">Loading</div>
-          <div v-else class="card-content">
-            <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable striped>
+          <div v-else :class="{'card-content': !isMobile, 'p-2': isMobile}">
+            <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable :striped="!isMobile" :mobile-cards="false">
               <b-table-column field="name" label="Name" width="40" v-slot="props">
                 {{ props.row.name }}
               </b-table-column>
@@ -359,9 +366,9 @@
 
               <template slot="detail" slot-scope="props">
                 <tr :set="plot = props.row">
-                  <td colspan="5">
-                    <div class="box">
-                      <div class="p-4" v-if="plot.cpuMap">
+                  <td class="detail" colspan="5">
+                    <div :class="{'box': !isMobile, 'block': isMobile}">
+                      <div v-if="plot.cpuMap">
                         <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
                       </div>
                     </div>
@@ -460,8 +467,12 @@
     plotPlan: any = null;
     username = localStorage.getItem('username');
     plottingProgressOpen = false;
+    isMobile = false;
 
     mounted() {
+      if (window.innerWidth <= 800) {
+        this.isMobile = true;
+      }
       this.load();
       this.autoRefresh();
       if (localStorage.getItem("plottingProgressOpen") != 'true') {
@@ -852,7 +863,7 @@
         [0, 0, 0, 0, 0, 0],
         [0],
       ]
-      const symbols = [' _ ', ' . ', ' : '];
+      const symbols = ['_', '.', ':'];
       for (var i = 0; i < jobs.length; i++) {
         var phase = jobs[i].phase.split(':')
         if (parseInt(phase[0]) % 2 == 1) {
@@ -868,7 +879,7 @@
           if (summary[key][i] < 3) {
             result = result + symbols[summary[key][i]]
           } else {
-            result = result + " * "
+            result = result + "*"
           }
         }
       }
@@ -907,5 +918,19 @@
 
   #harvesters .summary-progress .progress-wrapper {
     margin: 0.2em 0;
+  }
+
+  @media only screen and (max-width: 800px) {
+    #plotters tr {
+      background-color: #343c3d;
+    }
+
+    #harvesters tr {
+      background-color: #343c3d;
+    }
+  }
+
+  .detail {
+    background-color: #282f2f;
   }
 </style>
