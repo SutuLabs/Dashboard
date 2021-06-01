@@ -855,7 +855,11 @@
       const symbols = [' _ ', ' . ', ' : '];
       for (var i = 0; i < jobs.length; i++) {
         var phase = jobs[i].phase.split(':')
-        summary[parseInt(phase[0])-1][parseInt(phase[1])-1] += 1;
+        if (parseInt(phase[0]) % 2 == 1) {
+          summary[parseInt(phase[0]) - 1][parseInt(phase[1]) - 1] += 1; //steps of phase 1 and 3 starts from 1
+        } else {
+          summary[parseInt(phase[0]) - 1][parseInt(phase[1])] += 1; //steps of phase 2 and 4 starts from 0 
+        }
       }
       var result = "["
       for (var key = 0; key < 4; key++) {
