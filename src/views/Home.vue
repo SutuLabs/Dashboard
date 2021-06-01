@@ -101,10 +101,10 @@
     },
   })
   export default class Home extends Vue {
-    netInfoList = [{
+    netInfoList = [/*{
       title: "当前币价",
       data: "Loading",
-    },
+    },*/
     {
       title: "全网容量",
       data: "Loading",
@@ -175,10 +175,10 @@
       this.intervals.push(temp);
     }
     getNetInfo(farm:any) {
-      this.netInfoList = [{
+      this.netInfoList = [/*{
         title: "当前币价",
         data: "TODO",
-      },
+      },*/
       {
         title: "全网容量",
         data: farm.node.space,

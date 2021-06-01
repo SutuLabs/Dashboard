@@ -345,7 +345,7 @@
           </div>
           <div v-if="harvesters == null" class="card-content">Loading</div>
           <div v-else :class="{'card-content': !isMobile, 'p-2': isMobile}">
-            <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable :striped="!isMobile" :mobile-cards="false">
+            <b-table :data="harvesters" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row scrollable :striped="!isMobile" :narrowed="isMobile" :mobile-cards="false">
               <b-table-column field="name" label="Name" width="40" v-slot="props">
                 {{ props.row.name }}
               </b-table-column>
@@ -367,7 +367,7 @@
               <template slot="detail" slot-scope="props">
                 <tr :set="plot = props.row">
                   <td class="detail" colspan="5">
-                    <div :class="{'box': !isMobile, 'block': isMobile}">
+                    <div :class="{'p-4': !isMobile, 'block': isMobile}">
                       <div v-if="plot.cpuMap">
                         <cpu-info name="plot.name" :hideProcess="hideProcess" :machine="plot" />
                       </div>
