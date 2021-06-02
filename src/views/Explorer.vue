@@ -1,5 +1,5 @@
 ﻿<template>
   <div class="explorer">
-    开发中，敬请期待。
+    功能即将上线，敬请期待！
   </div>
 </template>
