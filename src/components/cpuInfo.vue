@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="cpuInfo">
-    <div class="card-content p-4" v-if="machine.cpuMap">
+    <div class="p-4" v-if="machine.cpuMap">
       <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
       </apexchart>-->
 
@@ -9,7 +9,7 @@
           <disk-list :disks="machine.disks" />
         </div>
         <div class="column is-half columns is-mobile">
-          <div class="column is-one-quarter">
+          <div class="column">
             <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
               <div>
                 <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
@@ -34,7 +34,7 @@
               </b-tooltip>
             </div>
           </div>
-          <div class="column is-one-quarter">
+          <div class="column">
             <div class="block">
               <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                 <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">CPU</div>
@@ -45,7 +45,7 @@
               </b-tooltip>
             </div>
           </div>
-          <div class="column is-one-quarter">
+          <div class="column">
             <div class="block">
               <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                 <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">Network</div>
@@ -56,7 +56,7 @@
               </b-tooltip>
             </div>
           </div>
-          <div v-if="!hideProcess" class="column is-half">
+          <div v-if="!hideProcess" class="column is-one-third">
             <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
             <template>
               <b-taglist attached>
