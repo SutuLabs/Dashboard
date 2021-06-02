@@ -32,9 +32,16 @@
           <b-navbar-item v-if="!login" tag="router-link" :to="{path:'/login'}">
             登录
           </b-navbar-item>
-          <b-navbar-item v-else @click="quit">
-            退出登录
-          </b-navbar-item>
+          <b-dropdown v-else :triggers="['hover']" position="is-bottom-left" aria-role="menu">
+            <template #trigger>
+              <b-navbar-item>
+                {{ username }}
+                <b-icon icon="menu-down"></b-icon>
+              </b-navbar-item>
+            </template>
+            <b-dropdown-item aria-role="menuitem" @click="quit">退出登录</b-dropdown-item>
+          </b-dropdown>
+
         </template>
       </b-navbar>
     </div>
@@ -83,18 +90,23 @@
             </div>
             <div class="is-size-7">关于</div>
           </b-navbar-item>
-           <b-navbar-item v-if="!login" class="navbarButton" tag="router-link" :to="{path:'/login'}">
+          <b-navbar-item v-if="!login" class="navbarButton" tag="router-link" :to="{path:'/login'}">
             <div>
               <b-icon icon="account"></b-icon>
             </div>
             <div class="is-size-7">登录</div>
           </b-navbar-item>
-          <b-navbar-item v-else @click="quit" class="navbarButton">
-            <div>
-              <b-icon icon="account"></b-icon>
-            </div>
-            <div class="is-size-7">退出登录</div>
-          </b-navbar-item>
+          <b-dropdown v-else :triggers="['click']" position="is-top-left" aria-role="menu">
+            <template #trigger>
+              <b-navbar-item class="navbarButton">
+                <div>
+                  <b-icon icon="account"></b-icon>
+                </div>
+                <div class="is-size-7">{{ username }}</div>
+              </b-navbar-item>
+            </template>
+            <b-dropdown-item aria-role="menuitem" @click="quit">退出登录</b-dropdown-item>
+          </b-dropdown>
         </template>
       </b-navbar>
     </div>
@@ -106,6 +118,8 @@
   import { Component,Vue } from 'vue-property-decorator'
   @Component
   export default class App extends Vue {
+    username = localStorage.getItem('username'); 
+
     login = localStorage.getItem('username') ? true : false
      quit(){
        localStorage.removeItem('username')
