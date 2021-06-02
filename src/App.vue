@@ -52,7 +52,7 @@
       </b-navbar>
     </div>
 
-    <div :class="{'p-4': !isMobile, 'pt-4 pb-4 pl-2 pr-2': isMobile}">
+    <div class="p-4">
       <router-view />
     </div>
 
@@ -112,13 +112,6 @@
        localStorage.removeItem('password')
        this.login = false
        this.$router.go(0)     //Vue无法响应localStorage改变，刷新使页面响应更新 
-    }
-    isMobile = false;
-
-    mounted() {
-      if (window.innerWidth <= 800) {
-        this.isMobile = true;
-      }
     }
   }
 </script>
