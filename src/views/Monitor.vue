@@ -300,12 +300,8 @@
     plotPlan: any = null;
     username = localStorage.getItem('username');
     plottingProgressOpen = false;
-    isMobile = false; 
 
     mounted() {
-      if (window.innerWidth <= 800) {
-        this.isMobile = true;
-      }
       this.load();
       this.autoRefresh();
       if (localStorage.getItem("plottingProgressOpen") != 'true') {
