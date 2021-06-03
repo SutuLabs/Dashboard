@@ -389,23 +389,6 @@
       Vue.set(vueObj, 'process', machine.process);
       Vue.set(vueObj, 'networkIoSpeed', machine.networkIoSpeed);
     }
-    stopPlot(name: string, plotId: string) {
-      this.$buefy.dialog.confirm({
-        title: '确认停止任务',
-        message: `停止机器[${name}]上的任务[${plotId}]，确认吗？`,
-        cancelText: '取消',
-        confirmText: '确定',
-        type: 'is-success',
-        onConfirm: () => {
-          getInfo.deletePlot(name, plotId)
-            .then(() => {
-              Snackbar.open('删除命令已发送，等待半分钟看结果')
-            }).catch(() => {
-              Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
-            });
-        }
-      })
-    }
     autoRefresh() {
       var temp;
       temp = setInterval(() => {
