@@ -72,20 +72,20 @@
                   <tbody v-if="plotPlan">
                     <tr>
                       <td>Current</td>
-                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-success':'has-text-grey'">{{plot.configuration.jobNumber}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-success':'has-text-grey'">{{plot.configuration.rsyncdHost}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-success':'has-text-grey'">{{plot.configuration.rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-success':'has-text-grey'">
+                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.jobNumber}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdHost}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdIndex}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
                         {{plot.configuration.staggerMinute}}
                       </td>
                       <td></td>
                     </tr>
                     <tr>
                       <td>Plan</td>
-                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-success':'has-text-grey'">{{plotPlan[plot.name].jobNumber}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-success':'has-text-grey'">{{plotPlan[plot.name].rsyncdHost}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-success':'has-text-grey'">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-success':'has-text-grey'">
+                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].jobNumber}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdHost}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdIndex}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
                         {{plotPlan[plot.name].staggerMinute}}
                       </td>
                       <td>
