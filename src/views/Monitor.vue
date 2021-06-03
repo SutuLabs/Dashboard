@@ -84,6 +84,14 @@
                 </b-taglist>
               </div>
 
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">用户</b-tag>
+                  <b-tag v-if='username' type="is-info">{{username}}</b-tag>
+                  <b-tag v-else type="is-danger">未登录</b-tag>
+                </b-taglist>
+              </div>
+
             </b-field>
 
             <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
@@ -163,6 +171,10 @@
                 <b-switch  v-model="hideJobs">Hide Jobs</b-switch>
                 <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
                 <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+                <b-button  class="is-pulled-right" v-if="pileUp.length==0" disabled>无堆积</b-button>
+                <b-button  class="is-pulled-right" v-else-if="scrollKey==-1" @click="jump">堆积{{pileUp.length}}台</b-button>
+                <b-button  class="is-pulled-right" v-else @click="jump">查看下一台</b-button>
+
              </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false"/>
@@ -170,7 +182,7 @@
             <div class="is-hidden-tablet">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true"/>
             </div>
-
+            
           </div>
         </div>
       </div>
@@ -292,6 +304,7 @@
     plotPlan: any = null;
     username = localStorage.getItem('username');
     plottingProgressOpen = false;
+    scrollKey = -1
 
     mounted() {
       this.load();
@@ -660,6 +673,15 @@
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
     // }
+    get pileUp(){
+      var arr = []
+      for (var i = 0; i < this.plotters.length; i++) {
+        if (this.plotters[i].fileCounts[0].count > 1) {
+          arr.push(i)
+        }
+      }
+      return arr
+    }
     get sortedErrors() {
       return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
     }
