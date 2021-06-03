@@ -164,8 +164,8 @@
                 <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
                 <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
                 <b-button  class="is-pulled-right" v-if="pileUp.length==0" disabled>无堆积</b-button>
-                <b-button  class="is-pulled-right" v-else-if="scrollKey==-1" @click="jump">堆积{{pileUp.length}}台</b-button>
-                <b-button  class="is-pulled-right" v-else @click="jump">查看下一台</b-button>
+                <b-button  class="is-pulled-right is-danger" v-else-if="scrollKey==-1" @click="jump">堆积{{pileUp.length}}台</b-button>
+                <b-button  class="is-pulled-right is-danger" v-else @click="jump">查看下一台</b-button>
 
              </div>
             <div class="is-hidden-mobile">
