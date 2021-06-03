@@ -148,7 +148,14 @@
       <div class="block">
         <div id="plotters" class="card">
           <div class="card-header">
-            <div class="card-header-title">Plotter</div>
+            <div class="card-header-title">
+              Plotter
+              <div v-if="plotters != null" class="has-text-info heading">
+                共{{plotters.length}}台，
+                <span v-if="checkStacking(plotters)" class="has-text-danger">{{checkStacking(plotters)}}台出现堆积</span>
+                <span v-else>均运行正常</span>
+              </div>
+            </div>
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
           <div v-else>
@@ -649,6 +656,13 @@
             });
         }
       })
+    }
+    checkStacking(plotters: any[]) {
+      var count = 0;
+      for (var i = 0; i < plotters.length; i++) {
+        if (plotters[i].fileCounts[0].count > 1) {count +=1}
+      }
+      return count;
     }
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();

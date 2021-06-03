@@ -1,45 +1,48 @@
 ﻿<template>
   <div class="machineTableDetailed">
     <b-table :data="machines" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped :mobile-cards="false">
-      <b-table-column field="name" label="Name" width="40" v-slot="props">
-        {{ props.row.name }}
+      <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
+        <a class="has-text-light" @click="props.toggleDetails(props.row)">{{machines.indexOf(props.row)+1}}</a>
       </b-table-column>
-      <b-table-column label="Jobs" width="40" v-slot="props" :visible="isPlotter">
+      <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info" v-slot="props">
+        <a class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
+      </b-table-column>
+      <b-table-column label="Jobs" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           {{props.row.jobs.length}}
           <span class="is-hidden-mobile">
-            <span :class="isDiffPlotPlan(props.row, ['jobNumber']) ? 'has-text-success':'has-text-grey'">/{{props.row.configuration.jobNumber}}</span>
+            <span :class="isDiffPlotPlan(props.row, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">/{{props.row.configuration.jobNumber}}</span>
             <span class="has-text-grey">
               [
             </span>
-            <span :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-success':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
+            <span :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
             <span class="has-text-grey">
               min]
             </span>
           </span>
         </template>
       </b-table-column>
-      <b-table-column label="Moving" width="40" v-slot="props" :visible="isPlotter">
+      <b-table-column label="Moving" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           {{props.row.fileCounts[0].count}}
           <span class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
-            <span :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-success':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</span>
+            <span :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</span>
             <span class="has-text-grey">@</span>
-            <span :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-success':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
+            <span :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
           </span>
         </template>
       </b-table-column>
-      <b-table-column label="Plotting Progress" width="20%" v-slot="props" :visible="isPlotter && !isMobile">
+      <b-table-column label="Plotting Progress" width="20%" header-class="has-text-info" v-slot="props" :visible="isPlotter && !isMobile">
         <div style="font-family: Courier New, Courier, monospace">
           {{ plottingProgress(props.row.jobs)}}
         </div>
       </b-table-column>
-      <b-table-column field="network" label="Network" width="40" v-slot="props" :visible="isHarvester">
+      <b-table-column field="network" label="Network" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
         <div v-if="parseFloat(props.row.networkIoSpeed) > 10240">{{ humanize(props.row.networkIoSpeed) }}</div>
         <div v-else>No active data transfer</div>
       </b-table-column>
-      <b-table-column label="Disk Space" width="30%" v-slot="props">
+      <b-table-column label="Disk Space" width="30%" header-class="has-text-info" v-slot="props">
         <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
           <div class="summary-progress">
             <disk-list :disks="[getLargestDisk(props.row.disks)]" />
@@ -52,7 +55,7 @@
 
       <template slot="detail" slot-scope="props">
         <tr :set="machine = props.row">
-          <td class="has-background-dark" colspan="6">
+          <td class="has-background-dark" colspan="7">
             <div v-if="isPlotter" :set="plot = machine">
               <div class="table-container pt-2">
                 <table class="table is-striped">
