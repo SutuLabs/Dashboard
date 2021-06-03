@@ -16,7 +16,7 @@
             <option value="8tb">8TB</option>
           </b-select>
         </b-field>
-        <b-table :data="plans">
+        <b-table :data="plans" :mobile-cards="false">
           <b-table-column field="k32" label="k-32" v-slot="plan">{{plan.row.k32}}</b-table-column>
           <b-table-column field="percent" label="磁盘空间使用率" v-slot="plan">{{plan.row.percent}}% (已用{{plan.row.usedSpace}}TB)</b-table-column>
         </b-table>

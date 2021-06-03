@@ -6,7 +6,7 @@
         <div class="title is-3 has-text-success has-text-weight-bold">TODO</div>
       </div>
       <div class="columns">
-        <div class="column" v-for="item in netInfoList.slice(1)" :key="netInfoList.indexOf(item)">
+        <div class="column" v-for="item in netInfoList" :key="netInfoList.indexOf(item)">
           <div class="box">
             <div class="heading">{{item.title}}</div>
             <div class="title is-5 has-text-success has-text-weight-bold">{{item.data}}</div>
