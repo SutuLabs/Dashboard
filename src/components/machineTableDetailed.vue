@@ -5,7 +5,7 @@
         <a class="has-text-light" @click="props.toggleDetails(props.row)">{{machines.indexOf(props.row)+1}}</a>
       </b-table-column>
       <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info" v-slot="props">
-        <a class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
+        <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
       </b-table-column>
       <b-table-column label="Jobs" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
@@ -27,7 +27,7 @@
           {{props.row.fileCounts[0].count}}
           <span class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
-            <span :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</span>
+            <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)" :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</a>
             <span class="has-text-grey">@</span>
             <span :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
           </span>
@@ -273,6 +273,9 @@
       }
       result = result + ']'
       return result
+    }
+    getHarvesterName(host: string) {
+      return "harvester" + host.slice(-1) + '-' + host.slice(-3);
     }
   }
 </script>
