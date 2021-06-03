@@ -154,23 +154,16 @@
                 共{{plotters.length}}台，
                 <span v-if="checkStacking(plotters)" class="has-text-danger">{{checkStacking(plotters)}}台出现堆积</span>
                 <span v-else>均运行正常</span>
-              </div>
+          </div>
             </div>
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
-          <div v-else>
-            <b-field class="card-content mb-0" grouped group-multiline>
-              <div class="control">
-                <b-switch v-model="hideJobs">Hide Jobs</b-switch>
-              </div>
-              <div class="control">
-                <b-switch v-model="hideProcess">Hide Process</b-switch>
-              </div>
-              <div class="control">
-                <b-button @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
-              </div>
-            </b-field>
-
+          <div v-else >
+             <div class="p-4 sticky has-background-dark">
+                <b-switch  v-model="hideJobs">Hide Jobs</b-switch>
+                <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
+                <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+             </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false"/>
             </div>
@@ -696,5 +689,11 @@
 
   #harvesters .summary-progress .progress-wrapper {
     margin: 0.2em 0;
+  }
+
+  #plotters .sticky{
+    position: sticky;
+    top:0;
+    z-index:1;
   }
 </style>
