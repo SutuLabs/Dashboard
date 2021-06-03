@@ -13,7 +13,7 @@
           <div class="heading">根据农田数量及当前币价，预估耕种收益。</div>
         </div>
       </div>
-      <div class="card-content">
+      <div class="card-content p-0">
         <div v-if="!calcLoading">
           <b-tabs type="is-boxed" expanded>
             <b-tab-item label="初级版">
@@ -22,41 +22,45 @@
 
             <b-tab-item label="高级版" id="advanced">
 
-              <div class="block columns">
-                <div class="column is-one-quarter">
-                  <b-field label="输入算力">
-                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.inputSize"
-                             v-on:input="calculate()"></b-input>
-                    <b-select size="is-small" v-model="calculator.initSizeUnit">
-                      <option value="tib">TiB</option>
-                      <option value="plot">Plot(s)</option>
-                    </b-select>
-                  </b-field>
+              <div class="block columns is-gapless">
+                <div class="column is-half columns is-mobile">
+                  <div class="column is-half">
+                    <b-field label="输入算力">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.inputSize"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.initSizeUnit">
+                        <option value="tib">TiB</option>
+                        <option value="plot">Plot(s)</option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                  <div class="column is-half">
+                    <b-field label="时间周期">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.timeFrame"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.timeFrameUnit">
+                        <option value="month">月</option>
+                        <option value="year">年</option>
+                      </b-select>
+                    </b-field>
+                  </div>
                 </div>
-                <div class="column is-one-quarter">
-                  <b-field label="时间周期">
-                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.timeFrame"
-                             v-on:input="calculate()"></b-input>
-                    <b-select size="is-small" v-model="calculator.timeFrameUnit">
-                      <option value="month">月</option>
-                      <option value="year">年</option>
-                    </b-select>
-                  </b-field>
-                </div>
-                <div class="column is-one-quarter">
-                  <b-field label="开始时间">
-                    <b-datepicker size="is-small" v-model="calculator.startDate" placeholder="Click to select..." icon="calendar-today" trap-focus></b-datepicker>
-                  </b-field>
-                </div>
-                <div class="column is-one-quarter">
-                  <b-field label="币价">
-                    <b-input size="is-small" :lazy="true" expanded v-model="calculator.XCHprice"
-                             v-on:input="calculate()"></b-input>
-                    <b-select size="is-small" v-model="calculator.XCHpriceUnit">
-                      <option value="usdt">USDT/XCH</option>
-                      <option value="rmb" hidden>RMB/XCH</option>
-                    </b-select>
-                  </b-field>
+                <div class="column is-half columns is-mobile">
+                  <div class="column is-half">
+                    <b-field label="开始时间">
+                      <b-datepicker size="is-small" v-model="calculator.startDate" placeholder="Click to select..." icon="calendar-today" trap-focus></b-datepicker>
+                    </b-field>
+                  </div>
+                  <div class="column is-half">
+                    <b-field label="币价(/XCH)">
+                      <b-input size="is-small" :lazy="true" expanded v-model="calculator.XCHprice"
+                               v-on:input="calculate()"></b-input>
+                      <b-select size="is-small" v-model="calculator.XCHpriceUnit">
+                        <option value="usdt">USDT</option>
+                        <option value="rmb" hidden>RMB</option>
+                      </b-select>
+                    </b-field>
+                  </div>
                 </div>
               </div>
 
@@ -85,8 +89,8 @@
                     <b-field horizontal label="最大增长至">
                       <b-field>
                         <b-input size="is-small" :lazy="true" expanded v-model="calculator.maxSize"
-                                 v-on:input="calculate()" :disabled="calculator.unlimited"></b-input>
-                        <b-select size="is-small" v-model="calculator.maxSizeUnit" :disabled="calculator.unlimited">
+                                 v-on:input="calculate()"></b-input>
+                        <b-select size="is-small" v-model="calculator.maxSizeUnit">
                           <option value="tib">TiB</option>
                         </b-select>
                       </b-field>
@@ -273,7 +277,7 @@
         }
       }
     }
-    calculate() {
+    calculate(): void {
       this.calcLoading = false;
       const unitPlotSize = 101.4; // GiB
       var rawTotalNetSpace = parseFloat(this.farm.node.space); //EiB
@@ -511,7 +515,6 @@
           }
         }
       }
-      console.log(this.calculator.calculatorMap);
     }
 
     beforeDestroy() {
