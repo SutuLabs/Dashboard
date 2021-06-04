@@ -1,9 +1,11 @@
 ﻿<template>
   <div class="explorer">
-    <b-notification v-if="username==null" type="is-danger" has-icon aria-close-label="Close notification" role="alert">
-      尚未登录，无法查看！
-    </b-notification>
-
+    <template class="container" v-if="username==null">
+      <b-notification type="is-danger" has-icon aria-close-label="Close notification" role="alert">
+        尚未登录，无法查看！
+      </b-notification>
+      <b-button class="column is-1 is-offset-5 p-2" type="is-info" tag="router-link" :to="{path:'/login'}">点击登录</b-button>
+    </template>
     <div v-else>
       <div v-if="farmer!=null" class="box">
         <div>
