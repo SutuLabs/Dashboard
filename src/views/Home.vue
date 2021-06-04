@@ -139,7 +139,7 @@
     username = localStorage.getItem("username")
 
     mounted() {
-      if(localStorage.getItem('username')){
+      if(this.username){
         this.load();
         this.autoRefresh();
       }
