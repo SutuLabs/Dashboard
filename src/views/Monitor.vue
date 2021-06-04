@@ -256,12 +256,6 @@
   </div>
 </template>
 
-<style>
-  .b-tooltip.is-multiline.is-large .tooltip-content {
-    width: 600px;
-  }
-</style>
-
 <script lang="ts">
   import {
     Component,
@@ -299,17 +293,11 @@
     hideProcess = false;
     plotPlan: any = null;
     username = localStorage.getItem('username');
-    plottingProgressOpen = false;
     scrollKey = -1
 
     mounted() {
       this.load();
       this.autoRefresh();
-      if (localStorage.getItem("plottingProgressOpen") != 'true') {
-        localStorage.setItem("plottingProgressOpen", this.plottingProgressOpen.toString());
-      } else {
-        this.plottingProgressOpen = Boolean(localStorage.getItem("plottingProgressOpen"));
-      }
     }
 
     load() {
@@ -555,12 +543,15 @@
 
     beforeDestroy() {
       this.intervals = getInfo.stopRefresh(this.intervals);
-      localStorage.setItem("plottingProgressOpen", this.plottingProgressOpen.toString());
     }
   }
 </script>
 
 <style>
+  .b-tooltip.is-multiline.is-large .tooltip-content {
+    width: 600px;
+  }
+
   #plotters .summary-progress progress {
     margin: 0;
   }
