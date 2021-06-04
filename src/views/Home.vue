@@ -1,5 +1,10 @@
 ﻿<template>
   <div class="home">
+    <template class="container" v-if="username==null">
+      <b-notification type="is-danger" has-icon aria-close-label="Close notification" role="alert">
+        尚未登录，无法查看！
+      </b-notification>
+    </template>
     <div class="is-hidden-mobile block">
       <div class="box is-hidden">
         <div class="heading">当前币价</div>
@@ -131,6 +136,7 @@
     ];
     farm :any= null;
     intervals: number[] = [];
+    username = localStorage.getItem("username")
 
     mounted() {
       if(localStorage.getItem('username')){
