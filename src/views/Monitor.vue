@@ -141,10 +141,6 @@
         </div>
       </div>
 
-      <!--<div class="box">-->
-      <!-- <diskMap /> -->
-      <!--</div>-->
-
       <div class="block">
         <div id="plotters" class="card">
           <div class="card-header">
@@ -260,8 +256,8 @@
   import {
     Component,
     Vue
-  } from 'vue-property-decorator';
-  import getInfo from '@/services/getInfo';
+  } from 'vue-property-decorator'
+  import getInfo from '@/services/getInfo'
   import diskMap from '@/components/diskMap.vue'
   import DiskList from '@/components/DiskList.vue'
   import cpuInfo from '@/components/cpuInfo.vue'
@@ -440,13 +436,6 @@
           })
       }, 5000);
       this.intervals.push(temp);
-      // temp = setInterval(() => {
-      //   getInfo.save("farmer", this.farmer);
-      //   getInfo.save("plot", this.plot);
-      //   getInfo.save("errors", this.errors);
-      //   getInfo.save("events", this.events);
-      // }, 5000);
-      // this.intervals.push(temp);
     }
     calcProgress(phase: any) {
       const p = Number(phase[0]);
@@ -522,9 +511,6 @@
       }
       return count;
     }
-    // get tempDirSet() {
-    //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
-    // }
     get pileUp() {
       var arr = []
       for (var i = 0; i < this.plotters.length; i++) {
