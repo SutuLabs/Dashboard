@@ -163,10 +163,6 @@
                 <b-switch  v-model="hideJobs">Hide Jobs</b-switch>
                 <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
                 <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
-                <b-button  class="is-pulled-right" v-if="pileUp.length==0" disabled>无堆积</b-button>
-                <b-button  class="is-pulled-right is-danger" v-else-if="scrollKey==-1" @click="jump">堆积{{pileUp.length}}台</b-button>
-                <b-button  class="is-pulled-right is-danger" v-else @click="jump">查看下一台</b-button>
-
              </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false"/>
@@ -296,7 +292,6 @@
     plotPlan: any = null;
     username = localStorage.getItem('username');
     plottingProgressOpen = false;
-    scrollKey = -1
 
     mounted() {
       this.load();
@@ -638,16 +633,6 @@
         }
       })
     }
-    jump() {
-      if (this.scrollKey == -1) {
-        this.scrollKey++
-      }
-      var element:any= (this.$refs.machineTableDetailed as machineTableDetailed).$refs[
-        'findPileUp' + this.pileUp[this.scrollKey]
-      ]
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      this.scrollKey = ++this.scrollKey % this.pileUp.length
-    }
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
@@ -658,15 +643,6 @@
     // get tempDirSet() {
     //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
     // }
-    get pileUp(){
-      var arr = []
-      for (var i = 0; i < this.plotters.length; i++) {
-        if (this.plotters[i].fileCounts[0].count > 1) {
-          arr.push(i)
-        }
-      }
-      return arr
-    }
     get sortedErrors() {
       return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
     }
