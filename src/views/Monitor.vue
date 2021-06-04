@@ -290,8 +290,10 @@
     username = localStorage.getItem('username');
 
     mounted() {
-      this.load();
-      this.autoRefresh();
+      if(this.username){
+        this.load()
+        this.autoRefresh()
+      }
     }
 
     load() {
