@@ -87,9 +87,7 @@
                       <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.jobNumber}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdHost}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
-                        {{plot.configuration.staggerMinute}}
-                      </td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.staggerMinute}}</td>
                       <td></td>
                     </tr>
                     <tr>
@@ -97,9 +95,7 @@
                       <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].jobNumber}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdHost}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
-                        {{plotPlan[plot.name].staggerMinute}}
-                      </td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].staggerMinute}}</td>
                       <td>
                         <b-button size="is-small" @click="applyPlotPlan([plot.name])" :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">Apply</b-button>
                       </td>
@@ -247,9 +243,7 @@
     isDiffPlotPlan(plot: any, keys: string[]) {
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (plot.configuration[key] != this.plotPlan[plot.name][key]) {
-          return true;
-        }
+        if (plot.configuration[key] != this.plotPlan[plot.name][key]) return true
       }
       return false;
     }
