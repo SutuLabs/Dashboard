@@ -291,8 +291,8 @@
 
     mounted() {
       if(this.username){
-        this.load()
-        this.autoRefresh()
+        this.load();
+        this.autoRefresh();
       }
     }
 
