@@ -642,11 +642,10 @@
       if (this.scrollKey == -1) {
         this.scrollKey++
       }
-      var element1 = this.$refs.machineTableDetailed.$refs[
+      var element:any= (this.$refs.machineTableDetailed as machineTableDetailed).$refs[
         'findPileUp' + this.pileUp[this.scrollKey]
       ]
-      console.log(element1)
-      element1.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       this.scrollKey = ++this.scrollKey % this.pileUp.length
     }
     checkStacking(plotters: any[]) {
