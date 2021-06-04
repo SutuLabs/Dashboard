@@ -288,7 +288,6 @@
     hideProcess = false;
     plotPlan: any = null;
     username = localStorage.getItem('username');
-    scrollKey = -1
 
     mounted() {
       this.load();
