@@ -30,32 +30,32 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import getInfo from '@/services/getInfo'
-@Component
-export default class Home extends Vue {
-  username = ''
-  password = ''
-  errorinput = false
-  login() {
-    if (this.username != '' && this.password != '') {
-      localStorage.setItem('username', this.username)
-      localStorage.setItem('password', this.password)
-      getInfo
-        .getInfo('servers')
-        .then((response) => response.json())
-        .then(() => {
-          this.$router.push('/')
-          this.$router.go(0) //Vue无法响应localStorage改变，刷新使页面响应更新
-        })
-        .catch(() => {
-          localStorage.removeItem('username')
-          localStorage.removeItem('password')
-          this.errorinput = true
-        })
-    } else {
-      this.errorinput = true
+  import { Component, Vue } from 'vue-property-decorator'
+  import getInfo from '@/services/getInfo'
+  @Component
+  export default class Home extends Vue {
+    username = ''
+    password = ''
+    errorinput = false
+    login() {
+      if (this.username != '' && this.password != '') {
+        localStorage.setItem('username', this.username)
+        localStorage.setItem('password', this.password)
+        getInfo
+          .getInfo('servers')
+          .then((response) => response.json())
+          .then(() => {
+            this.$router.push('/')
+            this.$router.go(0) //Vue无法响应localStorage改变，刷新使页面响应更新
+          })
+          .catch(() => {
+            localStorage.removeItem('username')
+            localStorage.removeItem('password')
+            this.errorinput = true
+          })
+      } else {
+        this.errorinput = true
+      }
     }
   }
-}
 </script>
