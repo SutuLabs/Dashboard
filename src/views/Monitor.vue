@@ -1,9 +1,11 @@
 ﻿<template>
   <div class="explorer">
-    <b-notification v-if="username==null" type="is-danger" has-icon aria-close-label="Close notification" role="alert">
-      尚未登录，无法查看！
-    </b-notification>
-
+    <template class="container" v-if="username==null">
+      <b-notification type="is-danger" has-icon aria-close-label="Close notification" role="alert">
+        尚未登录，无法查看！
+      </b-notification>
+      <b-button class="column is-1 is-offset-5 p-2" type="is-info" tag="router-link" :to="{path:'/login'}">点击登录</b-button>
+    </template>
     <div v-else>
       <div v-if="farmer!=null" class="box">
         <div>
@@ -141,10 +143,6 @@
         </div>
       </div>
 
-      <!--<div class="box">-->
-      <!-- <diskMap /> -->
-      <!--</div>-->
-
       <div class="block">
         <div id="plotters" class="card">
           <div class="card-header">
@@ -154,7 +152,7 @@
                 共{{plotters.length}}台，
                 <span v-if="checkStacking(plotters)" class="has-text-danger">{{checkStacking(plotters)}}台出现堆积</span>
                 <span v-else>均运行正常</span>
-          </div>
+              </div>
             </div>
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
@@ -165,12 +163,11 @@
                 <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
              </div>
             <div class="is-hidden-mobile">
-              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false"/>
+              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false" />
             </div>
             <div class="is-hidden-tablet">
-              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true"/>
+              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true" />
             </div>
-            
           </div>
         </div>
       </div>
@@ -182,8 +179,7 @@
               <p class="panel-heading">
                 {{machine.name}}
               </p>
-
-              <div class="card-content p-4" v-if="machine.cpuMap">
+              <div class="card-content p-4">
                 <cpu-info name="machine.name" :machine="machine" />
               </div>
             </nav>
@@ -194,7 +190,14 @@
       <div class="block">
         <div id="harvesters" class="card">
           <div class="card-header">
-            <div class="card-header-title">Harvester</div>
+            <div class="card-header-title">
+              Harvester
+              <div v-if="harvesters != null" class="has-text-info heading">
+                共{{harvesters.length}}台，
+                <span v-if="checkDisksFull(harvesters)" class="has-text-danger">{{checkDisksFull(harvesters)}}台容量不足4TB</span>
+                <span v-else>容量充足</span>
+              </div>
+            </div>
           </div>
           <div v-if="harvesters == null" class="card-content">Loading</div>
           <div v-else>
@@ -248,18 +251,12 @@
   </div>
 </template>
 
-<style>
-  .b-tooltip.is-multiline.is-large .tooltip-content {
-    width: 600px;
-  }
-</style>
-
 <script lang="ts">
   import {
     Component,
     Vue
-  } from 'vue-property-decorator';
-  import getInfo from '@/services/getInfo';
+  } from 'vue-property-decorator'
+  import getInfo from '@/services/getInfo'
   import diskMap from '@/components/diskMap.vue'
   import DiskList from '@/components/DiskList.vue'
   import cpuInfo from '@/components/cpuInfo.vue'
@@ -291,16 +288,10 @@
     hideProcess = false;
     plotPlan: any = null;
     username = localStorage.getItem('username');
-    plottingProgressOpen = false;
 
     mounted() {
       this.load();
       this.autoRefresh();
-      if (localStorage.getItem("plottingProgressOpen") != 'true') {
-        localStorage.setItem("plottingProgressOpen", this.plottingProgressOpen.toString());
-      } else {
-        this.plottingProgressOpen = Boolean(localStorage.getItem("plottingProgressOpen"));
-      }
     }
 
     load() {
@@ -320,7 +311,6 @@
               this.farmers.forEach((farmer: any) => {
                 var m = server.find((_: any) => _.name == farmer.name);
                 this.assignMachine(farmer, m);
-                this.calcCpuMap(farmer);
                 getInfo.sortDisks(farmer);
               });
               this.farmer = this.farmers[0];
@@ -337,7 +327,6 @@
               this.plotters.forEach((plotter: any) => {
                 var m = server.find((_: any) => _.name == plotter.name);
                 this.assignMachine(plotter, m);
-                this.calcCpuMap(plotter);
                 getInfo.sortDisks(plotter);
               });
             });
@@ -346,7 +335,6 @@
               this.harvesters.push(machine);
             }
             this.harvesters.forEach((harvester: any) => {
-              this.calcCpuMap(harvester);
               getInfo.sortDisks(harvester);
             })
           })
@@ -409,20 +397,17 @@
             this.farmers.forEach((farmer: any) => {
               var m = json.find((_: any) => _.name == farmer.name);
               this.assignMachine(farmer, m);
-              this.calcCpuMap(farmer);
               getInfo.sortDisks(farmer);
             });
             this.farmer = this.farmers[0];
             this.plotters.forEach((plotter: any) => {
               var m = json.find((_: any) => _.name == plotter.name);
               this.assignMachine(plotter, m);
-              this.calcCpuMap(plotter);
               getInfo.sortDisks(plotter);
             });
             this.harvesters.forEach((harvester: any) => {
               var m = json.find((_: any) => _.name == harvester.name);
               this.assignMachine(harvester, m);
-              this.calcCpuMap(harvester);
               getInfo.sortDisks(harvester);
             })
           }).then(() => {
@@ -449,13 +434,6 @@
           })
       }, 5000);
       this.intervals.push(temp);
-      // temp = setInterval(() => {
-      //   getInfo.save("farmer", this.farmer);
-      //   getInfo.save("plot", this.plot);
-      //   getInfo.save("errors", this.errors);
-      //   getInfo.save("events", this.events);
-      // }, 5000);
-      // this.intervals.push(temp);
     }
     calcProgress(phase: any) {
       const p = Number(phase[0]);
@@ -464,137 +442,6 @@
       if (p == 2) return 35 + n * 3;
       if (p == 3) return 56 + n * 5;
       if (p == 4) return 98;
-    }
-    calcCpuMap(machine: any) {
-      machine.cpuMap = {
-        data: [{
-          name: 'Cpu',
-          data: machine.cpus.map((_: any) => 100 - _),
-        }],
-        chartOptions: {
-          chart: {
-            type: 'bar',
-            height: 150,
-            animations: {
-              enabled: false
-            },
-            toolbar: {
-              show: false,
-            }
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              colors: {
-                ranges: [{
-                  from: 0,
-                  to: 100,
-                  color: '#00FF01'
-                }]
-              },
-              columnWidth: '55%',
-              endingShape: 'rounded'
-            },
-          },
-          dataLabels: {
-            enabled: false
-          },
-          stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-          },
-          xaxis: {
-            categories: machine.cpus.map((_: any, i: number) => i + 1),
-            labels: {
-              style: {
-                colors: 'white',
-              }
-            }
-          },
-          yaxis: {
-            title: {
-              text: 'CPU Usage',
-              style: {
-                color: 'white',
-              }
-            },
-            labels: {
-              style: {
-                colors: 'white',
-              }
-            },
-            max: 100,
-            min: 0,
-            decimalsInFloat: 0,
-          },
-          fill: {
-            opacity: 1
-          },
-          tooltip: {
-            theme: "dark",
-            y: {
-              formatter: function (val: number) {
-                return val.toString() + " %"
-              }
-            }
-          }
-        }
-      };
-      machine.cpuRadialBar = {
-        data: [(machine.memory.used / machine.memory.total * 100).toFixed(1)],
-        chartOptions: {
-          chart: {
-            height: 150,
-            type: 'radialBar',
-            animations: {
-              enabled: false
-            },
-            toolbar: {
-              show: false,
-            }
-          },
-          plotOptions: {
-            radialBar: {
-              startAngle: -135,
-              endAngle: 135,
-              track: {
-                background: '#A9A9A9',
-                startAngle: -135,
-                endAngle: 135,
-              },
-              dataLabels: {
-                name: {
-                  show: false,
-                  color: "#FFFFFF",
-                },
-                value: {
-                  fontSize: "16px",
-                  show: true,
-                  color: "#FFFFFF",
-                },
-              },
-            },
-          },
-          fill: {
-            colors: [function ({
-              value
-            }: any) {
-              if (value < 55) {
-                return '#00FF00'
-              } else if (value >= 55 && value < 80) {
-                return '#FFFF00'
-              } else {
-                return '#FF0000'
-              }
-            }],
-          },
-          stroke: {
-            lineCap: "butt"
-          },
-          labels: ['内存情况'],
-        },
-      }
     }
     shorten(err: any) {
       var temp: string;
@@ -636,13 +483,21 @@
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
-        if (plotters[i].fileCounts[0].count > 1) {count +=1}
+        if (plotters[i].fileCounts[0].count > 2) { count += 1 }
       }
       return count;
     }
-    // get tempDirSet() {
-    //   return [...new Set(this.plot.jobs.map((_: any) => _.tempDir))].sort();
-    // }
+    checkDisksFull(machines: any[]) {
+      var count = 0;
+      for (var i = 0; i < machines.length; i++) {
+        var availableSpace = 0;
+        for (var j = 1; j < machines[i].disks.length; j++) {
+          if (machines[i].disks[j].available >= 2 * 106430464) availableSpace += machines[i].disks[j].available;
+        }
+        if (availableSpace < 4 * Math.pow(1024, 3)) count += 1;
+      }
+      return count;
+    }
     get sortedErrors() {
       return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
     }
@@ -652,12 +507,15 @@
 
     beforeDestroy() {
       this.intervals = getInfo.stopRefresh(this.intervals);
-      localStorage.setItem("plottingProgressOpen", this.plottingProgressOpen.toString());
     }
   }
 </script>
 
 <style>
+  #errors .tooltip-content {
+    width: 600px;
+  }
+
   #plotters .summary-progress progress {
     margin: 0;
   }
@@ -674,9 +532,9 @@
     margin: 0.2em 0;
   }
 
-  #plotters .sticky{
+  #plotters .sticky {
     position: sticky;
-    top:0;
-    z-index:1;
+    top: 0;
+    z-index: 1;
   }
 </style>

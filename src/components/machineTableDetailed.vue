@@ -42,7 +42,7 @@
         <div v-if="parseFloat(props.row.networkIoSpeed) > 10240">{{ humanize(props.row.networkIoSpeed) }}</div>
         <div v-else>No active data transfer</div>
       </b-table-column>
-      <b-table-column label="Disk Space" width="30%" header-class="has-text-info" v-slot="props">
+      <b-table-column label="Disk Space" width="30%" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
           <div class="summary-progress">
             <disk-list :disks="[getLargestDisk(props.row.disks)]" />
@@ -51,6 +51,18 @@
         <template v-else>
           No disks found
         </template>
+      </b-table-column>
+      <b-table-column field="network" label="硬盘总数" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
+        <div>{{ props.row.disks.length }}</div>
+      </b-table-column>
+      <b-table-column field="network" label="剩余硬盘数量" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
+        <div>{{ diskAvailable(props.row.disks).length }}</div>
+      </b-table-column>
+      <b-table-column field="network" label="剩余容量" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
+        <div class="has-text-success">
+          {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b)) }}
+          <span class="has-text-light">({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0)}})</span>
+        </div>
       </b-table-column>
 
       <template slot="detail" slot-scope="props">
@@ -75,9 +87,7 @@
                       <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.jobNumber}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdHost}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
-                        {{plot.configuration.staggerMinute}}
-                      </td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.staggerMinute}}</td>
                       <td></td>
                     </tr>
                     <tr>
@@ -85,9 +95,7 @@
                       <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].jobNumber}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdHost}}</td>
                       <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
-                        {{plotPlan[plot.name].staggerMinute}}
-                      </td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].staggerMinute}}</td>
                       <td>
                         <b-button size="is-small" @click="applyPlotPlan([plot.name])" :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">Apply</b-button>
                       </td>
@@ -147,7 +155,7 @@
               </div>
             </div>
 
-            <div class="block" v-if="machine.cpuMap">
+            <div class="block">
               <cpu-info name="machine.name" :hideProcess="hideProcess" :machine="machine" />
             </div>
           </td>
@@ -235,9 +243,7 @@
     isDiffPlotPlan(plot: any, keys: string[]) {
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (plot.configuration[key] != this.plotPlan[plot.name][key]) {
-          return true;
-        }
+        if (plot.configuration[key] != this.plotPlan[plot.name][key]) return true
       }
       return false;
     }
@@ -293,6 +299,13 @@
     }
     getHarvesterName(host: string) {
       return "harvester" + host.slice(-1) + '-' + host.slice(-3);
+    }
+    diskAvailable(disks: any[]) {
+      var toReturn: any[] = [];
+      disks.forEach((disk: any) => {
+        if (disk.available >= 2 * 106430464) toReturn.push(disk.available * 1024);
+      })
+      return toReturn;
     }
   }
 </script>

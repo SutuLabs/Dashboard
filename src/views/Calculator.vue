@@ -21,7 +21,6 @@
             </b-tab-item>
 
             <b-tab-item label="高级版" id="advanced">
-
               <div class="block columns is-gapless">
                 <div class="column is-half columns is-mobile">
                   <div class="column is-half">
