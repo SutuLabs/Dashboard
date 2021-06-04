@@ -642,7 +642,6 @@
         if(this.scrollKey==-1){this.scrollKey++}
         var element = document.getElementById('plotters')?.getElementsByTagName('tbody')[0].getElementsByClassName('chevron-cell')[this.pileUp[this.scrollKey]];
         element?.scrollIntoView({behavior: "smooth", block: "center"});
-        console.log(this.scrollKey)
         this.scrollKey = ++this.scrollKey % this.pileUp.length
     }
     checkStacking(plotters: any[]) {
