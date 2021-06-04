@@ -638,6 +638,16 @@
         }
       })
     }
+    jump() {
+      if (this.scrollKey == -1) {
+        this.scrollKey++
+      }
+      var element:any= (this.$refs.machineTableDetailed as machineTableDetailed).$refs[
+        'findPileUp' + this.pileUp[this.scrollKey]
+      ]
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      this.scrollKey = ++this.scrollKey % this.pileUp.length
+    }
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
