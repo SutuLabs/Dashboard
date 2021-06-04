@@ -2,7 +2,7 @@
   <div class="machineTableDetailed">
     <b-table :data="machines" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped :mobile-cards="false">
       <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
-        <a class="has-text-light" @click="props.toggleDetails(props.row)">{{machines.indexOf(props.row)+1}}</a>
+        <a class="has-text-light" :ref="'findPileUp'+machines.indexOf(props.row)" @click="props.toggleDetails(props.row)">{{machines.indexOf(props.row)+1}}</a>
       </b-table-column>
       <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info" v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
