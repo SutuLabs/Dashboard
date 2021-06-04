@@ -154,7 +154,7 @@
                 共{{plotters.length}}台，
                 <span v-if="checkStacking(plotters)" class="has-text-danger">{{checkStacking(plotters)}}台出现堆积</span>
                 <span v-else>均运行正常</span>
-          </div>
+              </div>
             </div>
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
@@ -165,12 +165,12 @@
                 <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
              </div>
             <div class="is-hidden-mobile">
-              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false"/>
+              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false" />
             </div>
             <div class="is-hidden-tablet">
-              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true"/>
+              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true" />
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -194,7 +194,14 @@
       <div class="block">
         <div id="harvesters" class="card">
           <div class="card-header">
-            <div class="card-header-title">Harvester</div>
+            <div class="card-header-title">
+              Harvester
+              <div v-if="harvesters != null" class="has-text-info heading">
+                共{{harvesters.length}}台，
+                <span v-if="checkDisksFull(harvesters)" class="has-text-danger">{{checkDisksFull(harvesters)}}台容量不足4TB</span>
+                <span v-else>容量充足</span>
+              </div>
+            </div>
           </div>
           <div v-if="harvesters == null" class="card-content">Loading</div>
           <div v-else>
@@ -636,7 +643,18 @@
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
-        if (plotters[i].fileCounts[0].count > 1) {count +=1}
+        if (plotters[i].fileCounts[0].count > 1) { count += 1 }
+      }
+      return count;
+    }
+    checkDisksFull(machines: any[]) {
+      var count = 0; 
+      for (var i = 0; i < machines.length; i++) {
+        var availableSpace = 0;
+        for (var j = 1; j < machines[i].disks.length; j++) {
+          if (machines[i].disks[j].available >= 2 * 106430464) availableSpace += machines[i].disks[j].available;
+        }
+        if (availableSpace < 4 * Math.pow(1024, 3)) count += 1;
       }
       return count;
     }
@@ -674,9 +692,9 @@
     margin: 0.2em 0;
   }
 
-  #plotters .sticky{
+  #plotters .sticky {
     position: sticky;
-    top:0;
-    z-index:1;
+    top: 0;
+    z-index: 1;
   }
 </style>
