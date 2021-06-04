@@ -1,21 +1,25 @@
 ﻿<template>
   <div class="machineTableDetailed">
-    <b-table :data="machines" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped :mobile-cards="false">
+    <b-table :data="machines" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped
+      :mobile-cards="false">
       <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
         <a class="has-text-light" @click="props.toggleDetails(props.row)">{{machines.indexOf(props.row)+1}}</a>
       </b-table-column>
-      <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info" v-slot="props">
+      <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info"
+        v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
       </b-table-column>
       <b-table-column label="Jobs" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           {{props.row.jobs.length}}
           <span class="is-hidden-mobile">
-            <span :class="isDiffPlotPlan(props.row, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">/{{props.row.configuration.jobNumber}}</span>
+            <span
+              :class="isDiffPlotPlan(props.row, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">/{{props.row.configuration.jobNumber}}</span>
             <span class="has-text-grey">
               [
             </span>
-            <span :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
+            <span
+              :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
             <span class="has-text-grey">
               min]
             </span>
@@ -27,41 +31,45 @@
           {{props.row.fileCounts[0].count}}
           <span class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
-            <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)" :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</a>
+            <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
+              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</a>
             <span class="has-text-grey">@</span>
-            <span :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
+            <span
+              :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
           </span>
         </template>
       </b-table-column>
-      <b-table-column label="Plotting Progress" width="20%" header-class="has-text-info" v-slot="props" :visible="isPlotter && !isMobile">
+      <b-table-column label="Plotting Progress" width="20%" header-class="has-text-info" v-slot="props"
+        :visible="isPlotter && !isMobile">
         <div style="font-family: Courier New, Courier, monospace">
           {{ plottingProgress(props.row.jobs)}}
         </div>
       </b-table-column>
-      <b-table-column field="network" label="Network" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
+      <b-table-column field="network" label="Network" width="40" header-class="has-text-info" v-slot="props"
+        :visible="isHarvester">
         <div v-if="parseFloat(props.row.networkIoSpeed) > 10240">{{ humanize(props.row.networkIoSpeed) }}</div>
-        <div v-else>No active data transfer</div>
+        <div v-else>无传输</div>
       </b-table-column>
       <b-table-column label="Disk Space" width="30%" header-class="has-text-info" v-slot="props" :visible="isPlotter">
-        <template v-if="props.row.disks" :set="disk = getLargestDisk(props.row.disks)">
+        <template v-if="props.row.disks">
           <div class="summary-progress">
-            <disk-list :disks="[getLargestDisk(props.row.disks)]" />
+            <disk-list :disks="[ getProperDisk(props.row.disks) ]" />
           </div>
         </template>
         <template v-else>
           No disks found
         </template>
       </b-table-column>
-      <b-table-column field="network" label="硬盘总数" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
-        <div>{{ props.row.disks.length }}</div>
+      <b-table-column field="network" label="剩余硬盘" width="40" header-class="has-text-info" v-slot="props"
+        :visible="isHarvester">
+        <div>{{ diskAvailable(props.row.disks).length }}/{{ props.row.disks.length }}</div>
       </b-table-column>
-      <b-table-column field="network" label="剩余硬盘数量" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
-        <div>{{ diskAvailable(props.row.disks).length }}</div>
-      </b-table-column>
-      <b-table-column field="network" label="剩余容量" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
+      <b-table-column field="network" label="剩余容量" width="40" header-class="has-text-info" v-slot="props"
+        :visible="isHarvester">
         <div class="has-text-success">
           {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b)) }}
-          <span class="has-text-light">({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0)}})</span>
+          <span
+            class="has-text-light">({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0)}})</span>
         </div>
       </b-table-column>
 
@@ -84,20 +92,30 @@
                   <tbody v-if="plotPlan">
                     <tr>
                       <td>Current</td>
-                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.jobNumber}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdHost}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{plot.configuration.staggerMinute}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">
+                        {{plot.configuration.jobNumber}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">
+                        {{plot.configuration.rsyncdHost}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">
+                        {{plot.configuration.rsyncdIndex}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
+                        {{plot.configuration.staggerMinute}}</td>
                       <td></td>
                     </tr>
                     <tr>
                       <td>Plan</td>
-                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].jobNumber}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdHost}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{plotPlan[plot.name].staggerMinute}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">
+                        {{plotPlan[plot.name].jobNumber}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">
+                        {{plotPlan[plot.name].rsyncdHost}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">
+                        {{plotPlan[plot.name].rsyncdIndex}}</td>
+                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
+                        {{plotPlan[plot.name].staggerMinute}}</td>
                       <td>
-                        <b-button size="is-small" @click="applyPlotPlan([plot.name])" :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">Apply</b-button>
+                        <b-button size="is-small" @click="applyPlotPlan([plot.name])"
+                          :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">
+                          Apply</b-button>
                       </td>
                     </tr>
                   </tbody>
@@ -122,13 +140,13 @@
                         <b-progress format="percent" :max="100">
                           <template #bar>
                             <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                                            type="is-danger">
+                              type="is-danger">
                             </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 35"
-                                            :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
+                            <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
+                              type="is-info">
                             </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 56"
-                                            :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
+                            <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
+                              type="is-warning">
                             </b-progress-bar>
                             <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
                             </b-progress-bar>
@@ -166,7 +184,11 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Prop } from 'vue-property-decorator'
+  import {
+    Component,
+    Vue,
+    Prop
+  } from 'vue-property-decorator'
   import getInfo from '@/services/getInfo'
   import cpuInfo from '@/components/cpuInfo.vue'
   import diskList from '@/components/DiskList.vue'
@@ -178,18 +200,18 @@
     components: {
       cpuInfo,
       diskList,
-  }
+    }
   })
   export default class machineTableDetailed extends Vue {
     @Prop() private machines!: any[];
     @Prop() private plotPlan!: any;
     @Prop() private type!: string;
-    @Prop() private hideJobs!: boolean; 
-    @Prop() private hideProcess!: boolean; 
+    @Prop() private hideJobs!: boolean;
+    @Prop() private hideProcess!: boolean;
     @Prop() private isMobile!: boolean;
 
-    isPlotter = false; 
-    isHarvester = false; 
+    isPlotter = false;
+    isHarvester = false;
 
     mounted() {
       if (this.type == "plotter") {
@@ -247,18 +269,26 @@
       }
       return false;
     }
-    getLargestDisk(disks: any[]) {
-      if (disks && disks.length == 0) {
+    getProperDisk(disks: any[]) {
+      if (!disks || disks.length == 0) {
         return null;
-      } else {
-        var maxSize = 0;
-        for (var i = 0; i < disks.length; i++) {
-          if (disks[i].size > disks[maxSize].size) {
-            maxSize = i;
-          }
-        }
-        return disks[maxSize];
       }
+
+      var priv = ["/data/tmp", "/data", "/"];
+      for (let i = 0; i < priv.length; i++) {
+        const path = priv[i];
+        var idx = disks.findIndex(_ => _.path == path);
+        if (idx >= 0) return disks[idx];
+
+      }
+
+      var maxSizeIdx = 0;
+      for (var i = 0; i < disks.length; i++) {
+        if (disks[i].size > disks[maxSizeIdx].size) {
+          maxSizeIdx = i;
+        }
+      }
+      return disks[maxSizeIdx];
     }
     humanize(size: number) {
       var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -266,8 +296,10 @@
     }
     plottingProgress(jobs: {
       phase: string;
-    }[]) {
-      if (!jobs) { return "No jobs" }
+    } []) {
+      if (!jobs) {
+        return "No jobs"
+      }
       var summary = [
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
