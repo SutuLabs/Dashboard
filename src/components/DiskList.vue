@@ -21,7 +21,6 @@
     Vue,
     Prop
   } from 'vue-property-decorator';
-  import getInfo from '@/services/getInfo';
 
   @Component
   export default class DiskList extends Vue {
