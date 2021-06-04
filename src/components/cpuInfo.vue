@@ -1,26 +1,12 @@
 ﻿<template>
   <div class="cpuInfo">
-    <div class="p-4" v-if="machine.cpuMap">
-      <!--<apexchart height="150" :options="machine.cpuMap.chartOptions" :series="machine.cpuMap.data">
-      </apexchart>-->
-
+    <div class="p-4" v-if="machine">
       <div class="columns is-multiline">
         <div class="column is-half">
           <disk-list :disks="machine.disks" />
         </div>
-        <div class="column is-half columns is-mobile">
+        <div class="column is-half columns is-mobile" v-if="machine.memory">
           <div class="column">
-            <!--<b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
-              <div>
-                <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">内存情况</div>
-                <apexchart height="150" :options="machine.cpuRadialBar.chartOptions"
-                           :series="machine.cpuRadialBar.data"></apexchart>
-              </div>
-              <template v-slot:content>
-                <div>已用：{{machine.memory.used}}GB</div>
-                <div>总共：{{machine.memory.total}}GB</div>
-              </template>
-            </b-tooltip>-->
             <div class="block">
               <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                 <div>

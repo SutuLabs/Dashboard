@@ -159,7 +159,7 @@
               </div>
             </div>
 
-            <div class="block" v-if="machine.cpuMap">
+            <div class="block">
               <cpu-info name="machine.name" :hideProcess="hideProcess" :machine="machine" />
             </div>
           </td>

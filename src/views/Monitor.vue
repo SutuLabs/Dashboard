@@ -166,7 +166,6 @@
               <b-button class="is-pulled-right" v-if="pileUp.length==0" disabled>无堆积</b-button>
               <b-button class="is-pulled-right is-danger" v-else-if="scrollKey==-1" @click="jump">堆积{{pileUp.length}}台</b-button>
               <b-button class="is-pulled-right is-danger" v-else @click="jump">查看下一台</b-button>
-
             </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false" />
@@ -174,7 +173,6 @@
             <div class="is-hidden-tablet">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true" />
             </div>
-
           </div>
         </div>
       </div>
@@ -186,8 +184,7 @@
               <p class="panel-heading">
                 {{machine.name}}
               </p>
-
-              <div class="card-content p-4" v-if="machine.cpuMap">
+              <div class="card-content p-4">
                 <cpu-info name="machine.name" :machine="machine" />
               </div>
             </nav>
@@ -332,7 +329,6 @@
               this.farmers.forEach((farmer: any) => {
                 var m = server.find((_: any) => _.name == farmer.name);
                 this.assignMachine(farmer, m);
-                this.calcCpuMap(farmer);
                 getInfo.sortDisks(farmer);
               });
               this.farmer = this.farmers[0];
@@ -349,7 +345,6 @@
               this.plotters.forEach((plotter: any) => {
                 var m = server.find((_: any) => _.name == plotter.name);
                 this.assignMachine(plotter, m);
-                this.calcCpuMap(plotter);
                 getInfo.sortDisks(plotter);
               });
             });
@@ -358,7 +353,6 @@
               this.harvesters.push(machine);
             }
             this.harvesters.forEach((harvester: any) => {
-              this.calcCpuMap(harvester);
               getInfo.sortDisks(harvester);
             })
           })
@@ -421,20 +415,17 @@
             this.farmers.forEach((farmer: any) => {
               var m = json.find((_: any) => _.name == farmer.name);
               this.assignMachine(farmer, m);
-              this.calcCpuMap(farmer);
               getInfo.sortDisks(farmer);
             });
             this.farmer = this.farmers[0];
             this.plotters.forEach((plotter: any) => {
               var m = json.find((_: any) => _.name == plotter.name);
               this.assignMachine(plotter, m);
-              this.calcCpuMap(plotter);
               getInfo.sortDisks(plotter);
             });
             this.harvesters.forEach((harvester: any) => {
               var m = json.find((_: any) => _.name == harvester.name);
               this.assignMachine(harvester, m);
-              this.calcCpuMap(harvester);
               getInfo.sortDisks(harvester);
             })
           }).then(() => {
@@ -476,137 +467,6 @@
       if (p == 2) return 35 + n * 3;
       if (p == 3) return 56 + n * 5;
       if (p == 4) return 98;
-    }
-    calcCpuMap(machine: any) {
-      machine.cpuMap = {
-        data: [{
-          name: 'Cpu',
-          data: machine.cpus.map((_: any) => 100 - _),
-        }],
-        chartOptions: {
-          chart: {
-            type: 'bar',
-            height: 150,
-            animations: {
-              enabled: false
-            },
-            toolbar: {
-              show: false,
-            }
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              colors: {
-                ranges: [{
-                  from: 0,
-                  to: 100,
-                  color: '#00FF01'
-                }]
-              },
-              columnWidth: '55%',
-              endingShape: 'rounded'
-            },
-          },
-          dataLabels: {
-            enabled: false
-          },
-          stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-          },
-          xaxis: {
-            categories: machine.cpus.map((_: any, i: number) => i + 1),
-            labels: {
-              style: {
-                colors: 'white',
-              }
-            }
-          },
-          yaxis: {
-            title: {
-              text: 'CPU Usage',
-              style: {
-                color: 'white',
-              }
-            },
-            labels: {
-              style: {
-                colors: 'white',
-              }
-            },
-            max: 100,
-            min: 0,
-            decimalsInFloat: 0,
-          },
-          fill: {
-            opacity: 1
-          },
-          tooltip: {
-            theme: "dark",
-            y: {
-              formatter: function (val: number) {
-                return val.toString() + " %"
-              }
-            }
-          }
-        }
-      };
-      machine.cpuRadialBar = {
-        data: [(machine.memory.used / machine.memory.total * 100).toFixed(1)],
-        chartOptions: {
-          chart: {
-            height: 150,
-            type: 'radialBar',
-            animations: {
-              enabled: false
-            },
-            toolbar: {
-              show: false,
-            }
-          },
-          plotOptions: {
-            radialBar: {
-              startAngle: -135,
-              endAngle: 135,
-              track: {
-                background: '#A9A9A9',
-                startAngle: -135,
-                endAngle: 135,
-              },
-              dataLabels: {
-                name: {
-                  show: false,
-                  color: "#FFFFFF",
-                },
-                value: {
-                  fontSize: "16px",
-                  show: true,
-                  color: "#FFFFFF",
-                },
-              },
-            },
-          },
-          fill: {
-            colors: [function ({
-              value
-            }: any) {
-              if (value < 55) {
-                return '#00FF00'
-              } else if (value >= 55 && value < 80) {
-                return '#FFFF00'
-              } else {
-                return '#FF0000'
-              }
-            }],
-          },
-          stroke: {
-            lineCap: "butt"
-          },
-          labels: ['内存情况'],
-        },
-      }
     }
     shorten(err: any) {
       var temp: string;
@@ -664,7 +524,7 @@
       return count;
     }
     checkDisksFull(machines: any[]) {
-      var count = 0; 
+      var count = 0;
       for (var i = 0; i < machines.length; i++) {
         var availableSpace = 0;
         for (var j = 1; j < machines[i].disks.length; j++) {
