@@ -133,8 +133,10 @@
     intervals: number[] = [];
 
     mounted() {
-      this.load();
-      this.autoRefresh();
+      if(localStorage.getItem('username')){
+        this.load();
+        this.autoRefresh();
+      }
     }
 
     load() {
