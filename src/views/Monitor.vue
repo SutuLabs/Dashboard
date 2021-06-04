@@ -512,7 +512,7 @@
 </script>
 
 <style>
-  .b-tooltip.is-multiline.is-large .tooltip-content {
+  #errors .tooltip-content {
     width: 600px;
   }
 
