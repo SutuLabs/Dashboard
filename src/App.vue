@@ -26,22 +26,19 @@
           <b-navbar-item tag="router-link" :to="{path:'/plottingPerformance'}">
             P盘效率
           </b-navbar-item>
-          <b-navbar-item tag="router-link" :to="{path:'/about'}">
-            关于我们
-          </b-navbar-item>
-          <b-navbar-item v-if="!login" tag="router-link" :to="{path:'/login'}">
-            登录
-          </b-navbar-item>
-          <b-dropdown v-else :triggers="['hover']" position="is-bottom-left" aria-role="menu">
+          <b-dropdown :triggers="['hover']" position="is-bottom-left" aria-role="menu">
             <template #trigger>
-              <b-navbar-item>
-                {{ username }}
+              <b-navbar-item >
+                <span v-if="!login">个人中心</span>
+                <span v-else>{{username}}</span>
                 <b-icon icon="menu-down"></b-icon>
               </b-navbar-item>
             </template>
-            <b-dropdown-item aria-role="menuitem" @click="quit">退出登录</b-dropdown-item>
+            <b-dropdown-item aria-role="menuitem" v-if="login" @click="quit">退出登录</b-dropdown-item>
+            <b-navbar-item aria-role="menuitem" v-else tag="router-link" :to="{path:'/login'}">登录</b-navbar-item>
+            <b-navbar-item aria-role="menuitem" tag="router-link" :to="{path:'/about'}">关于我们</b-navbar-item>
           </b-dropdown>
-
+          
         </template>
       </b-navbar>
     </div>
