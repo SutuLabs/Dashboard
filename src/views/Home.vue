@@ -81,7 +81,6 @@
           </div>
         </router-link>
         <div class="card-content">
-          <!--<diskMap />-->
         </div>
       </div>
     </div>
@@ -138,7 +137,6 @@
       this.autoRefresh();
     }
 
-    // TODO: setintervals 
     load() {
       getInfo.getInfo("farmer")
         .then(response => response.json())
