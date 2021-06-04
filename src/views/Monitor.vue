@@ -484,7 +484,7 @@
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
-        if (plotters[i].fileCounts[0].count > 1) { count += 1 }
+        if (plotters[i].fileCounts[0].count > 2) { count += 1 }
       }
       return count;
     }
