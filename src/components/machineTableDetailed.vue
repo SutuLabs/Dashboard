@@ -11,8 +11,8 @@
       </b-table-column>
       <b-table-column label="Jobs" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
-          {{props.row.jobs.length}}
-          <span class="is-hidden-mobile">
+          {{(props.row.jobs||[]).length}}
+          <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span
               :class="isDiffPlotPlan(props.row, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">/{{props.row.configuration.jobNumber}}</span>
             <span class="has-text-grey">
@@ -28,8 +28,10 @@
       </b-table-column>
       <b-table-column label="Moving" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
-          {{props.row.fileCounts[0].count}}
-          <span class="is-hidden-mobile">
+          <template v-if="props.row.fileCounts && props.row.fileCounts.length > 0">
+            {{props.row.fileCounts.count}}
+          </template>
+          <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
             <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
               :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</a>
@@ -78,7 +80,7 @@
           <td class="has-background-dark" colspan="7">
             <div v-if="isPlotter" :set="plot = machine">
               <div class="table-container pt-2">
-                <table class="table is-striped">
+                <table class="table is-striped" v-if="plotPlan && plot.configuration">
                   <thead>
                     <tr>
                       <th></th>
@@ -89,7 +91,7 @@
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody v-if="plotPlan">
+                  <tbody>
                     <tr>
                       <td>Current</td>
                       <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">

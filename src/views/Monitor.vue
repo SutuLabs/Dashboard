@@ -370,6 +370,7 @@
         })
     }
     assignMachine(vueObj: any, machine: any) {
+      if (!machine) return;
       Vue.set(vueObj, 'cpus', machine.cpus);
       Vue.set(vueObj, 'disks', machine.disks);
       Vue.set(vueObj, 'memory', machine.memory);
@@ -490,7 +491,7 @@
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
-        if (plotters[i].fileCounts[0].count > 2) { count += 1 }
+        if (plotters[i].fileCounts[0]?.count > 2) { count += 1 }
       }
       return count;
     }

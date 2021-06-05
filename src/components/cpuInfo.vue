@@ -24,7 +24,7 @@
             <div class="block">
               <b-tooltip position="is-bottom" type="is-light" size="is-small" multilined>
                 <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">CPU</div>
-                <div>{{calcCpu(machine)}}/{{machine.cpus.length}}</div>
+                <div>{{calcCpu(machine)}}/{{(machine.cpus || []).length}}</div>
                 <template v-slot:content>
                   <div>超过50%</div>
                 </template>
@@ -85,7 +85,7 @@
 
     calcCpu(machine: any) {
       var count = 0;
-      machine.cpus.forEach((cpu: any) => {
+      machine.cpus?.forEach((cpu: any) => {
         if (cpu < 50) count += 1;
       });
       return count;
