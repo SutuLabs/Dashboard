@@ -28,8 +28,8 @@
       </b-table-column>
       <b-table-column label="Moving" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
-          <template v-if="props.row.fileCounts && props.row.fileCounts.length > 0">
-            {{props.row.fileCounts.count}}
+          <template v-if="props.row.fileCounts && props.row.fileCounts.length > 0 && props.row.fileCounts[0]">
+            {{props.row.fileCounts[0].count}}
           </template>
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
