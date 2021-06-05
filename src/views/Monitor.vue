@@ -376,6 +376,7 @@
       Vue.set(vueObj, 'memory', machine.memory);
       Vue.set(vueObj, 'process', machine.process);
       Vue.set(vueObj, 'networkIoSpeed', machine.networkIoSpeed);
+      Vue.set(vueObj, 'power', machine.power);
     }
     autoRefresh() {
       var temp;

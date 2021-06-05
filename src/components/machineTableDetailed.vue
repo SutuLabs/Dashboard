@@ -9,6 +9,13 @@
         v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
       </b-table-column>
+      <b-table-column label="Power" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
+        <template>
+          <span class="has-text-grey">
+            {{props.row.power}}
+          </span>
+        </template>
+      </b-table-column>
       <b-table-column label="Jobs" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           {{(props.row.jobs||[]).length}}
@@ -77,7 +84,7 @@
 
       <template slot="detail" slot-scope="props">
         <tr :set="machine = props.row">
-          <td class="has-background-dark" colspan="7">
+          <td class="has-background-dark" colspan="8">
             <div v-if="isPlotter" :set="plot = machine">
               <div class="table-container pt-2">
                 <table class="table is-striped" v-if="plotPlan && plot.configuration">
