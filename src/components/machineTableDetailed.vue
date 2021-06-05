@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="machineTableDetailed">
-    <b-table :data="machines" ref="table" detailed :show-detail-icon="true" detail-key="name" custom-detail-row striped
+    <b-table :data="machines" ref="table" detailed :show-detail-icon="false" detail-key="name" custom-detail-row striped
       :mobile-cards="false">
       <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
         <a class="has-text-light" @click="props.toggleDetails(props.row)">{{machines.indexOf(props.row)+1}}</a>
@@ -28,7 +28,7 @@
             <span
               :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
             <span class="has-text-grey">
-              min]
+              m]
             </span>
           </span>
         </template>
@@ -41,7 +41,7 @@
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
             <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
-              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost}}</a>
+              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
             <span class="has-text-grey">@</span>
             <span
               :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
