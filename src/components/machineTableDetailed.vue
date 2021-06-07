@@ -76,7 +76,7 @@
       <b-table-column field="network" label="剩余容量" width="40" header-class="has-text-info" v-slot="props"
         :visible="isHarvester">
         <div class="has-text-success">
-          {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b)) }}
+          {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b, 0)) }}
           <span
             class="has-text-light">({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0)}})</span>
         </div>
@@ -300,6 +300,7 @@
       return disks[maxSizeIdx];
     }
     humanize(size: number) {
+      if (size == 0) return 0;
       var i = Math.floor(Math.log(size) / Math.log(1024));
       return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     }

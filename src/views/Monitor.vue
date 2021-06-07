@@ -386,9 +386,11 @@
           .then(json => {
             this.plotters.forEach((plotter: any) => {
               var m = json.find((_: any) => _.name == plotter.name);
-              Vue.set(plotter, "jobs", m.jobs);
-              Vue.set(plotter, "fileCounts", m.fileCounts);
-              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              if (m){
+                Vue.set(plotter, "jobs", m.jobs);
+                Vue.set(plotter, "fileCounts", m.fileCounts);
+                plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              }
             })
           });
         getInfo.getInfo('farmer')
