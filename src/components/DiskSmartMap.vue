@@ -1,0 +1,136 @@
+﻿<template>
+  <div>
+    <b-button @click="load()">Get Disk Info</b-button>
+
+    <b-collapse class="card" animation="slide" v-for="(machine, index) of machines" :key="index" :open="isOpen == index"
+      @open="isOpen = index">
+      <template #trigger="props">
+        <div class="card-header" role="button">
+          <p class="card-header-title">
+            {{ machine.name }}
+          </p>
+          <a class="card-header-icon">
+            <b-icon :icon="props.open ? 'menu-down' : 'menu-up'">
+            </b-icon>
+          </a>
+        </div>
+      </template>
+      <div class="card-content">
+        <div class="content">
+          <b-table v-if="machine.disks" :data="machine.disks" detailed :show-detail-icon="false" detail-key="sn" custom-detail-row striped
+            :mobile-cards="false">
+            <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
+              <a class="has-text-light"
+                @click="props.toggleDetails(props.row)">{{machine.disks.indexOf(props.row)+1}}</a>
+            </b-table-column>
+            <b-table-column field="sn" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info"
+              v-slot="props">
+              <a :id="props.row.sn" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.sn }}</a>
+            </b-table-column>
+            <b-table-column label="Model" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  {{props.row.model}}
+                </span>
+              </template>
+            </b-table-column>
+            <b-table-column label="Block" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  {{props.row.blockDevice}}
+                </span>
+              </template>
+            </b-table-column>
+            <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <b-button v-if="!props.row.parts" size="is-small" @click="create(machine.name, props.row.blockDevice)">
+                  Create Partition</b-button>
+              </template>
+            </b-table-column>
+
+            <template slot="detail" slot-scope="props">
+              <tr>
+                <td class="has-background-dark" colspan="8">
+                  <div class="table-container pt-2">
+                    <table class="table is-striped" v-if="props.row.parts">
+                      <thead>
+                        <tr>
+                          <th>label</th>
+                          <th>mount point</th>
+                          <th>name</th>
+                          <th>size</th>
+                          <th>uuid</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="part in props.row.parts" :key="part.label">
+                          <td>{{part.label}}</td>
+                          <td>{{part.mountPoint}}</td>
+                          <td>{{part.name}}</td>
+                          <td>{{part.size}}</td>
+                          <td>{{part.uuid}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </b-table>
+        </div>
+      </div>
+    </b-collapse>
+  </div>
+</template>
+
+<script lang="ts">
+  import {
+    Component,
+    Vue,
+    Prop
+  } from 'vue-property-decorator';
+  import getInfo from '@/services/getInfo';
+
+  @Component
+  export default class DiskSmartMap extends Vue {
+    private machines: {
+      name: string,
+      disks: {
+        blockDevice: string,
+        parts: {
+          name: string,
+          label: string,
+          mountPoint: string,
+          size: string,
+          uuid: string,
+        } [],
+        sn: string,
+        model: string,
+        smart: any,
+      } []
+    } [] = [];
+    private isOpen = 0;
+
+    load() {
+      getInfo.getInfo('disks')
+        .then(response => response.json())
+        .then(json => {
+          this.machines = json;
+        });
+    }
+
+    humanize(size: number) {
+      if (size == 0) return 0;
+      var i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    }
+
+    simplify(name: string) {
+      return name.replace(/-([0-9a-f]{8})[0-9a-f]{56}.plot/, "-$1.plot");
+    }
+
+    create(host: string, block: string) {
+      console.log("create", host, block);
+    }
+  }
+</script>

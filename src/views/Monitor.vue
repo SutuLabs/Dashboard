@@ -250,6 +250,7 @@
 
 
       <plots-map />
+      <disk-smart-map />
     </div>
   </div>
 </template>
@@ -265,6 +266,7 @@
   import cpuInfo from '@/components/cpuInfo.vue'
   import machineTableDetailed from '@/components/machineTableDetailed.vue'
   import PlotsMap from '@/components/PlotsMap.vue'
+  import DiskSmartMap from '@/components/DiskSmartMap.vue'
   import {
     SnackbarProgrammatic as Snackbar
   } from 'buefy'
@@ -276,6 +278,7 @@
       cpuInfo,
       machineTableDetailed,
       PlotsMap,
+      DiskSmartMap,
     },
   })
   export default class monitor extends Vue {
