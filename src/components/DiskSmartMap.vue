@@ -1,6 +1,9 @@
 ﻿<template>
   <div>
     <b-button @click="load()">Get Disk Info</b-button>
+    <b-checkbox v-model="forceGetDiskInfo">
+      Force Get
+    </b-checkbox>
 
     <b-collapse class="card" animation="slide" v-for="(machine, index) of machines" :key="index" :open="isOpen == index"
       @open="isOpen = index">
@@ -17,8 +20,8 @@
       </template>
       <div class="card-content">
         <div class="content">
-          <b-table v-if="machine.disks" :data="machine.disks" detailed :show-detail-icon="false" detail-key="sn" custom-detail-row striped
-            :mobile-cards="false">
+          <b-table v-if="machine.disks" :data="machine.disks" detailed :show-detail-icon="false" detail-key="sn"
+            custom-detail-row striped :mobile-cards="false">
             <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
               <a class="has-text-light"
                 @click="props.toggleDetails(props.row)">{{machine.disks.indexOf(props.row)+1}}</a>
@@ -41,10 +44,22 @@
                 </span>
               </template>
             </b-table-column>
+            <b-table-column label="Partitions" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  <span v-for="part in props.row.parts" :key="part.uuid">
+                    {{part.label}}
+                  </span>
+                </span>
+              </template>
+            </b-table-column>
             <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
               <template>
-                <b-button v-if="!props.row.parts" size="is-small" @click="create(machine.name, props.row.blockDevice)">
-                  Create Partition</b-button>
+                <b-button v-if="!props.row.parts" size="is-small"
+                  @click="create(machine.name, props.row.blockDevice, numbers && numbers[props.row.sn])">
+                  Create Partition
+                  <span v-if="numbers && numbers[props.row.sn]" class="has-text-info">[{{numbers[props.row.sn]}}]</span>
+                </b-button>
               </template>
             </b-table-column>
 
@@ -90,6 +105,9 @@
     Prop
   } from 'vue-property-decorator';
   import getInfo from '@/services/getInfo';
+  import {
+    SnackbarProgrammatic as Snackbar
+  } from 'buefy'
 
   @Component
   export default class DiskSmartMap extends Vue {
@@ -109,13 +127,20 @@
         smart: any,
       } []
     } [] = [];
+    private numbers: any = {};
     private isOpen = 0;
+    private forceGetDiskInfo = false;
 
     load() {
-      getInfo.getInfo('disks')
+      getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
         .then(response => response.json())
         .then(json => {
           this.machines = json;
+          getInfo.getInfo(`serial-number`)
+            .then(response => response.json())
+            .then(json => {
+              this.numbers = json;
+            });
         });
     }
 
@@ -129,8 +154,24 @@
       return name.replace(/-([0-9a-f]{8})[0-9a-f]{56}.plot/, "-$1.plot");
     }
 
-    create(host: string, block: string) {
-      console.log("create", host, block);
+    create(host: string, block: string, label: string) {
+      console.log("create", host, block, label);
+      var t = Snackbar.open({
+        type: 'is-primary',
+        message: `creating ${host} ${block} ${label}`,
+        indefinite: true,
+        queue: false
+      })
+      getInfo.createPartition(host, block, label)
+        .then(_ => {
+          t.close();
+          Snackbar.open({
+            type: 'is-success',
+            message: `success fully created ${host} ${block} ${label}`,
+            indefinite: true,
+            queue: false
+          })
+        });
     }
   }
 </script>
