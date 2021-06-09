@@ -41,7 +41,7 @@
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
             <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
-              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
+              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'" :title="plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
             <span class="has-text-grey">@</span>
             <span
               :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
