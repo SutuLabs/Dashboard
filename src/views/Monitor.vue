@@ -4,7 +4,8 @@
       <b-notification type="is-danger" has-icon aria-close-label="Close notification" role="alert">
         尚未登录，无法查看！
       </b-notification>
-      <b-button class="column is-1 is-offset-5 p-2" type="is-info" tag="router-link" :to="{path:'/login'}">点击登录</b-button>
+      <b-button class="column is-1 is-offset-5 p-2" type="is-info" tag="router-link" :to="{path:'/login'}">点击登录
+      </b-button>
     </template>
     <div v-else>
       <div v-if="farmer!=null" class="box">
@@ -13,7 +14,7 @@
             <b-field grouped group-multiline>
               <div class="container is-fluid mb-3">
                 <b-notification v-if="connectionStatus=='failed'" type="is-danger" has-icon
-                                aria-close-label="Close notification" role="alert">
+                  aria-close-label="Close notification" role="alert">
                   无法连接至服务器，请检查您的网络连接或联系管理员！
                 </b-notification>
               </div>
@@ -156,17 +157,20 @@
             </div>
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
-          <div v-else >
-             <div class="p-4 sticky has-background-dark">
-                <b-switch  v-model="hideJobs">Hide Jobs</b-switch>
-                <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
-                <b-button  class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
-             </div>
+          <div v-else>
+            <div class="p-4 sticky has-background-dark">
+              <b-switch v-model="hideJobs">Hide Jobs</b-switch>
+              <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
+              <b-button class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
+              <b-button class="is-pulled-right" @click="cleanTemporary(plotters.map(_=>_.name))">Clean All</b-button>
+            </div>
             <div class="is-hidden-mobile">
-              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="false" />
+              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
+                :hideProcess="hideProcess" :isMobile="false" />
             </div>
             <div class="is-hidden-tablet">
-              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs" :hideProcess="hideProcess" :isMobile="true" />
+              <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
+                :hideProcess="hideProcess" :isMobile="true" />
             </div>
           </div>
         </div>
@@ -194,14 +198,16 @@
               Harvester
               <div v-if="harvesters != null" class="has-text-info heading">
                 共{{harvesters.length}}台，
-                <span v-if="checkDisksFull(harvesters)" class="has-text-danger">{{checkDisksFull(harvesters)}}台容量不足4TB</span>
+                <span v-if="checkDisksFull(harvesters)"
+                  class="has-text-danger">{{checkDisksFull(harvesters)}}台容量不足4TB</span>
                 <span v-else>容量充足</span>
               </div>
             </div>
           </div>
           <div v-if="harvesters == null" class="card-content">Loading</div>
           <div v-else>
-            <machine-table-detailed :machines="harvesters" :type="'harvester'" :plotPlan="{}" :hideJobs="true" :hideProcess="false" :isMobile="false" />
+            <machine-table-detailed :machines="harvesters" :type="'harvester'" :plotPlan="{}" :hideJobs="true"
+              :hideProcess="false" :isMobile="false" />
           </div>
         </div>
       </div>
@@ -247,6 +253,10 @@
           </div>
         </div>
       </div>
+
+
+      <plots-map />
+      <disk-smart-map />
     </div>
   </div>
 </template>
@@ -261,6 +271,8 @@
   import DiskList from '@/components/DiskList.vue'
   import cpuInfo from '@/components/cpuInfo.vue'
   import machineTableDetailed from '@/components/machineTableDetailed.vue'
+  import PlotsMap from '@/components/PlotsMap.vue'
+  import DiskSmartMap from '@/components/DiskSmartMap.vue'
   import {
     SnackbarProgrammatic as Snackbar
   } from 'buefy'
@@ -271,6 +283,8 @@
       DiskList,
       cpuInfo,
       machineTableDetailed,
+      PlotsMap,
+      DiskSmartMap,
     },
   })
   export default class monitor extends Vue {
@@ -290,7 +304,7 @@
     username = localStorage.getItem('username');
 
     mounted() {
-      if(this.username){
+      if (this.username) {
         this.load();
         this.autoRefresh();
       }
@@ -333,7 +347,7 @@
               });
             });
           server.forEach((machine: any) => {
-            if (/harvester\d/.test(machine.name)) {
+            if (/harvester(_s)?\d/.test(machine.name)) {
               this.harvesters.push(machine);
             }
             this.harvesters.forEach((harvester: any) => {
@@ -365,11 +379,13 @@
         })
     }
     assignMachine(vueObj: any, machine: any) {
+      if (!machine) return;
       Vue.set(vueObj, 'cpus', machine.cpus);
       Vue.set(vueObj, 'disks', machine.disks);
       Vue.set(vueObj, 'memory', machine.memory);
       Vue.set(vueObj, 'process', machine.process);
       Vue.set(vueObj, 'networkIoSpeed', machine.networkIoSpeed);
+      Vue.set(vueObj, 'power', machine.power);
     }
     autoRefresh() {
       var temp;
@@ -379,9 +395,11 @@
           .then(json => {
             this.plotters.forEach((plotter: any) => {
               var m = json.find((_: any) => _.name == plotter.name);
-              Vue.set(plotter, "jobs", m.jobs);
-              Vue.set(plotter, "fileCounts", m.fileCounts);
-              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              if (m) {
+                Vue.set(plotter, "jobs", m.jobs);
+                Vue.set(plotter, "fileCounts", m.fileCounts);
+                plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              }
             })
           });
         getInfo.getInfo('farmer')
@@ -458,6 +476,38 @@
         return err;
       }
     }
+    cleanTemporary(names: string[]) {
+      this.$buefy.dialog.confirm({
+        title: '确认清理',
+        message: `清理机器[${names}]，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          var t = Snackbar.open({
+            type: 'is-primary',
+            message: `清理[${names}]中`,
+            indefinite: true,
+            queue: false
+          })
+          getInfo.cleanTemporary(names)
+            .then(() => {
+              t.close();
+              Snackbar.open({
+                type: 'is-success',
+                message: '应用成功',
+              });
+            }).catch(() => {
+              t.close();
+              Snackbar.open({
+                type: 'is-error',
+                message: '应用失败',
+                indefinite: true,
+              });
+            });
+        }
+      })
+    }
     applyPlotPlan(plotList: string[]) {
       var plans: any[] = [];
       plotList.forEach((plot: string) => {
@@ -485,7 +535,9 @@
     checkStacking(plotters: any[]) {
       var count = 0;
       for (var i = 0; i < plotters.length; i++) {
-        if (plotters[i].fileCounts[0].count > 2) { count += 1 }
+        if (plotters[i].fileCounts[0] && plotters[i].fileCounts[0].count > 2) {
+          count += 1
+        }
       }
       return count;
     }

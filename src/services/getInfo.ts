@@ -38,6 +38,25 @@ export default {
     });
   },
 
+  cleanTemporary(names: string[]) {
+    const url = `${this.baseUrl}/server/temporary`;
+
+    return fetch(url, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+      body: JSON.stringify(names),
+    });
+  },
+
+  createPartition(host: string, block: string, label: string) {
+    const url = `${this.baseUrl}/server/create-part?host=${host}&block=${block}&label=${label}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
   getHeaders() {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
