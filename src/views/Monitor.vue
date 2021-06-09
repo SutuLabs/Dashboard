@@ -341,7 +341,7 @@
               });
             });
           server.forEach((machine: any) => {
-            if (/harvester\d/.test(machine.name)) {
+            if (/harvester(_s)?\d/.test(machine.name)) {
               this.harvesters.push(machine);
             }
             this.harvesters.forEach((harvester: any) => {
