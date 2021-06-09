@@ -41,7 +41,8 @@
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
             <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
-              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'" :title="plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
+              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
+              :title="plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
             <span class="has-text-grey">@</span>
             <span
               :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
@@ -83,107 +84,109 @@
       </b-table-column>
 
       <template slot="detail" slot-scope="props">
-        <tr :set="machine = props.row">
+        <tr>
           <td class="has-background-dark" colspan="8">
-            <div v-if="isPlotter" :set="plot = machine">
-              <div class="table-container pt-2">
-                <table class="table is-striped" v-if="plotPlan && plot.configuration">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Job number</th>
-                      <th>Rsyncd Host</th>
-                      <th>Rsyncd Index</th>
-                      <th>Stagger Minute</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Current</td>
-                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">
-                        {{plot.configuration.jobNumber}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">
-                        {{plot.configuration.rsyncdHost}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">
-                        {{plot.configuration.rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
-                        {{plot.configuration.staggerMinute}}</td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td>Plan</td>
-                      <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">
-                        {{plotPlan[plot.name].jobNumber}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">
-                        {{plotPlan[plot.name].rsyncdHost}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">
-                        {{plotPlan[plot.name].rsyncdIndex}}</td>
-                      <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
-                        {{plotPlan[plot.name].staggerMinute}}</td>
-                      <td>
-                        <b-button size="is-small" @click="applyPlotPlan([plot.name])"
-                          :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">
-                          Apply</b-button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <template v-if="isPlotter">
+              <div v-for="plot in [ props.row ]" :key="plot.name">
+                <div class="table-container pt-2">
+                  <table class="table is-striped" v-if="plotPlan && plot.configuration">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Job number</th>
+                        <th>Rsyncd Host</th>
+                        <th>Rsyncd Index</th>
+                        <th>Stagger Minute</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Current</td>
+                        <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">
+                          {{plot.configuration.jobNumber}}</td>
+                        <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">
+                          {{plot.configuration.rsyncdHost}}</td>
+                        <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">
+                          {{plot.configuration.rsyncdIndex}}</td>
+                        <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
+                          {{plot.configuration.staggerMinute}}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Plan</td>
+                        <td :class="isDiffPlotPlan(plot, ['jobNumber']) ? 'has-text-danger':'has-text-grey'">
+                          {{plotPlan[plot.name].jobNumber}}</td>
+                        <td :class="isDiffPlotPlan(plot, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'">
+                          {{plotPlan[plot.name].rsyncdHost}}</td>
+                        <td :class="isDiffPlotPlan(plot, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">
+                          {{plotPlan[plot.name].rsyncdIndex}}</td>
+                        <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
+                          {{plotPlan[plot.name].staggerMinute}}</td>
+                        <td>
+                          <b-button size="is-small" @click="applyPlotPlan([plot.name])"
+                            :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">
+                            Apply</b-button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
 
-              <div v-if="!hideJobs" class="table-container">
-                <table class="table is-striped is-hoverable">
-                  <thead>
-                    <tr>
-                      <th class="is-hidden-mobile"></th>
-                      <th>id</th>
-                      <th>工作时长 </th>
-                      <th>工作进度</th>
-                      <th>容量</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="job in plot.jobs" v-bind:key="job.id">
-                      <td class="is-hidden-mobile" width="25%">
-                        <b-progress format="percent" :max="100">
-                          <template #bar>
-                            <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
-                              type="is-danger">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 35" :value="job.progress > 56 ? 21 : job.progress - 35"
-                              type="is-info">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 56" :value="job.progress > 91 ? 35 : job.progress - 56"
-                              type="is-warning">
-                            </b-progress-bar>
-                            <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
-                            </b-progress-bar>
-                          </template>
-                        </b-progress>
-                      </td>
-                      <td>{{job.id}}</td>
-                      <td v-if="job.wallTime.includes(':')">
-                        {{(job.wallTime).split(':')[0]}}<span class="has-text-grey">
-                          h
-                        </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span>
-                      </td>
-                      <td v-else>
-                        {{job.wallTime.slice(0,-1)}}<span class="has-text-grey">s</span>
-                      </td>
-                      <td>{{job.phase}}</td>
-                      <td>{{job.tempSize}}</td>
-                      <td>
-                        <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div v-if="!hideJobs" class="table-container">
+                  <table class="table is-striped is-hoverable">
+                    <thead>
+                      <tr>
+                        <th class="is-hidden-mobile"></th>
+                        <th>id</th>
+                        <th>工作时长 </th>
+                        <th>工作进度</th>
+                        <th>容量</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="job in plot.jobs" v-bind:key="job.id">
+                        <td class="is-hidden-mobile" width="25%">
+                          <b-progress format="percent" :max="100">
+                            <template #bar>
+                              <b-progress-bar v-if="job.progress > 0" :value="job.progress > 35 ? 35 : job.progress"
+                                type="is-danger">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 35"
+                                :value="job.progress > 56 ? 21 : job.progress - 35" type="is-info">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 56"
+                                :value="job.progress > 91 ? 35 : job.progress - 56" type="is-warning">
+                              </b-progress-bar>
+                              <b-progress-bar v-if="job.progress > 91" :value="job.progress - 91" type="is-success">
+                              </b-progress-bar>
+                            </template>
+                          </b-progress>
+                        </td>
+                        <td>{{job.id}}</td>
+                        <td v-if="job.wallTime.includes(':')">
+                          {{(job.wallTime).split(':')[0]}}<span class="has-text-grey">
+                            h
+                          </span>{{(job.wallTime).split(':')[1]}}<span class="has-text-grey"> min</span>
+                        </td>
+                        <td v-else>
+                          {{job.wallTime.slice(0,-1)}}<span class="has-text-grey">s</span>
+                        </td>
+                        <td>{{job.phase}}</td>
+                        <td>{{job.tempSize}}</td>
+                        <td>
+                          <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+            </template>
 
             <div class="block">
-              <cpu-info name="machine.name" :hideProcess="hideProcess" :machine="machine" />
+              <cpu-info name="props.row.name" :hideProcess="hideProcess" :machine="props.row" />
             </div>
           </td>
         </tr>
