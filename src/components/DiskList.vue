@@ -6,7 +6,7 @@
           show-value>
           <span class="has-text-white">{{disk.path}}</span>
           <span class="has-text-white px-6">{{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}</span>
-          <span class="has-text-white">[{{humanize((disk.available)*1024)}}/{{Math.floor(disk.available / 106430464)}}]</span>
+          <span class="has-text-white">{{humanize((disk.available)*1024)}} ( {{Math.floor(disk.available / 106430464)}} )</span>
         </b-progress>
       </div>
     </div>
