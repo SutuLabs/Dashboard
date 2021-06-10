@@ -42,7 +42,7 @@
               </b-tooltip>
             </div>
           </div>
-          <div v-if="!hideProcess" class="column is-one-third">
+          <div v-if="!hideProcess" class="mt-3">
             <div class="block mb-2 is-size-6 has-text-weight-bold has-text-centered">进程情况</div>
             <template>
               <b-taglist attached>
