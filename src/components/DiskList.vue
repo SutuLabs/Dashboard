@@ -4,11 +4,9 @@
       <div v-if="disk.size > 1024*1024">
         <b-progress :type="'is-' + getDiskProgressType(disk.used, disk.size)" :value="disk.used" :max="disk.size"
           show-value>
-          <span class="columns">
-          <span class="column has-text-white is-4">{{disk.path}}</span>
-          <span class="column has-text-white is-6">{{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}</span>
-          <span class="column has-text-white is-2">[{{humanize((disk.available)*1024)}}/{{Math.floor(disk.available / 106430464)}}]</span>
-          </span>
+          <span class="has-text-white">{{disk.path}}</span>
+          <span class="has-text-white px-6">{{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}</span>
+          <span class="has-text-white">[{{humanize((disk.available)*1024)}}/{{Math.floor(disk.available / 106430464)}}]</span>
         </b-progress>
       </div>
     </div>
