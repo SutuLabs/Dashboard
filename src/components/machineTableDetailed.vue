@@ -28,7 +28,7 @@
             <span
               :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
             <span class="has-text-grey">
-              min]
+              m]
             </span>
           </span>
         </template>
