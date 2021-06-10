@@ -28,7 +28,7 @@
             <span
               :class="isDiffPlotPlan(props.row, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.staggerMinute}}</span>
             <span class="has-text-grey">
-              m]
+              min]
             </span>
           </span>
         </template>
@@ -173,7 +173,7 @@
                         <td v-else>
                           {{job.wallTime.slice(0,-1)}}<span class="has-text-grey">s</span>
                         </td>
-                        <td>{{job.phase}}</td>
+                        <td>{{job.phase.replace(':','-')}}</td>
                         <td>{{job.tempSize}}</td>
                         <td>
                           <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
