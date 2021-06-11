@@ -48,7 +48,7 @@
                 </b-tooltip>
               </div>
 
-              <div class="control">
+              <div class="control is-hidden-mobile">
                 <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
                   <b-taglist attached>
                     <b-tag type="is-dark">耕田数量</b-tag>
@@ -57,7 +57,7 @@
                 </b-tooltip>
               </div>
 
-              <div class="control">
+              <div class="control is-hidden-mobile">
                 <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
                   <b-taglist attached>
                     <b-tag type="is-dark">总共挖币</b-tag>
@@ -66,21 +66,21 @@
                 </b-tooltip>
               </div>
 
-              <div class="control">
+              <div class="control is-hidden-mobile">
                 <b-taglist attached>
                   <b-tag type="is-dark">Farmer</b-tag>
                   <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
                 </b-taglist>
               </div>
 
-              <div class="control">
+              <div class="control is-hidden-mobile">
                 <b-taglist attached>
                   <b-tag type="is-dark">Plotter</b-tag>
                   <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
                 </b-taglist>
               </div>
 
-              <div class="control">
+              <div class="control is-hidden-mobile">
                 <b-taglist attached>
                   <b-tag type="is-dark">Harvester</b-tag>
                   <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
@@ -97,6 +97,40 @@
                 </a>
               </template>
               <b-field grouped group-multiline>
+                <div class="control is-hidden-tablet">
+                  <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
+                    <b-taglist attached>
+                      <b-tag type="is-dark">耕田数量</b-tag>
+                      <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
+                    </b-taglist>
+                  </b-tooltip>
+                </div>
+                <div class="control is-hidden-tablet">
+                  <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
+                    <b-taglist attached>
+                      <b-tag type="is-dark">总共挖币</b-tag>
+                      <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
+                    </b-taglist>
+                  </b-tooltip>
+                </div>
+                <div class="control is-hidden-tablet">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">Farmer</b-tag>
+                    <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
+                  </b-taglist>
+                </div>
+                <div class="control is-hidden-tablet">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">Plotter</b-tag>
+                    <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
+                  </b-taglist>
+                </div>
+                <div class="control is-hidden-tablet">
+                  <b-taglist attached>
+                    <b-tag type="is-dark">Harvester</b-tag>
+                    <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
+                  </b-taglist>
+                </div>
                 <div class="control">
                   <b-taglist attached>
                     <b-tag type="is-dark">高度</b-tag>
