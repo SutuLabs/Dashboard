@@ -42,7 +42,7 @@
             <span class="has-text-grey">-></span>
             <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
               :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
-              :title="plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
+              :title="plotPlan[props.row.name] && plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
             <span class="has-text-grey">@</span>
             <span
               :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
@@ -277,7 +277,7 @@
     isDiffPlotPlan(plot: any, keys: string[]) {
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (plot.configuration[key] != this.plotPlan[plot.name][key]) return true
+        if (this.plotPlan[plot.name] && plot.configuration[key] != this.plotPlan[plot.name][key]) return true
       }
       return false;
     }
