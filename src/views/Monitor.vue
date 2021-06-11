@@ -98,12 +98,12 @@
               </template>
               <b-field grouped group-multiline>
                 <div class="control is-hidden-tablet">
-                <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">耕田数量</b-tag>
-                    <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
-                  </b-taglist>
-                </b-tooltip>
+                  <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
+                    <b-taglist attached>
+                      <b-tag type="is-dark">耕田数量</b-tag>
+                      <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
+                    </b-taglist>
+                  </b-tooltip>
                 </div>
                 <div class="control is-hidden-tablet">
                   <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
