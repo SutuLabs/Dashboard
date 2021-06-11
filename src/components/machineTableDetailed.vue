@@ -40,9 +40,9 @@
           </template>
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
-              <span
-                :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
-                :title="plotPlan[props.row.name] && plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</span>
+            <span
+              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
+              :title="plotPlan[props.row.name] && plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</span>
             <span class="has-text-grey">@</span>
             <span
               :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
@@ -183,7 +183,7 @@
                           <a @click="stopPlot(plot.name, job.id)"><b-icon icon="window-close" ></b-icon></a>
                         </td>
                         <td v-else>
-                           <b-checkbox v-model="mulstop" :native-value="job.id" :disabled='!mulCheck'></b-checkbox>
+                          <b-checkbox v-model="mulstop" :native-value="job.id" :disabled='!mulCheck'></b-checkbox>
                         </td>
                       </tr>
                     </tbody>
@@ -255,13 +255,13 @@
         onConfirm: () => {
           id.map((_: any) => {
             getInfo
-            .deletePlot(name, _)
-            .then(() => {
-              Snackbar.open('删除命令已发送，等待半分钟看结果')
-            })
-            .catch(() => {
-              Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
-            })
+              .deletePlot(name, _)
+              .then(() => {
+                Snackbar.open('删除命令已发送，等待半分钟看结果')
+              })
+              .catch(() => {
+                Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
+              })
           })
         },
       })
