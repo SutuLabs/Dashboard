@@ -9,7 +9,7 @@
         v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
       </b-table-column>
-      <b-table-column label="Power" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
+      <b-table-column :label="'Power('+machines.reduce((sum, e) => sum + e.power,0)+')'" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           <span class="has-text-grey">
             {{props.row.power}}
@@ -40,9 +40,9 @@
           </template>
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
-            <a :href="'#'+getHarvesterName(props.row.configuration.rsyncdHost)"
+            <span
               :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
-              :title="plotPlan[props.row.name] && plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</a>
+              :title="plotPlan[props.row.name] && plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</span>
             <span class="has-text-grey">@</span>
             <span
               :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger':'has-text-grey'">{{props.row.configuration.rsyncdIndex}}</span>
@@ -124,6 +124,7 @@
                         <td :class="isDiffPlotPlan(plot, ['staggerMinute']) ? 'has-text-danger':'has-text-grey'">
                           {{plotPlan[plot.name].staggerMinute}}</td>
                         <td>
+                          <b-button size="is-small" @click="cleanTemporary([plot.name])">Clean</b-button>
                           <b-button size="is-small" @click="applyPlotPlan([plot.name])"
                             :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">
                             Apply</b-button>
@@ -142,7 +143,10 @@
                         <th>工作时长 </th>
                         <th>工作进度</th>
                         <th>容量</th>
-                        <th>操作</th>
+                        <th>
+                          <b-button @click="mulCheck=!mulCheck">{{ mulCheck==false?'批量操作':'取消操作' }}</b-button>
+                          <b-button :disabled="!mulCheck" @click=stopPlot(plot.name,mulstop)>停止</b-button>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -175,8 +179,11 @@
                         </td>
                         <td>{{job.phase.replace(':','-')}}</td>
                         <td>{{job.tempSize}}</td>
-                        <td>
-                          <b-button size="is-small" @click="stopPlot(plot.name, job.id)">停止</b-button>
+                        <td v-if="!mulCheck">
+                          <a @click="stopPlot(plot.name, job.id)"><b-icon icon="window-close" ></b-icon></a>
+                        </td>
+                        <td v-else>
+                          <b-checkbox v-model="mulstop" :native-value="job.id" :disabled='!mulCheck'></b-checkbox>
                         </td>
                       </tr>
                     </tbody>
@@ -224,6 +231,8 @@
 
     isPlotter = false;
     isHarvester = false;
+    mulCheck = false;
+    mulstop:any = [];
 
     mounted() {
       if (this.type == "plotter") {
@@ -232,22 +241,29 @@
         this.isHarvester = true;
       }
     }
-
-    stopPlot(name: string, plotId: string) {
+    stopPlot(name: string, plotId: string[]) {
+      var id = this.machines
+        .filter((_) => _.name == name)
+        .map((_) => _.jobs.map((_: any) => _.id))[0]
+        .filter((_: any) => plotId.indexOf(_) > -1)
       this.$buefy.dialog.confirm({
         title: '确认停止任务',
-        message: `停止机器[${name}]上的任务[${plotId}]，确认吗？`,
+        message: `停止机器[${name}]上的任务[${id}]，确认吗？`,
         cancelText: '取消',
         confirmText: '确定',
         type: 'is-success',
         onConfirm: () => {
-          getInfo.deletePlot(name, plotId)
-            .then(() => {
-              Snackbar.open('删除命令已发送，等待半分钟看结果')
-            }).catch(() => {
-              Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
-            });
-        }
+          id.map((_: any) => {
+            getInfo
+              .deletePlot(name, _)
+              .then(() => {
+                Snackbar.open('删除命令已发送，等待半分钟看结果')
+              })
+              .catch(() => {
+                Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
+              })
+          })
+        },
       })
     }
     applyPlotPlan(plotList: string[]) {
@@ -265,11 +281,58 @@
         confirmText: '确定',
         type: 'is-success',
         onConfirm: () => {
+          var t = Snackbar.open({
+            type: 'is-primary',
+            message: `应用[${plotList}]中`,
+            indefinite: true,
+            queue: false
+          })
           getInfo.applyPlotPlan(plans)
             .then(() => {
-              Snackbar.open('应用成功')
+              t.close();
+              Snackbar.open({
+                type: 'is-success',
+                message: '应用成功',
+              });
             }).catch(() => {
-              Snackbar.open('应用失败')
+              t.close();
+              Snackbar.open({
+                type: 'is-error',
+                message: '应用失败',
+                indefinite: true,
+              });
+            });
+        }
+      })
+    }
+    cleanTemporary(names: string[]) {
+      this.$buefy.dialog.confirm({
+        title: '确认清理',
+        message: `清理机器[${names}]，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          var t = Snackbar.open({
+            type: 'is-primary',
+            message: `清理[${names}]中`,
+            indefinite: true,
+            queue: false
+          })
+          getInfo.cleanTemporary(names)
+            .then(() => {
+              t.close();
+              Snackbar.open({
+                type: 'is-success',
+                message: '清理成功',
+              });
+            }).catch(() => {
+              t.close();
+              Snackbar.open({
+                type: 'is-error',
+                message: '清理失败',
+                indefinite: true,
+              });
             });
         }
       })

@@ -200,7 +200,7 @@
             </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
-                :hideProcess="hideProcess" :isMobile="false" />
+                :hideProcess="hideProcess" :isMobile="false" ref="machine"/>
             </div>
             <div class="is-hidden-tablet">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
@@ -511,60 +511,10 @@
       }
     }
     cleanTemporary(names: string[]) {
-      this.$buefy.dialog.confirm({
-        title: '确认清理',
-        message: `清理机器[${names}]，确认吗？`,
-        cancelText: '取消',
-        confirmText: '确定',
-        type: 'is-success',
-        onConfirm: () => {
-          var t = Snackbar.open({
-            type: 'is-primary',
-            message: `清理[${names}]中`,
-            indefinite: true,
-            queue: false
-          })
-          getInfo.cleanTemporary(names)
-            .then(() => {
-              t.close();
-              Snackbar.open({
-                type: 'is-success',
-                message: '应用成功',
-              });
-            }).catch(() => {
-              t.close();
-              Snackbar.open({
-                type: 'is-error',
-                message: '应用失败',
-                indefinite: true,
-              });
-            });
-        }
-      })
+      (this.$refs.machine as machineTableDetailed).cleanTemporary(names)
     }
     applyPlotPlan(plotList: string[]) {
-      var plans: any[] = [];
-      plotList.forEach((plot: string) => {
-        plans.push({
-          name: plot,
-          plan: this.plotPlan[plot],
-        })
-      })
-      this.$buefy.dialog.confirm({
-        title: '确认应用计划',
-        message: `应用机器[${plotList}]的计划，确认吗？`,
-        cancelText: '取消',
-        confirmText: '确定',
-        type: 'is-success',
-        onConfirm: () => {
-          getInfo.applyPlotPlan(plans)
-            .then(() => {
-              Snackbar.open('应用成功')
-            }).catch(() => {
-              Snackbar.open('应用失败')
-            });
-        }
-      })
+      (this.$refs.machine as machineTableDetailed).applyPlotPlan(plotList)
     }
     checkStacking(plotters: any[]) {
       var count = 0;
