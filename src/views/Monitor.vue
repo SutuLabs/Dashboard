@@ -98,39 +98,39 @@
               </template>
               <b-field grouped group-multiline>
                 <div class="control is-hidden-tablet">
-                  <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
-                    <b-taglist attached>
-                      <b-tag type="is-dark">耕田数量</b-tag>
-                      <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
-                    </b-taglist>
-                  </b-tooltip>
-                </div>
-                <div class="control is-hidden-tablet">
-                  <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
-                    <b-taglist attached>
-                      <b-tag type="is-dark">总共挖币</b-tag>
-                      <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
-                    </b-taglist>
-                  </b-tooltip>
-                </div>
-                <div class="control is-hidden-tablet">
+                <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
                   <b-taglist attached>
-                    <b-tag type="is-dark">Farmer</b-tag>
-                    <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
+                    <b-tag type="is-dark">耕田数量</b-tag>
+                    <b-tag type="is-primary">{{farmer.farmer.plotCount}}</b-tag>
                   </b-taglist>
-                </div>
-                <div class="control is-hidden-tablet">
+                </b-tooltip>
+              </div>
+              <div class="control is-hidden-tablet">
+                <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
                   <b-taglist attached>
-                    <b-tag type="is-dark">Plotter</b-tag>
-                    <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
+                    <b-tag type="is-dark">总共挖币</b-tag>
+                    <b-tag type="is-danger">{{farmer.farmer.totalFarmed}}</b-tag>
                   </b-taglist>
-                </div>
-                <div class="control is-hidden-tablet">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">Harvester</b-tag>
-                    <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
-                  </b-taglist>
-                </div>
+                </b-tooltip>
+              </div>
+              <div class="control is-hidden-tablet">
+                <b-taglist attached>
+                  <b-tag type="is-dark">Farmer</b-tag>
+                  <b-tag v-if='farmers' type="is-info">{{farmers.length}}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control is-hidden-tablet">
+                <b-taglist attached>
+                  <b-tag type="is-dark">Plotter</b-tag>
+                  <b-tag v-if='plotters' type="is-info">{{plotters.length}}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control is-hidden-tablet">
+                <b-taglist attached>
+                  <b-tag type="is-dark">Harvester</b-tag>
+                  <b-tag v-if='harvesters' type="is-info">{{harvesters.length}}</b-tag>
+                </b-taglist>
+              </div>
                 <div class="control">
                   <b-taglist attached>
                     <b-tag type="is-dark">高度</b-tag>
@@ -197,10 +197,10 @@
               <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
               <b-button class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
               <b-button class="is-pulled-right" @click="cleanTemporary(plotters.map(_=>_.name))">Clean All</b-button>
-            </div>
+             </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
-                :hideProcess="hideProcess" :isMobile="false" />
+                :hideProcess="hideProcess" :isMobile="false" ref="machine"/>
             </div>
             <div class="is-hidden-tablet">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
@@ -511,60 +511,10 @@
       }
     }
     cleanTemporary(names: string[]) {
-      this.$buefy.dialog.confirm({
-        title: '确认清理',
-        message: `清理机器[${names}]，确认吗？`,
-        cancelText: '取消',
-        confirmText: '确定',
-        type: 'is-success',
-        onConfirm: () => {
-          var t = Snackbar.open({
-            type: 'is-primary',
-            message: `清理[${names}]中`,
-            indefinite: true,
-            queue: false
-          })
-          getInfo.cleanTemporary(names)
-            .then(() => {
-              t.close();
-              Snackbar.open({
-                type: 'is-success',
-                message: '应用成功',
-              });
-            }).catch(() => {
-              t.close();
-              Snackbar.open({
-                type: 'is-error',
-                message: '应用失败',
-                indefinite: true,
-              });
-            });
-        }
-      })
+      (this.$refs.machine as machineTableDetailed).cleanTemporary(names)
     }
     applyPlotPlan(plotList: string[]) {
-      var plans: any[] = [];
-      plotList.forEach((plot: string) => {
-        plans.push({
-          name: plot,
-          plan: this.plotPlan[plot],
-        })
-      })
-      this.$buefy.dialog.confirm({
-        title: '确认应用计划',
-        message: `应用机器[${plotList}]的计划，确认吗？`,
-        cancelText: '取消',
-        confirmText: '确定',
-        type: 'is-success',
-        onConfirm: () => {
-          getInfo.applyPlotPlan(plans)
-            .then(() => {
-              Snackbar.open('应用成功')
-            }).catch(() => {
-              Snackbar.open('应用失败')
-            });
-        }
-      })
+      (this.$refs.machine as machineTableDetailed).applyPlotPlan(plotList)
     }
     checkStacking(plotters: any[]) {
       var count = 0;
