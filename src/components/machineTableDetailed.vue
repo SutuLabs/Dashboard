@@ -9,14 +9,14 @@
         v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
       </b-table-column>
-      <b-table-column :label="'Power('+machines.reduce((sum, e) => sum + e.power,0)+')'" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
+      <b-table-column :label="`Power (${machines.reduce((sum, e) => sum + e.power,0)})`" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           <span class="has-text-grey">
             {{props.row.power}}
           </span>
         </template>
       </b-table-column>
-      <b-table-column label="Jobs" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
+      <b-table-column :label="`Jobs (${machines.reduce((sum, e) => sum + (e.jobs && e.jobs.length || 0),0)})`" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           {{(props.row.jobs||[]).length}}
           <span v-if="props.row.configuration" class="is-hidden-mobile">
