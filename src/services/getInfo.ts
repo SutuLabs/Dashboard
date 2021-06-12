@@ -68,9 +68,17 @@ export default {
     });
   },
 
-
   createPartition(host: string, block: string, label: string) {
     const url = `${this.baseUrl}/server/create-part?host=${host}&block=${block}&label=${label}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
+  renamePartition(host: string, block: string, oldLabel: string, newLabel: string) {
+    const url = `${this.baseUrl}/server/rename-part?host=${host}&block=${block}&oldLabel=${oldLabel}&newLabel=${newLabel}`;
 
     return fetch(url, {
       method: 'POST',

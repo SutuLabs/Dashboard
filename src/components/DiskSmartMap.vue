@@ -63,10 +63,19 @@
             </b-table-column>
             <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
               <template>
-                <b-button v-if="!props.row.parts && numbers[props.row.sn]" size="is-small"
+                <b-button v-if="!props.row.parts && numbers && numbers[props.row.sn] && numbers[props.row.sn]"
+                  size="is-small"
                   @click="create(machine.name, props.row.blockDevice, numbers && numbers[props.row.sn])">
                   Create Partition
                   <span v-if="numbers && numbers[props.row.sn]" class="has-text-info">[{{numbers[props.row.sn]}}]</span>
+                </b-button>
+                <b-button
+                  v-if="props.row.parts && props.row.parts.length > 0 && numbers && numbers[props.row.sn] && numbers[props.row.sn] != props.row.parts[0].label"
+                  size="is-small"
+                  @click="rename(machine.name, props.row.blockDevice, props.row.parts[0].label, numbers[props.row.sn])">
+                  Rename Partition
+                  <span v-if="numbers && numbers[props.row.sn]"
+                    class="has-text-info">[{{props.row.parts[0].label}}->{{numbers[props.row.sn]}}]</span>
                 </b-button>
               </template>
             </b-table-column>
@@ -191,7 +200,6 @@
     }
 
     create(host: string, block: string, label: string) {
-      console.log("create", host, block, label);
       var t = Snackbar.open({
         type: 'is-primary',
         message: `creating ${host} ${block} ${label}`,
@@ -204,6 +212,25 @@
           Snackbar.open({
             type: 'is-success',
             message: `success fully created ${host} ${block} ${label}`,
+            indefinite: true,
+            queue: false
+          })
+        });
+    }
+
+    rename(host: string, block: string, oldLabel: string, newLabel: string) {
+      var t = Snackbar.open({
+        type: 'is-primary',
+        message: `renaming ${host} ${block} ${oldLabel} -> ${newLabel}`,
+        indefinite: true,
+        queue: false
+      })
+      getInfo.renamePartition(host, block, oldLabel, newLabel)
+        .then(_ => {
+          t.close();
+          Snackbar.open({
+            type: 'is-success',
+            message: `success fully renamed ${host} ${block} ${oldLabel} -> ${newLabel}`,
             indefinite: true,
             queue: false
           })
