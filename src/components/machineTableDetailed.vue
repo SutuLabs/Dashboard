@@ -9,14 +9,16 @@
         v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
       </b-table-column>
-      <b-table-column :label="`Power (${machines.reduce((sum, e) => sum + e.power,0)})`" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter && !isMobile">
+      <b-table-column :label="`Power (${machines.reduce((sum, e) => sum + e.power,0)})`" width="40"
+        header-class="has-text-info" v-slot="props" :visible="isPlotter && !isMobile">
         <template>
           <span class="has-text-grey">
             {{props.row.power}}
           </span>
         </template>
       </b-table-column>
-      <b-table-column :label="`Jobs (${machines.reduce((sum, e) => sum + (e.jobs && e.jobs.length || 0),0)})`" width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
+      <b-table-column :label="`Jobs (${machines.reduce((sum, e) => sum + (e.jobs && e.jobs.length || 0),0)})`"
+        width="40" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template>
           {{(props.row.jobs||[]).length}}
           <span v-if="props.row.configuration" class="is-hidden-mobile">
@@ -40,8 +42,7 @@
           </template>
           <span v-if="props.row.configuration" class="is-hidden-mobile">
             <span class="has-text-grey">-></span>
-            <span
-              :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
+            <span :class="isDiffPlotPlan(props.row, ['rsyncdHost']) ? 'has-text-danger':'has-text-grey'"
               :title="plotPlan[props.row.name] && plotPlan[props.row.name]['rsyncdHost'].slice(-3)">{{props.row.configuration.rsyncdHost.slice(-3)}}</span>
             <span class="has-text-grey">@</span>
             <span
@@ -82,6 +83,16 @@
             class="has-text-light">({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0)}})</span>
         </div>
       </b-table-column>
+      <b-table-column label="动作" width="40" header-class="has-text-info" :visible="isHarvester">
+        <template v-slot:header>
+          收割机
+          <b-button size="is-small" @click="startDaemons(machines.map(_=>_.name))">启动所有</b-button>
+        </template>
+        <template v-slot="props">
+          <b-button size="is-small" @click="startDaemons([props.row.name])">启动</b-button>
+        </template>
+      </b-table-column>
+
 
       <template slot="detail" slot-scope="props">
         <tr>
@@ -180,7 +191,9 @@
                         <td>{{job.phase.replace(':','-')}}</td>
                         <td>{{job.tempSize}}</td>
                         <td v-if="!mulCheck">
-                          <a @click="stopPlot(plot.name, job.id)"><b-icon icon="window-close" ></b-icon></a>
+                          <a @click="stopPlot(plot.name, job.id)">
+                            <b-icon icon="window-close"></b-icon>
+                          </a>
                         </td>
                         <td v-else>
                           <b-checkbox v-model="mulstop" :native-value="job.id" :disabled='!mulCheck'></b-checkbox>
@@ -232,7 +245,7 @@
     isPlotter = false;
     isHarvester = false;
     mulCheck = false;
-    mulstop:any = [];
+    mulstop: any = [];
 
     mounted() {
       if (this.type == "plotter") {
@@ -331,6 +344,46 @@
               Snackbar.open({
                 type: 'is-error',
                 message: '清理失败',
+                indefinite: true,
+              });
+            });
+        }
+      })
+    }
+    startDaemons(names: string[]) {
+      this.$buefy.dialog.confirm({
+        title: '确认启动',
+        message: `启动机器[${names}]的进程，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          var t = Snackbar.open({
+            type: 'is-primary',
+            message: `启动[${names}]中`,
+            indefinite: true,
+            queue: false
+          })
+          getInfo.startHarvesterDaemons(names)
+            .then((resp) => {
+              t.close();
+              if (resp.ok) {
+                Snackbar.open({
+                  type: 'is-success',
+                  message: '启动成功',
+                });
+              } else {
+                Snackbar.open({
+                  type: 'is-danger',
+                  message: '启动失败',
+                  indefinite: true,
+                });
+              }
+            }).catch(() => {
+              t.close();
+              Snackbar.open({
+                type: 'is-danger',
+                message: '启动失败',
                 indefinite: true,
               });
             });
