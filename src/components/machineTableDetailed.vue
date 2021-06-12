@@ -98,6 +98,7 @@
         </template>
         <template v-slot="props">
           <b-button size="is-small" @click="startDaemons([props.row.name])">启动</b-button>
+          <b-button size="is-small" @click="mountAll([props.row.name])">挂载</b-button>
         </template>
       </b-table-column>
 
@@ -405,6 +406,46 @@
               Snackbar.open({
                 type: 'is-danger',
                 message: '启动失败',
+                indefinite: true,
+              });
+            });
+        }
+      })
+    }
+    mountAll(names: string[]) {
+      this.$buefy.dialog.confirm({
+        title: '确认启动',
+        message: `试图在机器[${names}]上进行挂载，确认吗？`,
+        cancelText: '取消',
+        confirmText: '确定',
+        type: 'is-success',
+        onConfirm: () => {
+          var t = Snackbar.open({
+            type: 'is-primary',
+            message: `挂载[${names}]中`,
+            indefinite: true,
+            queue: false
+          })
+          getInfo.mountAll(names)
+            .then((resp) => {
+              t.close();
+              if (resp.ok) {
+                Snackbar.open({
+                  type: 'is-success',
+                  message: '挂载成功',
+                });
+              } else {
+                Snackbar.open({
+                  type: 'is-danger',
+                  message: '挂载失败',
+                  indefinite: true,
+                });
+              }
+            }).catch(() => {
+              t.close();
+              Snackbar.open({
+                type: 'is-danger',
+                message: '挂载失败',
                 indefinite: true,
               });
             });
