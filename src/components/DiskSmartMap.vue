@@ -63,7 +63,7 @@
             </b-table-column>
             <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
               <template>
-                <b-button v-if="!props.row.parts" size="is-small"
+                <b-button v-if="!props.row.parts && numbers[props.row.sn]" size="is-small"
                   @click="create(machine.name, props.row.blockDevice, numbers && numbers[props.row.sn])">
                   Create Partition
                   <span v-if="numbers && numbers[props.row.sn]" class="has-text-info">[{{numbers[props.row.sn]}}]</span>
@@ -142,22 +142,24 @@
     private machineSelected = '';
 
     load() {
+      getInfo.getInfo(`serial-number`)
+        .then(response => response.json())
+        .then(json => {
+          this.numbers = json;
+        });
       if (this.machineSelected) {
         getInfo.getInfo(`disk/${this.machineSelected}`)
           .then(response => response.json())
           .then(json => {
             this.pushWithReplace(this.machines, json, 'name')
+            this.sortDisks();
           });
       } else {
         getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
           .then(response => response.json())
           .then(json => {
             this.machines = json;
-            getInfo.getInfo(`serial-number`)
-              .then(response => response.json())
-              .then(json => {
-                this.numbers = json;
-              });
+            this.sortDisks();
           });
       }
     }
@@ -168,6 +170,14 @@
       var fi = arr.findIndex((f: T) => f[k] === o[k]);
       fi != -1 ? arr.splice(fi, 1, o) : arr.push(o);
       return this;
+    }
+
+    sortDisks() {
+      this.machines.forEach(m => {
+        if (!m.disks) return;
+        m.disks.sort((a, b) => !a.parts || !b.parts ? 0 : a.parts[0].label.localeCompare(b.parts[0].label));
+      });
+      console.log(this.machines)
     }
 
     humanize(size: number) {
