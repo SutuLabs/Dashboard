@@ -3,7 +3,7 @@
     <div class="p-4" v-if="machine">
       <div class="columns is-multiline">
         <div class="column is-half">
-          <disk-list :disks="machine.disks" />
+          <disk-list :disks="machine.disks" :abnormals="machine.abnormalFarmlands"/>
         </div>
         <div class="column is-half columns is-mobile" v-if="machine.memory">
           <div class="column">

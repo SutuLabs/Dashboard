@@ -445,6 +445,15 @@
               Vue.set(farmer, "node", m.node);
             })
           });
+        getInfo.getInfo('harvester')
+          .then(response => response.json())
+          .then(json => {
+            this.harvesters.forEach((machine: any) => {
+              var m = json.find((_: any) => _.name == machine.name);
+              Vue.set(machine, "totalPlot", m.totalPlot);
+              Vue.set(machine, "abnormalFarmlands", m.abnormalFarmlands);
+            })
+          });
         getInfo.getInfo('servers')
           .then(response => response.json())
           .then(json => {

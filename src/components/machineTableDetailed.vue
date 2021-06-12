@@ -71,9 +71,17 @@
           No disks found
         </template>
       </b-table-column>
+      <b-table-column field="totalPlot" :label="`田数 (${machines.reduce((sum, e) => sum + e.totalPlot,0)})`" width="40"
+        header-class="has-text-info" v-slot="props" :visible="isHarvester">
+        <div>{{ props.row.totalPlot }}</div>
+      </b-table-column>
       <b-table-column field="network" label="剩余硬盘" width="40" header-class="has-text-info" v-slot="props"
         :visible="isHarvester">
-        <div>{{ diskAvailable(props.row.disks).length }}/{{ props.row.disks.length }}</div>
+        <div>
+          {{ diskAvailable(props.row.disks).length }}/{{ props.row.disks.length }}
+          <span v-if="props.row.abnormalFarmlands && props.row.abnormalFarmlands.length > 0"
+            class="has-text-danger">[{{props.row.abnormalFarmlands.length}}]</span>
+        </div>
       </b-table-column>
       <b-table-column field="network" label="剩余容量" width="40" header-class="has-text-info" v-slot="props"
         :visible="isHarvester">
@@ -200,6 +208,20 @@
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              </div>
+            </template>
+
+            <template v-if="isHarvester">
+              <div v-for="harvester in [ props.row ]" :key="harvester.name">
+                <div class="content">
+                  <b-field grouped group-multiline>
+                    <div v-for="ab in harvester.abnormalFarmlands" :key="ab" class="control">
+                      <b-taglist attached>
+                        <b-tag type="is-danger">{{ab}}</b-tag>
+                      </b-taglist>
+                    </div>
+                  </b-field>
                 </div>
               </div>
             </template>

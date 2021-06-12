@@ -6,7 +6,9 @@
           show-value>
           <span class="has-text-white">{{disk.path}}</span>
           <span class="has-text-white px-6">{{humanize(disk.used*1024)}}/{{humanize((disk.used+disk.available)*1024)}}</span>
-          <span class="has-text-white">{{humanize((disk.available)*1024)}} ( {{Math.floor(disk.available / 106430464)}} )</span>
+          <span class="has-text-white">{{humanize((disk.available)*1024)}} ( {{Math.floor(disk.available / 106430464)}} )
+            <span v-if="abnormals && abnormals.indexOf(disk.path) > -1">🔥</span>
+          </span>
         </b-progress>
       </div>
     </div>
@@ -23,6 +25,7 @@
   @Component
   export default class DiskList extends Vue {
     @Prop() private disks!: any[];
+    @Prop() private abnormals!: string[];
 
     humanize(size: number) {
       var i = Math.floor(Math.log(size) / Math.log(1024));
