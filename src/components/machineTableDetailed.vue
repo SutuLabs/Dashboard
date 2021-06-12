@@ -136,8 +136,7 @@
                           {{plotPlan[plot.name].staggerMinute}}</td>
                         <td>
                           <b-button size="is-small" @click="cleanTemporary([plot.name])">Clean</b-button>
-                          <b-button size="is-small" @click="applyPlotPlan([plot.name])"
-                            :disabled="!isDiffPlotPlan(plot, ['jobNumber','rsyncdHost','rsyncdIndex','staggerMinute'])">
+                          <b-button size="is-small" @click="applyPlotPlan([plot.name])">
                             Apply</b-button>
                         </td>
                       </tr>
