@@ -73,7 +73,11 @@
       </b-table-column>
       <b-table-column field="totalPlot" :label="`田数 (${machines.reduce((sum, e) => sum + e.totalPlot,0)})`" width="40"
         header-class="has-text-info" v-slot="props" :visible="isHarvester">
-        <div>{{ props.row.totalPlot }}</div>
+        <div>
+          <b-tooltip :label="props.row.lastPlotTime">
+            {{ props.row.totalPlot }}
+          </b-tooltip>
+        </div>
       </b-table-column>
       <b-table-column field="network" label="剩余硬盘" width="40" header-class="has-text-info" v-slot="props"
         :visible="isHarvester">

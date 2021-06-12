@@ -451,6 +451,7 @@
             this.harvesters.forEach((machine: any) => {
               var m = json.find((_: any) => _.name == machine.name);
               Vue.set(machine, "totalPlot", m.totalPlot);
+              Vue.set(machine, "lastPlotTime", m.lastPlotTime);
               Vue.set(machine, "abnormalFarmlands", m.abnormalFarmlands);
             })
           });
