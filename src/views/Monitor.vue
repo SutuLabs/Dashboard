@@ -200,7 +200,7 @@
             </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
-                :hideProcess="hideProcess" :isMobile="false" ref="machine"/>
+                :hideProcess="hideProcess" :isMobile="false" ref="machine" />
             </div>
             <div class="is-hidden-tablet">
               <machine-table-detailed :machines="plotters" :type="'plotter'" :plotPlan="plotPlan" :hideJobs="hideJobs"
@@ -290,7 +290,7 @@
 
 
       <plots-map />
-      <disk-smart-map />
+      <disk-smart-map :machine-names="harvesters.map(_ => _.name)" />
     </div>
   </div>
 </template>

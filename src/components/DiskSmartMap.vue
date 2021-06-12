@@ -1,9 +1,17 @@
 ﻿<template>
   <div>
-    <b-button @click="load()">Get Disk Info</b-button>
-    <b-checkbox v-model="forceGetDiskInfo">
-      Force Get
-    </b-checkbox>
+    <b-field label="Disk List Retrieval">
+      <b-select placeholder="Select a machine" v-model="machineSelected">
+        <option value="" key="">All</option>
+        <option v-for="option in machineNames" :value="option" :key="option">
+          {{ option }}
+        </option>
+      </b-select>
+      <b-button @click="load()">Get Disk Info</b-button>
+      <b-checkbox v-model="forceGetDiskInfo">
+        Force Get
+      </b-checkbox>
+    </b-field>
 
     <b-collapse class="card" animation="slide" v-for="(machine, index) of machines" :key="index" :open="isOpen == index"
       @open="isOpen = index">
@@ -127,21 +135,39 @@
         smart: any,
       } []
     } [] = [];
+    @Prop() private machineNames!: string[];
     private numbers: any = {};
     private isOpen = 0;
     private forceGetDiskInfo = false;
+    private machineSelected = '';
 
     load() {
-      getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
-        .then(response => response.json())
-        .then(json => {
-          this.machines = json;
-          getInfo.getInfo(`serial-number`)
-            .then(response => response.json())
-            .then(json => {
-              this.numbers = json;
-            });
-        });
+      if (this.machineSelected) {
+        getInfo.getInfo(`disk/${this.machineSelected}`)
+          .then(response => response.json())
+          .then(json => {
+            this.pushWithReplace(this.machines, json, 'name')
+          });
+      } else {
+        getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
+          .then(response => response.json())
+          .then(json => {
+            this.machines = json;
+            getInfo.getInfo(`serial-number`)
+              .then(response => response.json())
+              .then(json => {
+                this.numbers = json;
+              });
+          });
+      }
+    }
+
+    pushWithReplace < T extends {
+      [index: string]: any
+    } > (arr: Array < T > , o: T, k: string) {
+      var fi = arr.findIndex((f: T) => f[k] === o[k]);
+      fi != -1 ? arr.splice(fi, 1, o) : arr.push(o);
+      return this;
     }
 
     humanize(size: number) {
