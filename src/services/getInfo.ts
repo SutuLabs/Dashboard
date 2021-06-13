@@ -10,6 +10,16 @@ export default {
     });
   },
 
+  uploadFile(path: string, formData: FormData): Promise<Response> {
+    const url = `${this.baseUrl}/server/${path}`;
+
+    return fetch(url, {
+      method: 'PUT',
+      body: formData,
+      headers: this.getHeaders(false),
+    });
+  },
+
   deletePlot(machineName: string, plotId: string) {
     const url = `${this.baseUrl}/server/plot?name=${machineName}&id=${plotId}`;
 
@@ -86,13 +96,16 @@ export default {
     });
   },
 
-  getHeaders() {
+  getHeaders(isJson = true): Headers {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
 
     const headers = new Headers();
 
-    headers.append('Content-Type', 'text/json');
+    if (isJson) {
+      headers.append('Content-Type', 'text/json');
+    }
+
     headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
     return headers;

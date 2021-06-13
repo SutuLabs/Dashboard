@@ -291,6 +291,7 @@
 
       <plots-map />
       <disk-smart-map :machine-names="harvesters.map(_ => _.name)" />
+      <sn-uploader />
     </div>
   </div>
 </template>
@@ -307,6 +308,7 @@
   import machineTableDetailed from '@/components/machineTableDetailed.vue'
   import PlotsMap from '@/components/PlotsMap.vue'
   import DiskSmartMap from '@/components/DiskSmartMap.vue'
+  import SnUploader from '@/components/SnUploader.vue'
   import {
     SnackbarProgrammatic as Snackbar
   } from 'buefy'
@@ -319,6 +321,7 @@
       machineTableDetailed,
       PlotsMap,
       DiskSmartMap,
+      SnUploader,
     },
   })
   export default class monitor extends Vue {
