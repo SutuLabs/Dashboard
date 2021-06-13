@@ -13,6 +13,62 @@
       </b-checkbox>
     </b-field>
 
+    <b-collapse v-if="machines" class="card" animation="slide" :open="isOpen == 999" @open="isOpen = 999">
+      <template #trigger="props">
+        <div class="card-header" role="button">
+          <p class="card-header-title">
+            All Disks
+          </p>
+          <a class="card-header-icon">
+            <b-icon :icon="props.open ? 'menu-down' : 'menu-up'">
+            </b-icon>
+          </a>
+        </div>
+      </template>
+      <div class="card-content">
+        <div class="content">
+          <b-table v-if="numbers" :data="numbers" striped :mobile-cards="false">
+            <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
+              <a class="has-text-light" @click="props.toggleDetails(props.row)">{{numbers.indexOf(props.row)+1}}</a>
+            </b-table-column>
+            <b-table-column field="sn" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info"
+              v-slot="props">
+              <a :id="props.row.sn" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.sn }}</a>
+            </b-table-column>
+            <b-table-column field="id" label="Id" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  {{props.row.id}}
+                </span>
+              </template>
+            </b-table-column>
+            <b-table-column label="Host" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  {{props.row.host}}
+                </span>
+              </template>
+            </b-table-column>
+            <b-table-column label="实际状态" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  {{hostDict && hostDict[props.row.sn]}}
+                </span>
+              </template>
+            </b-table-column>
+            <b-table-column label="Note" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <span class="has-text-grey">
+                  {{props.row.note}}
+                </span>
+              </template>
+            </b-table-column>
+
+
+          </b-table>
+        </div>
+      </div>
+    </b-collapse>
     <b-collapse class="card" animation="slide" v-for="(machine, index) of machines" :key="index" :open="isOpen == index"
       @open="isOpen = index">
       <template #trigger="props">
@@ -63,19 +119,21 @@
             </b-table-column>
             <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
               <template>
-                <b-button v-if="!props.row.parts && numbers && numbers[props.row.sn] && numbers[props.row.sn]"
+                <b-button
+                  v-if="!props.row.parts && numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn]"
                   size="is-small"
-                  @click="create(machine.name, props.row.blockDevice, numbers && numbers[props.row.sn])">
+                  @click="create(machine.name, props.row.blockDevice, numbersDict && numbersDict[props.row.sn])">
                   Create Partition
-                  <span v-if="numbers && numbers[props.row.sn]" class="has-text-info">[{{numbers[props.row.sn]}}]</span>
+                  <span v-if="numbersDict && numbersDict[props.row.sn]"
+                    class="has-text-info">[{{numbersDict[props.row.sn]}}]</span>
                 </b-button>
                 <b-button
-                  v-if="props.row.parts && props.row.parts.length > 0 && numbers && numbers[props.row.sn] && numbers[props.row.sn] != props.row.parts[0].label"
+                  v-if="props.row.parts && props.row.parts.length > 0 && numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn] != props.row.parts[0].label"
                   size="is-small"
-                  @click="rename(machine.name, props.row.blockDevice, props.row.parts[0].label, numbers[props.row.sn])">
+                  @click="rename(machine.name, props.row.blockDevice, props.row.parts[0].label, numbersDict[props.row.sn])">
                   Rename Partition
-                  <span v-if="numbers && numbers[props.row.sn]"
-                    class="has-text-info">[{{props.row.parts[0].label}}->{{numbers[props.row.sn]}}]</span>
+                  <span v-if="numbersDict && numbersDict[props.row.sn]"
+                    class="has-text-info">[{{props.row.parts[0].label}}->{{numbersDict[props.row.sn]}}]</span>
                 </b-button>
               </template>
             </b-table-column>
@@ -125,6 +183,9 @@
   import {
     SnackbarProgrammatic as Snackbar
   } from 'buefy'
+  import {
+    Dictionary
+  } from 'vue-router/types/router';
 
   @Component
   export default class DiskSmartMap extends Vue {
@@ -145,7 +206,15 @@
       } []
     } [] = [];
     @Prop() private machineNames!: string[];
-    private numbers: any = {};
+    private numbers: {
+      id: string,
+      sn: string,
+      host: string,
+      note: string
+    } [] = [];
+    private numbersDict: Dictionary < string > = {};
+    private hostDict: Dictionary < string > = {};
+
     private isOpen = 0;
     private forceGetDiskInfo = false;
     private machineSelected = '';
@@ -155,6 +224,7 @@
         .then(response => response.json())
         .then(json => {
           this.numbers = json;
+          this.numbersDict = this.numbers.reduce((dict, cur, idx) => (dict[cur.sn] = cur.id, dict), {} as Dictionary < string > );
         });
       if (this.machineSelected) {
         getInfo.getInfo(`disk/${this.machineSelected}`)
@@ -186,7 +256,12 @@
         if (!m.disks) return;
         m.disks.sort((a, b) => !a.parts || !b.parts ? 0 : a.parts[0].label.localeCompare(b.parts[0].label));
       });
-      console.log(this.machines)
+
+      this.hostDict = this.machines
+        .flatMap(m=>m.disks ? m.disks.map(d=>({d, m})): [])
+        .reduce((dict,cur, idx)=>(dict[cur.d.sn]= cur.m.name,dict),{} as Dictionary<string>);
+
+      console.log(this.hostDict)
     }
 
     humanize(size: number) {
