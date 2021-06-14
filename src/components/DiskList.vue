@@ -10,7 +10,7 @@
           <span class="has-text-white"
             >{{ humanize(disk.available * 1024) }} ( {{ Math.floor(disk.available / 106430464) }} )
             <span v-if="abnormals && abnormals.indexOf(disk.path) > -1">🔥</span>
-            <b-button type="is-warning is-small" @click="unmount(disk.path.slice(6))">unmount</b-button>
+            <b-button v-if="showunmount" type="is-warning is-small" @click="unmount(disk.path.slice(6))">unmount</b-button>
           </span>
         </b-progress>
       </div>
@@ -33,7 +33,8 @@ import {
 export default class DiskList extends Vue {
   @Prop() private disks!: any[];
   @Prop() private abnormals!: string[];
-  @Prop() private machinename!: string ;
+  @Prop() private machinename!: string;
+  @Prop() private showunmount!: boolean;
 
   humanize(size: number) {
     var i = Math.floor(Math.log(size) / Math.log(1024));
