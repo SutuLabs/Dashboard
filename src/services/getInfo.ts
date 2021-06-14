@@ -105,6 +105,15 @@ export default {
     });
   },
 
+  unmountPartition(host: string, label: string) {
+    const url = `${this.baseUrl}/server/unmount-part?host=${host}&label=${label}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
   getHeaders(isJson = true): Headers {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
