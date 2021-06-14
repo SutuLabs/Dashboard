@@ -475,6 +475,7 @@ export default class monitor extends Vue {
             Vue.set(machine, "totalPlot", m.totalPlot);
             Vue.set(machine, "lastPlotTime", m.lastPlotTime);
             Vue.set(machine, "abnormalFarmlands", m.abnormalFarmlands);
+            Vue.set(machine, "danglingPartitions", m.danglingPartitions);
           })
         });
       getInfo.getInfo('servers')

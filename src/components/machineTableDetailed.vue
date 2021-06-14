@@ -294,6 +294,11 @@
                         <b-tag type="is-danger">{{ ab }}</b-tag>
                       </b-taglist>
                     </div>
+                    <div v-for="dp in harvester.danglingPartitions" :key="dp" class="control">
+                      <b-taglist attached>
+                        <b-tag type="is-warning">{{ dp }}</b-tag>
+                      </b-taglist>
+                    </div>
                   </b-field>
                 </div>
               </div>
