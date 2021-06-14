@@ -96,6 +96,15 @@ export default {
     });
   },
 
+  mountPartition(host: string, block: string, label: string) {
+    const url = `${this.baseUrl}/server/mount-part?host=${host}&block=${block}&label=${label}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
   getHeaders(isJson = true): Headers {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');

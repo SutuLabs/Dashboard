@@ -140,32 +140,34 @@
             </b-table-column>
             <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
               <template>
-                <b-button
-                  v-if="!props.row.parts && numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn]"
-                  size="is-small"
-                  @click="create(machine.name, props.row.blockDevice, numbersDict && numbersDict[props.row.sn])"
-                >
-                  Create Partition
-                  <span v-if="numbersDict && numbersDict[props.row.sn]" class="has-text-info"
-                    >[{{ numbersDict[props.row.sn] }}]</span
+                <template v-if="numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn]">
+                  <b-button
+                    v-if="!props.row.parts"
+                    size="is-small"
+                    @click="create(machine.name, props.row.blockDevice, numbersDict[props.row.sn])"
                   >
-                </b-button>
-                <b-button
-                  v-if="
-                    props.row.parts &&
-                      props.row.parts.length > 0 &&
-                      numbersDict &&
-                      numbersDict[props.row.sn] &&
-                      numbersDict[props.row.sn] != props.row.parts[0].label
-                  "
-                  size="is-small"
-                  @click="rename(machine.name, props.row.blockDevice, props.row.parts[0].label, numbersDict[props.row.sn])"
-                >
-                  Rename Partition
-                  <span v-if="numbersDict && numbersDict[props.row.sn]" class="has-text-info"
-                    >[{{ props.row.parts[0].label }}->{{ numbersDict[props.row.sn] }}]</span
-                  >
-                </b-button>
+                    Create Partition
+                    <span class="has-text-info">[{{ numbersDict[props.row.sn] }}]</span>
+                  </b-button>
+                  <template v-if="props.row.parts && props.row.parts.length > 0">
+                    <b-button
+                      v-if="numbersDict[props.row.sn] != props.row.parts[0].label"
+                      size="is-small"
+                      @click="rename(machine.name, props.row.blockDevice, props.row.parts[0].label, numbersDict[props.row.sn])"
+                    >
+                      Rename Partition
+                      <span class="has-text-info">[{{ props.row.parts[0].label }}->{{ numbersDict[props.row.sn] }}]</span>
+                    </b-button>
+                    <b-button
+                      v-if="!props.row.parts[0].mountPoint"
+                      size="is-small"
+                      @click="mount(machine.name, props.row.blockDevice, props.row.parts[0].label)"
+                    >
+                      Mount Partition
+                      <span class="has-text-info">[{{ props.row.parts[0].label }}]</span>
+                    </b-button>
+                  </template>
+                </template>
               </template>
             </b-table-column>
 
@@ -337,6 +339,25 @@ export default class DiskSmartMap extends Vue {
         Snackbar.open({
           type: 'is-success',
           message: `success fully renamed ${host} ${block} ${oldLabel} -> ${newLabel}`,
+          indefinite: true,
+          queue: false
+        })
+      });
+  }
+
+  mount(host: string, block: string, label: string) {
+    var t = Snackbar.open({
+      type: 'is-primary',
+      message: `mounting ${host} ${block} ${label}`,
+      indefinite: true,
+      queue: false
+    })
+    getInfo.mountPartition(host, block, label)
+      .then(_ => {
+        t.close();
+        Snackbar.open({
+          type: 'is-success',
+          message: `success fully mounted ${host} ${block} ${label}`,
           indefinite: true,
           queue: false
         })
