@@ -114,6 +114,15 @@ export default {
     });
   },
 
+  removePlotDir(host: string, path: string) {
+    const url = `${this.baseUrl}/server/plot-dir?host=${host}&path=${path}`;
+
+    return fetch(url, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+    });
+  },
+
   getHeaders(isJson = true): Headers {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');

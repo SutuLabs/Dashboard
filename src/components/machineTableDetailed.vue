@@ -262,10 +262,8 @@
                         </td>
                         <td>{{ job.id }}</td>
                         <td v-if="job.wallTime.includes(':')">
-                          {{ job.wallTime.split(":")[0]
-                          }}<span class="has-text-grey">
-                            h </span
-                          >{{ job.wallTime.split(":")[1] }}<span class="has-text-grey"> min</span>
+                          {{ job.wallTime.split(":")[0] }}<span class="has-text-grey"> h </span>{{ job.wallTime.split(":")[1]
+                          }}<span class="has-text-grey"> min</span>
                         </td>
                         <td v-else>{{ job.wallTime.slice(0, -1) }}<span class="has-text-grey">s</span></td>
                         <td>{{ job.phase.replace(":", "-") }}</td>
@@ -290,9 +288,7 @@
                 <div class="content">
                   <b-field grouped group-multiline>
                     <div v-for="ab in harvester.abnormalFarmlands" :key="ab" class="control">
-                      <b-taglist attached>
-                        <b-tag type="is-danger">{{ ab }}</b-tag>
-                      </b-taglist>
+                      <b-tag type="is-danger" attached closable @close="removePlotDir(harvester.name, ab)">{{ ab }}</b-tag>
                     </div>
                     <div v-for="dp in harvester.danglingPartitions" :key="dp" class="control">
                       <b-taglist attached>
@@ -523,6 +519,46 @@ export default class machineTableDetailed extends Vue {
             Snackbar.open({
               type: 'is-danger',
               message: '挂载失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
+  removePlotDir(machine: string, path: string) {
+    this.$buefy.dialog.confirm({
+      title: '确认移除',
+      message: `将彻底移除机器[${machine}]的目录[${path}]（内容不会受影响），确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-primary',
+          message: `移除机器[${machine}]的目录[${path}]中`,
+          indefinite: true,
+          queue: false
+        })
+        getInfo.removePlotDir(machine, path)
+          .then((resp) => {
+            t.close();
+            if (resp.ok) {
+              Snackbar.open({
+                type: 'is-success',
+                message: '移除成功',
+              });
+            } else {
+              Snackbar.open({
+                type: 'is-danger',
+                message: '移除失败',
+                indefinite: true,
+              });
+            }
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-danger',
+              message: '移除失败',
               indefinite: true,
             });
           });
