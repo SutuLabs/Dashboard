@@ -196,6 +196,7 @@
           <div v-else>
             <div class="p-4 sticky has-background-dark">
               <b-switch v-model="hideJobs">Hide Jobs</b-switch>
+              <b-switch v-model="showPlan">Show Plan</b-switch>
               <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
               <b-button class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
               <b-button class="is-pulled-right" @click="cleanTemporary(plotters.map(_ => _.name))">Clean All</b-button>
@@ -207,6 +208,7 @@
                 :plotPlan="plotPlan"
                 :hideJobs="hideJobs"
                 :hideProcess="hideProcess"
+                :showPlan="showPlan"
                 :isMobile="false"
                 ref="machine"
               />
@@ -218,6 +220,7 @@
                 :plotPlan="plotPlan"
                 :hideJobs="hideJobs"
                 :hideProcess="hideProcess"
+                :showPlan="showPlan"
                 :isMobile="true"
               />
             </div>
@@ -262,6 +265,7 @@
               :plotPlan="{}"
               :hideJobs="true"
               :hideProcess="false"
+              :showPlan="false"
               :isMobile="false"
             />
           </div>
@@ -356,6 +360,7 @@ export default class monitor extends Vue {
   intervals: number[] = [];
   hideJobs = false;
   hideProcess = false;
+  showPlan = false;
   plotPlan: any = null;
   username = localStorage.getItem('username');
 

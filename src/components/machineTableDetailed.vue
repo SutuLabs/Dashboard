@@ -70,6 +70,11 @@
             <span :class="isDiffPlotPlan(props.row, ['rsyncdIndex']) ? 'has-text-danger' : 'has-text-grey'">{{
               props.row.configuration.rsyncdIndex
             }}</span>
+            <span
+              v-if="plotPlan[props.row.name] && showPlan"
+              :class="isDiffPlotPlan(props.row, ['rsyncdIndex', 'rsyncdHost']) ? 'has-text-info' : 'has-text-grey'"
+              >({{ plotPlan[props.row.name]["rsyncdHost"].slice(-3) }}@{{ plotPlan[props.row.name]["rsyncdIndex"] }})</span
+            >
           </span>
         </template>
       </b-table-column>
@@ -348,6 +353,7 @@ export default class machineTableDetailed extends Vue {
   @Prop() private plotPlan!: any;
   @Prop() private type!: string;
   @Prop() private hideJobs!: boolean;
+  @Prop() private showPlan!: boolean;
   @Prop() private hideProcess!: boolean;
   @Prop() private isMobile!: boolean;
 
