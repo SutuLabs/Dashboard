@@ -450,6 +450,7 @@ export default class monitor extends Vue {
       getInfo.getInfo('plotter')
         .then(response => response.json())
         .then(json => {
+          if (!this.plotters) this.plotters = json;
           this.plotters.forEach((plotter: any) => {
             var m = json.find((_: any) => _.name == plotter.name);
             if (m) {
@@ -462,6 +463,7 @@ export default class monitor extends Vue {
       getInfo.getInfo('farmer')
         .then(response => response.json())
         .then(json => {
+          if (!this.farmers) this.farmers = json;
           this.farmers.forEach((farmer: any) => {
             var m = json.find((_: any) => _.name == farmer.name);
             Vue.set(farmer, "farmer", m.farmer);
@@ -516,6 +518,7 @@ export default class monitor extends Vue {
       getInfo.getPlotPlan()
         .then(response => response.json())
         .then(json => {
+          if (!this.plotPlan) this.plotPlan = json;
           json.forEach((plan: any) => {
             this.plotPlan[plan.name] = plan.plan;
           })
