@@ -129,8 +129,10 @@
       >
         <div>
           {{ diskAvailable(props.row.disks).length }}/{{ props.row.disks.length }}
-          <span v-if="props.row.abnormalFarmlands && props.row.abnormalFarmlands.length > 0" class="has-text-danger"
-            >[{{ props.row.abnormalFarmlands.length }}]</span
+          <span
+            v-if="props.row.abnormalFarmlands && sumAbnormalFarmlands(props.row.abnormalFarmlands) > 0"
+            class="has-text-danger"
+            >[{{ sumAbnormalFarmlands(props.row.abnormalFarmlands) }}]</span
           >
         </div>
       </b-table-column>
@@ -286,9 +288,21 @@
             <template v-if="isHarvester">
               <div v-for="harvester in [props.row]" :key="harvester.name">
                 <div class="content">
-                  <b-field grouped group-multiline>
-                    <div v-for="ab in harvester.abnormalFarmlands" :key="ab" class="control">
-                      <b-tag type="is-danger" attached closable @close="removePlotDir(harvester.name, ab)">{{ ab }}</b-tag>
+                  <b-field grouped group-multiline v-if="harvester.abnormalFarmlands">
+                    <div v-for="ab in harvester.abnormalFarmlands.ioErrors" :key="'ioe' + ab" class="control">
+                      <b-tooltip label="读写出错">
+                        <b-tag type="is-danger" attached closable @close="removePlotDir(harvester.name, ab)">{{ ab }}</b-tag>
+                      </b-tooltip>
+                    </div>
+                    <div v-for="ab in harvester.abnormalFarmlands.uninhabiteds" :key="'uni' + ab" class="control">
+                      <b-tooltip label="未耕种">
+                        <b-tag type="is-warning" attached>{{ ab }}</b-tag>
+                      </b-tooltip>
+                    </div>
+                    <div v-for="ab in harvester.abnormalFarmlands.missings" :key="'mis' + ab" class="control">
+                      <b-tooltip label="硬盘不在">
+                        <b-tag type="is-warning" attached closable @close="removePlotDir(harvester.name, ab)">{{ ab }}</b-tag>
+                      </b-tooltip>
                     </div>
                     <div v-for="dp in harvester.danglingPartitions" :key="dp" class="control">
                       <b-taglist attached>
@@ -632,6 +646,10 @@ export default class machineTableDetailed extends Vue {
     }
     result = result + ']'
     return result
+  }
+  sumAbnormalFarmlands(abnormals: { ioErrors: string[], missings: string[], uninhabiteds: string[] }): number {
+    if (!abnormals) return 0;
+    return (abnormals.ioErrors?.length ?? 0) + (abnormals.missings?.length ?? 0) + (abnormals.uninhabiteds?.length ?? 0);
   }
   getHarvesterName(host: string) {
     return "harvester" + host.slice(-1) + '-' + host.slice(-3);

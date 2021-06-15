@@ -9,7 +9,8 @@
           >
           <span class="has-text-white"
             >{{ humanize(disk.available * 1024) }} ( {{ Math.floor(disk.available / 106430464) }} )
-            <span v-if="abnormals && abnormals.indexOf(disk.path) > -1">🔥</span>
+            <span v-if="abnormals && abnormals.ioErrors && abnormals.ioErrors.indexOf(disk.path) > -1">🔥</span>
+            <span v-if="abnormals && abnormals.uninhabiteds && abnormals.uninhabiteds.indexOf(disk.path) > -1">🈚</span>
             <b-button v-if="showunmount" type="is-warning is-small" @click="unmount(disk.path.slice(6))">unmount</b-button>
           </span>
         </b-progress>
