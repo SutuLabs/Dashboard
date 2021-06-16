@@ -372,13 +372,9 @@ export default class monitor extends Vue {
   }
 
   load() {
-    var server: any;
     getInfo.getInfo('servers')
       .then(response => response.json())
-      .then(json => {
-        server = json;
-      })
-      .then(() => {
+      .then((servers: any) => {
         getInfo.getInfo('farmer')
           .then(response => response.json())
           .then(json => {
@@ -386,7 +382,7 @@ export default class monitor extends Vue {
           })
           .then(() => {
             this.farmers.forEach((farmer: any) => {
-              var m = server.find((_: any) => _.name == farmer.name);
+              var m = servers.find((_: any) => _.name == farmer.name);
               this.assignMachine(farmer, m);
               getInfo.sortDisks(farmer);
             });
@@ -402,12 +398,12 @@ export default class monitor extends Vue {
           })
           .then(() => {
             this.plotters.forEach((plotter: any) => {
-              var m = server.find((_: any) => _.name == plotter.name);
+              var m = servers.find((_: any) => _.name == plotter.name);
               this.assignMachine(plotter, m);
               getInfo.sortDisks(plotter);
             });
           });
-        server.forEach((machine: any) => {
+        servers.forEach((machine: any) => {
           if (/harvester(_s)?\d/.test(machine.name)) {
             this.harvesters.push(machine);
           }
@@ -464,6 +460,23 @@ export default class monitor extends Vue {
               plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
             }
           })
+
+          let incomings: { [key: string]: any } = this.plotters.reduce((rv: { [key: string]: any }, x: { configuration: { rsyncdHost: string } }) => {
+            // group by last segment
+            (rv[x.configuration.rsyncdHost] = rv[x.configuration.rsyncdHost] || []).push(x);
+            return rv;
+          }, {});
+          console.log(incomings, this.harvesters);
+          for (const key in incomings) {
+            if (Object.prototype.hasOwnProperty.call(incomings, key)) {
+              let inc = incomings[key];
+              let seg = key.slice(key.lastIndexOf('.') + 1);
+              let harvester = this.harvesters.find((_: any) => _.name.slice(_.name.lastIndexOf('-') + 1) == seg);
+              let result = inc.map((_: any) => ({ count: _.fileCounts && _.fileCounts.length > 0 && _.fileCounts[0]?.count, name: _.name }));
+              if (harvester)
+                Vue.set(harvester, 'incomings', result);
+            }
+          }
         });
       getInfo.getInfo('farmer')
         .then(response => response.json())

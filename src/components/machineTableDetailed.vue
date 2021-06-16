@@ -78,6 +78,21 @@
           </span>
         </template>
       </b-table-column>
+      <b-table-column label="Move In" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
+        <template>
+          <template v-if="props.row.incomings">
+            <b-tooltip multilined>
+              {{ props.row.incomings.reduce((sum, e) => sum + e.count, 0) }}
+              <template v-slot:content>
+                <b-taglist attached v-for="inc in props.row.incomings" :key="inc.name">
+                  <b-tag type="is-dark">{{ inc.name }}</b-tag>
+                  <b-tag type="is-info">{{ inc.count }}</b-tag>
+                </b-taglist>
+              </template>
+            </b-tooltip>
+          </template>
+        </template>
+      </b-table-column>
       <b-table-column
         label="Plotting Progress"
         width="20%"
@@ -112,7 +127,7 @@
       </b-table-column>
       <b-table-column
         field="totalPlot"
-        :label="`田数 (${machines.reduce((sum, e) => sum + e.totalPlot, 0)})`"
+        :label="`田数 (${machines.reduce((sum, e) => sum + e && e.totalPlot || 0, 0)})`"
         width="40"
         header-class="has-text-info"
         v-slot="props"
