@@ -466,7 +466,6 @@ export default class monitor extends Vue {
             (rv[x.configuration.rsyncdHost] = rv[x.configuration.rsyncdHost] || []).push(x);
             return rv;
           }, {});
-          console.log(incomings, this.harvesters);
           for (const key in incomings) {
             if (Object.prototype.hasOwnProperty.call(incomings, key)) {
               let inc = incomings[key];
