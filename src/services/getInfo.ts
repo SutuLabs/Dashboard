@@ -10,6 +10,16 @@ export default {
     });
   },
 
+  uploadFile(path: string, formData: FormData): Promise<Response> {
+    const url = `${this.baseUrl}/server/${path}`;
+
+    return fetch(url, {
+      method: 'PUT',
+      body: formData,
+      headers: this.getHeaders(false),
+    });
+  },
+
   deletePlot(machineName: string, plotId: string) {
     const url = `${this.baseUrl}/server/plot?name=${machineName}&id=${plotId}`;
 
@@ -48,6 +58,26 @@ export default {
     });
   },
 
+  startHarvesterDaemons(names?: any[]) {
+    const url = `${this.baseUrl}/server/daemons/harvesters`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(names),
+    });
+  },
+
+  mountAll(names?: any[]) {
+    const url = `${this.baseUrl}/server/mount`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(names),
+    });
+  },
+
   createPartition(host: string, block: string, label: string) {
     const url = `${this.baseUrl}/server/create-part?host=${host}&block=${block}&label=${label}`;
 
@@ -57,13 +87,52 @@ export default {
     });
   },
 
-  getHeaders() {
+  renamePartition(host: string, block: string, oldLabel: string, newLabel: string) {
+    const url = `${this.baseUrl}/server/rename-part?host=${host}&block=${block}&oldLabel=${oldLabel}&newLabel=${newLabel}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
+  mountPartition(host: string, block: string, label: string) {
+    const url = `${this.baseUrl}/server/mount-part?host=${host}&block=${block}&label=${label}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
+  unmountPartition(host: string, label: string) {
+    const url = `${this.baseUrl}/server/unmount-part?host=${host}&label=${label}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
+  removePlotDir(host: string, path: string) {
+    const url = `${this.baseUrl}/server/plot-dir?host=${host}&path=${path}`;
+
+    return fetch(url, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+    });
+  },
+
+  getHeaders(isJson = true): Headers {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
 
     const headers = new Headers();
 
-    headers.append('Content-Type', 'text/json');
+    if (isJson) {
+      headers.append('Content-Type', 'text/json');
+    }
+
     headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
 
     return headers;
