@@ -7,175 +7,123 @@
       <b-button class="column is-1 is-offset-5 p-2" type="is-info" tag="router-link" :to="{ path: '/login' }">点击登录 </b-button>
     </template>
     <div v-else>
-      <div v-if="farmer != null" class="box">
-        <div>
-          <div class="content">
-            <b-field grouped group-multiline>
-              <div class="container is-fluid mb-3">
-                <b-notification
-                  v-if="connectionStatus == 'failed'"
-                  type="is-danger"
-                  has-icon
-                  aria-close-label="Close notification"
-                  role="alert"
-                >
-                  无法连接至服务器，请检查您的网络连接或联系管理员！
-                </b-notification>
-              </div>
-              <div class="control">
+      <div v-if="farmer != null" class="m-2">
+        <div class="content">
+          <div class="container is-fluid mb-3" v-if="connectionStatus == 'failed'">
+            <b-notification type="is-danger" has-icon aria-close-label="Close notification" role="alert">
+              无法连接至服务器，请检查您的网络连接或联系管理员！
+            </b-notification>
+          </div>
+          <b-field grouped group-multiline>
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">连接状态</b-tag>
+                <b-tag type="is-warning" v-if="connectionStatus == 'loading'">连接中...</b-tag>
+                <b-tag type="is-success" v-else-if="connectionStatus == 'success'">连接成功</b-tag>
+                <b-tag type="is-danger" v-else>连接失败</b-tag>
+              </b-taglist>
+            </div>
+            <div class="control">
+              <b-tooltip :label="'空间: ' + farmer.farmer.totalSize + '/' + farmer.node.space" position="is-bottom">
                 <b-taglist attached>
-                  <b-tag type="is-dark">连接状态</b-tag>
-                  <b-tag type="is-warning" v-if="connectionStatus == 'loading'">连接中...</b-tag>
-                  <b-tag type="is-success" v-else-if="connectionStatus == 'success'">连接成功</b-tag>
-                  <b-tag type="is-danger" v-else>连接失败</b-tag>
+                  <b-tag type="is-dark">农场状态</b-tag>
+                  <b-tag type="is-success" v-if="farmer.farmer.status == 'Farming'">{{ farmer.farmer.status }}</b-tag>
+                  <b-tag type="is-danger" v-else>{{ farmer.farmer.status }}</b-tag>
                 </b-taglist>
-              </div>
-              <div class="control">
-                <b-tooltip :label="'时间: ' + farmer.node.time" position="is-bottom">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">同步状态</b-tag>
-                    <b-tag type="is-success" v-if="farmer.node.status == 'Full Node Synced'">
-                      {{ farmer.node.status }}
-                    </b-tag>
-                    <b-tag type="is-danger" v-else>{{ farmer.node.status }}</b-tag>
-                  </b-taglist>
-                </b-tooltip>
-              </div>
-
-              <div class="control">
-                <b-tooltip :label="'空间: ' + farmer.farmer.totalSize + '/' + farmer.node.space" position="is-bottom">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">农场状态</b-tag>
-                    <b-tag type="is-success" v-if="farmer.farmer.status == 'Farming'">{{ farmer.farmer.status }}</b-tag>
-                    <b-tag type="is-danger" v-else>{{ farmer.farmer.status }}</b-tag>
-                  </b-taglist>
-                </b-tooltip>
-              </div>
-
-              <div class="control is-hidden-mobile">
-                <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">耕田数量</b-tag>
-                    <b-tag type="is-primary">{{ farmer.farmer.plotCount }}</b-tag>
-                  </b-taglist>
-                </b-tooltip>
-              </div>
-
-              <div class="control is-hidden-mobile">
-                <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">总共挖币</b-tag>
-                    <b-tag type="is-danger">{{ farmer.farmer.totalFarmed }}</b-tag>
-                  </b-taglist>
-                </b-tooltip>
-              </div>
-
-              <div class="control is-hidden-mobile">
+              </b-tooltip>
+            </div>
+            <div class="control">
+              <b-tooltip :label="'时间: ' + farmer.node.time" position="is-bottom">
                 <b-taglist attached>
-                  <b-tag type="is-dark">Farmer</b-tag>
-                  <b-tag v-if="farmers" type="is-info">{{ farmers.length }}</b-tag>
+                  <b-tag type="is-dark">同步状态</b-tag>
+                  <b-tag type="is-success" v-if="farmer.node.status == 'Full Node Synced'">
+                    {{ farmer.node.status }}
+                  </b-tag>
+                  <b-tag type="is-danger" v-else>{{ farmer.node.status }}</b-tag>
                 </b-taglist>
+              </b-tooltip>
+            </div>
+            <div class="control">
+              <b-taglist v-if="plotters != null" attached>
+                <b-tag type="is-dark">收割机</b-tag>
+                <b-tag v-if="checkStacking(plotters)" type="is-danger">{{ checkStacking(plotters) }}台堆积</b-tag>
+                <b-tag v-else type="is-success">正常</b-tag>
+              </b-taglist>
+            </div>
+            <div class="control">
+              <b-taglist v-if="farmers != null" attached>
+                <b-tag type="is-dark">绘图机</b-tag>
+                <b-tag v-if="checkDisksFull(harvesters)" type="is-danger">{{ checkDisksFull(harvesters) }}台容量不足</b-tag>
+                <b-tag v-else type="is-success">正常</b-tag>
+              </b-taglist>
+            </div>
+          </b-field>
+        </div>
+
+        <div class="columns is-tablet m-2 box">
+          <div class="column is-half box has-background-dark m-1">
+            <div class="columns is-mobile">
+              <div class="column">
+                <div class="mb-5">
+                  耕田数量
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ farmer.farmer.plotCount }}</div>
+                </div>
+                <div>
+                  矿场算力
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ harvestSpace }}Tib</div>
+                </div>
               </div>
-
-              <div class="control is-hidden-mobile">
-                <b-taglist attached>
-                  <b-tag type="is-dark">Plotter</b-tag>
-                  <b-tag v-if="plotters" type="is-info">{{ plotters.length }}</b-tag>
-                </b-taglist>
+              <div class="column">
+                <div class="mb-5">
+                  总共挖币
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ farmer.farmer.totalFarmed }}</div>
+                </div>
+                <div>
+                  预计爆块时间
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ estimatedTime }}</div>
+                </div>
               </div>
+            </div>
+          </div>
 
-              <div class="control is-hidden-mobile">
-                <b-taglist attached>
-                  <b-tag type="is-dark">Harvester</b-tag>
-                  <b-tag v-if="harvesters" type="is-info">{{ harvesters.length }}</b-tag>
-                </b-taglist>
+          <div class="column has-background-dark box m-1">
+            机器信息
+            <div class="columns is-mobile">
+              <div class="column">绘图机：</div>
+              <div class="column">{{ harvesters && harvesters.length }}台</div>
+            </div>
+            <div class="columns is-mobile">
+              <div class="column">农夫：</div>
+              <div class="column">{{ farmers && farmers.length }}台</div>
+            </div>
+            <div class="columns is-mobile">
+              <div class="column">收割机：</div>
+              <div class="column">{{ plotters && plotters.length }}台</div>
+            </div>
+          </div>
+          <div class="column has-background-dark box m-1">
+            <div class="is-size-7">
+              <div class="columns is-mobile">
+                <div class="column">最高高度：</div>
+                <div class="column">{{ farmer.node.height }}</div>
               </div>
-            </b-field>
-
-            <b-collapse :open="false" position="is-bottom" aria-id="contentIdForA11y1">
-              <template #trigger="props">
-                <a aria-controls="contentIdForA11y1">
-                  <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
-                  {{ !props.open ? "显示全部" : "隐藏" }}
-                </a>
-              </template>
-              <b-field grouped group-multiline>
-                <div class="control is-hidden-tablet">
-                  <b-tooltip :label="'期望成功值: ' + farmer.farmer.expectedToWin" position="is-bottom">
-                    <b-taglist attached>
-                      <b-tag type="is-dark">耕田数量</b-tag>
-                      <b-tag type="is-primary">{{ farmer.farmer.plotCount }}</b-tag>
-                    </b-taglist>
-                  </b-tooltip>
-                </div>
-                <div class="control is-hidden-tablet">
-                  <b-tooltip :label="'最后挖币高度: ' + farmer.farmer.lastFarmedHeight" position="is-bottom">
-                    <b-taglist attached>
-                      <b-tag type="is-dark">总共挖币</b-tag>
-                      <b-tag type="is-danger">{{ farmer.farmer.totalFarmed }}</b-tag>
-                    </b-taglist>
-                  </b-tooltip>
-                </div>
-                <div class="control is-hidden-tablet">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">Farmer</b-tag>
-                    <b-tag v-if="farmers" type="is-info">{{ farmers.length }}</b-tag>
-                  </b-taglist>
-                </div>
-                <div class="control is-hidden-tablet">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">Plotter</b-tag>
-                    <b-tag v-if="plotters" type="is-info">{{ plotters.length }}</b-tag>
-                  </b-taglist>
-                </div>
-                <div class="control is-hidden-tablet">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">Harvester</b-tag>
-                    <b-tag v-if="harvesters" type="is-info">{{ harvesters.length }}</b-tag>
-                  </b-taglist>
-                </div>
-                <div class="control">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">高度</b-tag>
-                    <b-tag type="is-info">{{ farmer.node.height }}</b-tag>
-                  </b-taglist>
-                </div>
-                <div class="control">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">空间</b-tag>
-                    <b-tag type="is-primary is-light">{{ farmer.farmer.totalSize }}</b-tag>
-                    <b-tag type="is-light">{{ farmer.node.space }}</b-tag>
-                  </b-taglist>
-                </div>
-                <div class="control">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">难度</b-tag>
-                    <b-tag type="is-light">{{ farmer.node.difficulty }}</b-tag>
-                  </b-taglist>
-                </div>
-
-                <div class="control">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">交易费用</b-tag>
-                    <b-tag type="is-light">{{ farmer.farmer.txFees }}</b-tag>
-                  </b-taglist>
-                </div>
-
-                <div class="control">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">奖励</b-tag>
-                    <b-tag type="is-light">{{ farmer.farmer.rewards }}</b-tag>
-                  </b-taglist>
-                </div>
-
-                <div class="control">
-                  <b-taglist attached>
-                    <b-tag type="is-dark">期望成功值</b-tag>
-                    <b-tag type="is-light">{{ farmer.farmer.expectedToWin }}</b-tag>
-                  </b-taglist>
-                </div>
-              </b-field>
-            </b-collapse>
+              <div class="columns is-mobile">
+                <div class="column">难度：</div>
+                <div class="column">{{ farmer.node.difficulty }}</div>
+              </div>
+              <div class="columns is-mobile">
+                <div class="column">总算力：</div>
+                <div class="column">{{ farmer.node.space }}</div>
+              </div>
+              <div class="columns is-mobile">
+                <div class="column">交易费用：</div>
+                <div class="column">{{ farmer.farmer.txFees }}</div>
+              </div>
+              <div class="columns is-mobile">
+                <div class="column">奖励：</div>
+                <div class="column">{{ farmer.farmer.rewards }}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -590,6 +538,42 @@ export default class monitor extends Vue {
     }
     return count;
   }
+  formatTime(time: number) {
+    var day;
+    day = time / (24 * 60);
+    if (day < 1) {
+      var hour, min;
+      hour = Math.floor(time / 60);
+      if (hour < 1) {
+        if (time < 1) return "少于一分钟";
+        else return "大约 " + time.toFixed(0).toString() + " 分钟";
+      } else {
+        min = Math.floor(time - hour * 60);
+        if (min < 1) return hour.toString() + " 小时";
+        else return hour.toString() + " 小时 " + min.toString() + " 分钟";
+      }
+    } else if (day < 31) {
+      return day.toFixed(0).toString() + " 天";
+    } else {
+      var month, temp_day;
+      month = Math.floor(day / 30);
+      temp_day = Math.floor(day - month * 30);
+      if (month < 12) {
+        return month.toString() + " 个月 " + temp_day.toString() + " 天";
+      } else {
+        var year;
+        year = Math.floor(day / 365);
+        if (year < 1) return "接近 1 年"
+        else {
+          var temp_month = Math.floor((day - year * 365) / 30);
+          if (temp_month < 1) return year.toString() + " 年";
+          else {
+            return year.toString() + " 年 " + temp_month.toString() + " 个月";
+          }
+        }
+      }
+    }
+  }
   get sortedErrors() {
     return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
   }
@@ -597,6 +581,14 @@ export default class monitor extends Vue {
     return this.events.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
   }
 
+  get harvestSpace() {
+    return ((this.harvesters.reduce((sum, e) => sum + ((e && e.totalPlot) || 0), 0) * 101.4) / 1024).toFixed(2)
+  }
+  get estimatedTime() {
+    var averageBlockTime = 18.75
+    var rawTotalNetSpace = parseFloat(this.farmer.node.space);
+    return this.formatTime((averageBlockTime / 60) * (rawTotalNetSpace * Math.pow(1024, 2) / parseFloat(this.harvestSpace)));
+  }
   beforeDestroy() {
     this.intervals = getInfo.stopRefresh(this.intervals);
   }
