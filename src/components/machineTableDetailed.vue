@@ -345,15 +345,6 @@
 </template>
 
 <script lang="ts">
-interface info {
-  title: string,
-  confirmMsg: string,
-  loadingMsg: string,
-  successMsg: string,
-  failureMsg: string,
-  operation: any,
-}
-
 import {
   Component,
   Vue,
@@ -393,109 +384,128 @@ export default class machineTableDetailed extends Vue {
       this.isHarvester = true;
     }
   }
-
   stopPlot(name: string, plotId: string[]) {
     var id = this.machines
       .filter((_) => _.name == name)
       .map((_) => _.jobs.map((_: any) => _.id))[0]
       .filter((_: any) => plotId.indexOf(_) > -1)
-    var info = {
-      title: '确认停止任务',
-      confirmMsg: `停止机器[${name}]上的任务[${id}]，确认吗？`,
-      loadingMsg: `停止[${id}]中`,
-      successMsg: '删除命令已发送，等待半分钟看结果',
-      failureMsg: '删除失败，可能已经被删除，可能系统无法操作',
-      operation: () => getInfo.deletePlot(name, id),
-    };
-    this.confirmAndExecute(info);
-  }
-
-  applyPlotPlan(plotList: string[]) {
-    var info = {
-      title: '确认应用计划',
-      confirmMsg: `应用机器[${plotList}]的计划，确认吗？`,
-      loadingMsg: `应用[${plotList}]中`,
-      successMsg: '应用成功',
-      failureMsg: '应用失败',
-      operation: () => getInfo.applyPlotPlan(plotList),
-    }
-    this.confirmAndExecute(info);
-  }
-
-  cleanTemporary(names: string[]) {
-    var info = {
-      title: '确认清理',
-      confirmMsg: `清理机器[${names}]，确认吗？`,
-      loadingMsg: `清理[${names}]中`,
-      successMsg: '清理成功',
-      failureMsg: '清理失败',
-      operation: () => getInfo.cleanTemporary(names),
-    }
-    this.confirmAndExecute(info);
-  }
-
-  startDaemons(names: string[]) {
-    var info = {
-      title: '确认启动',
-      confirmMsg: `启动机器[${names}]的进程，确认吗？`,
-      loadingMsg: `启动[${names}]中`,
-      successMsg: '启动成功',
-      failureMsg: '启动失败',
-      operation: () => getInfo.startHarvesterDaemons(names),
-    }
-    this.confirmAndExecute(info);
-  }
-
-  mountAll(names: string[]) {
-    var info = {
-      title: '确认挂载',
-      confirmMsg: `试图在机器[${names}]上进行挂载，确认吗？`,
-      loadingMsg: `挂载[${names}]中`,
-      successMsg: '挂载成功',
-      failureMsg: '挂载失败',
-      operation: () => getInfo.mountAll(names),
-    };
-    this.confirmAndExecute(info);
-  }
-
-  removePlotDir(machine: string, path: string) {
-    var info = {
-      title: '确认移除',
-      confirmMsg: `将彻底移除机器[${machine}]的目录[${path}]（内容不会受影响），确认吗？`,
-      loadingMsg: `移除机器[${machine}]的目录[${path}]中`,
-      successMsg: '移除成功',
-      failureMsg: '移除失败',
-      operation: () => getInfo.removePlotDir(machine, path),
-    };
-    this.confirmAndExecute(info);
-  }
-
-  confirmAndExecute(info: info) {
     this.$buefy.dialog.confirm({
-      title: info.title,
-      message: info.confirmMsg,
+      title: '确认停止任务',
+      message: `停止机器[${name}]上的任务[${id}]，确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        id.map((_: any) => {
+          getInfo
+            .deletePlot(name, _)
+            .then(() => {
+              Snackbar.open('删除命令已发送，等待半分钟看结果')
+            })
+            .catch(() => {
+              Snackbar.open('删除失败，可能已经被删除，可能系统无法操作')
+            })
+        })
+      },
+    })
+  }
+  applyPlotPlan(plotList: string[]) {
+    var plans: any[] = [];
+    plotList.forEach((plot: string) => {
+      plans.push({
+        name: plot,
+        plan: this.plotPlan[plot],
+      })
+    })
+    this.$buefy.dialog.confirm({
+      title: '确认应用计划',
+      message: `应用机器[${plotList}]的计划，确认吗？`,
       cancelText: '取消',
       confirmText: '确定',
       type: 'is-success',
       onConfirm: () => {
         var t = Snackbar.open({
           type: 'is-primary',
-          message: info.loadingMsg,
+          message: `应用[${plotList}]中`,
           indefinite: true,
           queue: false
         })
-        info.operation()
-          .then((resp: any) => {
+        getInfo.applyPlotPlan(plans)
+          .then(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-success',
+              message: '应用成功',
+            });
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-error',
+              message: '应用失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
+  cleanTemporary(names: string[]) {
+    this.$buefy.dialog.confirm({
+      title: '确认清理',
+      message: `清理机器[${names}]，确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-primary',
+          message: `清理[${names}]中`,
+          indefinite: true,
+          queue: false
+        })
+        getInfo.cleanTemporary(names)
+          .then(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-success',
+              message: '清理成功',
+            });
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-error',
+              message: '清理失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
+  startDaemons(names: string[]) {
+    this.$buefy.dialog.confirm({
+      title: '确认启动',
+      message: `启动机器[${names}]的进程，确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-primary',
+          message: `启动[${names}]中`,
+          indefinite: true,
+          queue: false
+        })
+        getInfo.startHarvesterDaemons(names)
+          .then((resp) => {
             t.close();
             if (resp.ok) {
               Snackbar.open({
                 type: 'is-success',
-                message: info.successMsg,
+                message: '启动成功',
               });
             } else {
               Snackbar.open({
                 type: 'is-danger',
-                message: info.failureMsg,
+                message: '启动失败',
                 indefinite: true,
               });
             }
@@ -503,14 +513,93 @@ export default class machineTableDetailed extends Vue {
             t.close();
             Snackbar.open({
               type: 'is-danger',
-              message: info.failureMsg,
+              message: '启动失败',
               indefinite: true,
             });
           });
       }
     })
   }
-  
+  mountAll(names: string[]) {
+    this.$buefy.dialog.confirm({
+      title: '确认启动',
+      message: `试图在机器[${names}]上进行挂载，确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-primary',
+          message: `挂载[${names}]中`,
+          indefinite: true,
+          queue: false
+        })
+        getInfo.mountAll(names)
+          .then((resp) => {
+            t.close();
+            if (resp.ok) {
+              Snackbar.open({
+                type: 'is-success',
+                message: '挂载成功',
+              });
+            } else {
+              Snackbar.open({
+                type: 'is-danger',
+                message: '挂载失败',
+                indefinite: true,
+              });
+            }
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-danger',
+              message: '挂载失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
+  removePlotDir(machine: string, path: string) {
+    this.$buefy.dialog.confirm({
+      title: '确认移除',
+      message: `将彻底移除机器[${machine}]的目录[${path}]（内容不会受影响），确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-primary',
+          message: `移除机器[${machine}]的目录[${path}]中`,
+          indefinite: true,
+          queue: false
+        })
+        getInfo.removePlotDir(machine, path)
+          .then((resp) => {
+            t.close();
+            if (resp.ok) {
+              Snackbar.open({
+                type: 'is-success',
+                message: '移除成功',
+              });
+            } else {
+              Snackbar.open({
+                type: 'is-danger',
+                message: '移除失败',
+                indefinite: true,
+              });
+            }
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-danger',
+              message: '移除失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
   isDiffPlotPlan(plot: any, keys: string[]) {
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
