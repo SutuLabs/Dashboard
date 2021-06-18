@@ -68,6 +68,7 @@
 
 <script lang="ts">
   import { Component, Vue, Prop } from 'vue-property-decorator';
+  import getTime from '@/services/getTime'
 
   @Component
   export default class calculatorSimplified extends Vue {
@@ -94,43 +95,6 @@
       this.basicCalculate();
     }
 
-    formatTime(time: number) {
-      var day;
-      day = time / (24 * 60);
-      if (day < 1) {
-        var hour, min;
-        hour = Math.floor(time / 60);
-        if (hour < 1) {
-          if (time < 1) return "Less than 1 minute";
-          else return "About " + time.toFixed(0).toString() + " minutes";
-        } else {
-          min = Math.floor(time - hour * 60);
-          if (min < 1) return hour.toString() + " hours";
-          else return hour.toString() + " hours " + min.toString() + " minutes";
-        }
-      } else if (day < 31) {
-        return day.toFixed(0).toString() + " days";
-      } else {
-        var month, temp_day;
-        month = Math.floor(day / 30);
-        temp_day = Math.floor(day - month * 30);
-        if (month < 12) {
-          return month.toString() + " months " + temp_day.toString() + " days";
-        } else {
-          var year;
-          year = Math.floor(day / 365);
-          if (year < 1) return "Almost 1 year"
-          else {
-            var temp_month = Math.floor((day - year * 365) / 30);
-            if (temp_month < 1) return year.toString() + " years";
-            else {
-              return year.toString() + " years " + temp_month.toString() + " months";
-            }
-          }
-        }
-      }
-    }
-
     basicCalculate(): void {
       var initSize; //Tib
       var unitCost = this.basicCalc.unitCost;
@@ -142,9 +106,7 @@
         initSize = this.basicCalc.n * 101.4 / 1024;
       }
       var proportion = (initSize) / (rawTotalNetSpace * Math.pow(1024, 2));
-      var expectTimeWin = ((this.averageBlockTime / 60) / proportion); // in minutes (reference:https://github.com/Chia-Network/chia-blockchain/blob/95d6030876fb19f6836c6c6eeb41273cf7c30d93/chia/cmds/farm_funcs.py#L246-L247)
-      this.basicCalc.estimatedTime = this.formatTime(expectTimeWin);
-
+      this.basicCalc.estimatedTime = getTime.getEstimatedTime(initSize,rawTotalNetSpace,this.averageBlockTime);
       var dailyEarningXCH = 2 * (1 - Math.pow((1 - proportion), 4608)); // XCH reference: https://thechiafarmer.com/2021/04/23/estimated-time-to-win-explained/
       var dailyEarning = dailyEarningXCH * this.basicCalc.chiaPrice; // TODO: get chia price from coinbase
       this.basicCalc.dailyEarningXCH = dailyEarningXCH;
