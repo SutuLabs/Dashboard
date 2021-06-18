@@ -127,7 +127,7 @@
       </b-table-column>
       <b-table-column
         field="totalPlot"
-        :label="`田数 (${machines.reduce((sum, e) => sum + e && e.totalPlot || 0, 0)})`"
+        :label="`田数 (${machines.reduce((sum, e) => sum + ((e && e.totalPlot) || 0), 0)})`"
         width="40"
         header-class="has-text-info"
         v-slot="props"
