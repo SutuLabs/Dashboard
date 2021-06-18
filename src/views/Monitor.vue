@@ -414,7 +414,7 @@ export default class monitor extends Vue {
 
           let incomings: { [key: string]: any } = this.plotters.reduce((rv: { [key: string]: any }, x: { configuration: { rsyncdHost: string } }) => {
             // group by last segment
-            (rv[x.configuration.rsyncdHost] = rv[x.configuration.rsyncdHost] || []).push(x);
+            (rv[x.configuration?.rsyncdHost] = rv[x.configuration?.rsyncdHost] || []).push(x);
             return rv;
           }, {});
           for (const key in incomings) {
