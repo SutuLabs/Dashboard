@@ -60,8 +60,8 @@
           </b-field>
         </div>
 
-        <div class="columns is-tablet m-2 box">
-          <div class="column is-half box has-background-dark m-1">
+        <div class="columns is-tablet m-1 box">
+          <div class="column is-half box has-background-dark has-text-weight-bold m-1">
             <div class="columns is-mobile">
               <div class="column">
                 <div class="mb-5">
@@ -86,19 +86,21 @@
             </div>
           </div>
 
-          <div class="column has-background-dark box m-1">
+          <div class="column has-background-dark box m-1 has-text-weight-bold">
             机器信息
-            <div class="columns is-mobile">
-              <div class="column">绘图机：</div>
-              <div class="column">{{ harvesters && harvesters.length }}台</div>
-            </div>
-            <div class="columns is-mobile">
-              <div class="column">农夫：</div>
-              <div class="column">{{ farmers && farmers.length }}台</div>
-            </div>
-            <div class="columns is-mobile">
-              <div class="column">收割机：</div>
-              <div class="column">{{ plotters && plotters.length }}台</div>
+            <div class="mt-3">
+              <div class="columns is-mobile">
+                <div class="column">绘图机：</div>
+                <div class="column">{{ harvesters && harvesters.length }}台</div>
+              </div>
+              <div class="columns is-mobile">
+                <div class="column">农夫机：</div>
+                <div class="column">{{ farmers && farmers.length }}台</div>
+              </div>
+              <div class="columns is-mobile">
+                <div class="column">收割机：</div>
+                <div class="column">{{ plotters && plotters.length }}台</div>
+              </div>
             </div>
           </div>
           <div class="column has-background-dark box m-1">
@@ -273,6 +275,7 @@ import {
   Vue
 } from 'vue-property-decorator'
 import getInfo from '@/services/getInfo'
+import getTime from '@/services/getTime'
 import diskMap from '@/components/diskMap.vue'
 import DiskList from '@/components/DiskList.vue'
 import cpuInfo from '@/components/cpuInfo.vue'
@@ -538,42 +541,6 @@ export default class monitor extends Vue {
     }
     return count;
   }
-  formatTime(time: number) {
-    var day;
-    day = time / (24 * 60);
-    if (day < 1) {
-      var hour, min;
-      hour = Math.floor(time / 60);
-      if (hour < 1) {
-        if (time < 1) return "少于一分钟";
-        else return "大约 " + time.toFixed(0).toString() + " 分钟";
-      } else {
-        min = Math.floor(time - hour * 60);
-        if (min < 1) return hour.toString() + " 小时";
-        else return hour.toString() + " 小时 " + min.toString() + " 分钟";
-      }
-    } else if (day < 31) {
-      return day.toFixed(0).toString() + " 天";
-    } else {
-      var month, temp_day;
-      month = Math.floor(day / 30);
-      temp_day = Math.floor(day - month * 30);
-      if (month < 12) {
-        return month.toString() + " 个月 " + temp_day.toString() + " 天";
-      } else {
-        var year;
-        year = Math.floor(day / 365);
-        if (year < 1) return "接近 1 年"
-        else {
-          var temp_month = Math.floor((day - year * 365) / 30);
-          if (temp_month < 1) return year.toString() + " 年";
-          else {
-            return year.toString() + " 年 " + temp_month.toString() + " 个月";
-          }
-        }
-      }
-    }
-  }
   get sortedErrors() {
     return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
   }
@@ -585,9 +552,7 @@ export default class monitor extends Vue {
     return ((this.harvesters.reduce((sum, e) => sum + ((e && e.totalPlot) || 0), 0) * 101.4) / 1024).toFixed(2)
   }
   get estimatedTime() {
-    var averageBlockTime = 18.75
-    var rawTotalNetSpace = parseFloat(this.farmer.node.space);
-    return this.formatTime((averageBlockTime / 60) * (rawTotalNetSpace * Math.pow(1024, 2) / parseFloat(this.harvestSpace)));
+    return getTime.getEstimatedTime(parseFloat(this.harvestSpace), parseFloat(this.farmer.node.space))
   }
   beforeDestroy() {
     this.intervals = getInfo.stopRefresh(this.intervals);
