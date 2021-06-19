@@ -77,7 +77,11 @@
             >
           </span>
           <span v-if="isProcessExist(props.row.processes, 'rsync')">
-            🐌
+            <b-tooltip :label="props.row.madmaxJob.job.copyingFile">
+              🐌
+            </b-tooltip>
+            <span class="has-text-grey">-></span>
+            <span>{{ props.row.madmaxJob.job.copyingTarget.slice(-3) }}</span>
           </span>
         </template>
       </b-table-column>

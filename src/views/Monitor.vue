@@ -414,9 +414,12 @@ export default class monitor extends Vue {
             }
           })
 
-          let incomings: { [key: string]: any } = this.plotters.reduce((rv: { [key: string]: any }, x: { configuration: { rsyncdHost: string } }) => {
+          let incomings: { [key: string]: any } = this.plotters.reduce((rv: { [key: string]: any }, x: { configuration: { rsyncdHost: string }, madmaxJob: { job: { copyingTarget: string } } }) => {
             // group by last segment
-            (rv[x.configuration?.rsyncdHost] = rv[x.configuration?.rsyncdHost] || []).push(x);
+            if (x.configuration)
+              (rv[x.configuration.rsyncdHost] = rv[x.configuration.rsyncdHost] || []).push(x);
+            else if (x.madmaxJob?.job?.copyingTarget)
+              (rv[x.madmaxJob.job.copyingTarget] = rv[x.madmaxJob.job.copyingTarget] || []).push(x);
             return rv;
           }, {});
           for (const key in incomings) {
