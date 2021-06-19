@@ -427,7 +427,12 @@ export default class monitor extends Vue {
               let inc = incomings[key];
               let seg = key.slice(key.lastIndexOf('.') + 1);
               let harvester = this.harvesters.find((_: any) => _.name.slice(_.name.lastIndexOf('-') + 1) == seg);
-              let result = inc.map((_: any) => ({ count: _.fileCounts && _.fileCounts.length > 0 && _.fileCounts[0]?.count, name: _.name }));
+              let result = inc.map((_: any) => ({
+                count: _.fileCounts && _.fileCounts.length > 0 && _.fileCounts[0]?.count,
+                name: _.name,
+                percent: _?.madmaxJob?.job?.copyingPercent,
+                speed: _?.madmaxJob?.job?.copyingSpeed,
+              }));
               if (harvester)
                 Vue.set(harvester, 'incomings', result);
             }

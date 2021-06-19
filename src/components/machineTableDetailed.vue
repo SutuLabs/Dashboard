@@ -81,7 +81,15 @@
               🐌
             </b-tooltip>
             <span class="has-text-grey">-></span>
-            <span>{{ props.row.madmaxJob.job.copyingTarget.slice(-3) }}</span>
+            <span>{{ props.row.madmaxJob.job.copyingTarget && props.row.madmaxJob.job.copyingTarget.slice(-3) }}</span>
+            <br />
+            <span
+              class="has-text-grey"
+              v-if="props.row.madmaxJob.job && props.row.madmaxJob.job.copyingSpeed && props.row.madmaxJob.job.copyingPercent"
+            >
+              {{ humanize(props.row.madmaxJob.job.copyingSpeed) }}/s
+              ({{ props.row.madmaxJob.job.copyingPercent }}%)
+            </span>
           </span>
         </template>
       </b-table-column>
@@ -94,6 +102,7 @@
                 <b-taglist attached v-for="inc in props.row.incomings" :key="inc.name">
                   <b-tag type="is-dark">{{ inc.name }}</b-tag>
                   <b-tag type="is-info">{{ inc.count }}</b-tag>
+                  <b-tag type="is-info is-light">{{ humanize(inc.speed) }}/s({{ inc.percent }}%)</b-tag>
                 </b-taglist>
               </template>
             </b-tooltip>
@@ -650,7 +659,7 @@ export default class machineTableDetailed extends Vue {
       return null;
     }
 
-    var priv = ["/data/tmp", "/data", "/"];
+    var priv = ["/data/final", "/data/tmp", "/data", "/"];
     for (let i = 0; i < priv.length; i++) {
       const path = priv[i];
       var idx = disks.findIndex(_ => _.path == path);
