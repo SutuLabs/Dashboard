@@ -129,7 +129,9 @@
             </b-tooltip>
           </span>
           <span v-if="isProcessExist(props.row.processes, 'chia_plot')">
-            🚜
+            <b-tooltip :label="props.row.madmaxJob.job.lastUpdateTime">
+              🚜
+            </b-tooltip>
           </span>
         </div>
         <div v-if="props.row.jobs" style="font-family: Courier New, Courier, monospace">
