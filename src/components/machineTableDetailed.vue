@@ -76,6 +76,9 @@
               >({{ plotPlan[props.row.name]["rsyncdHost"].slice(-3) }}@{{ plotPlan[props.row.name]["rsyncdIndex"] }})</span
             >
           </span>
+          <span v-if="isProcessExist(props.row, 'rsync')">
+            🐌
+          </span>
         </template>
       </b-table-column>
       <b-table-column label="Move In" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
@@ -94,13 +97,42 @@
         </template>
       </b-table-column>
       <b-table-column
-        label="Plotting Progress"
-        width="20%"
+        :label="
+          'Plotting Progress (' +
+            machines
+              .reduce(
+                (sum, e) => sum + getProductionDaily(e.madmaxJob && e.madmaxJob.statistics && e.madmaxJob.statistics.averageTime),
+                0
+              )
+              .toFixed(0) +
+            ')'
+        "
+        width="40"
         header-class="has-text-info"
         v-slot="props"
         :visible="isPlotter && !isMobile"
       >
-        <div style="font-family: Courier New, Courier, monospace">
+        <div v-if="props.row.madmaxJob && props.row.madmaxJob.job && props.row.madmaxJob.job.phase != '-1'">
+          {{ props.row.madmaxJob.job.phase }}
+          <span v-if="props.row.madmaxJob && props.row.madmaxJob.statistics">
+            <b-tooltip
+              :label="
+                '⬇' +
+                  props.row.madmaxJob.statistics.minTime +
+                  '/⬆' +
+                  props.row.madmaxJob.statistics.maxTime +
+                  '/🎚️预计每日产量' +
+                  getProductionDaily(props.row.madmaxJob.statistics.averageTime).toFixed(2)
+              "
+            >
+              <b-tag> {{ props.row.madmaxJob.statistics.averageTime }} s </b-tag>
+            </b-tooltip>
+          </span>
+          <span v-if="isProcessExist(props.row, 'chia_plot')">
+            🚜
+          </span>
+        </div>
+        <div v-if="props.row.jobs" style="font-family: Courier New, Courier, monospace">
           {{ plottingProgress(props.row.jobs) }}
         </div>
       </b-table-column>
@@ -632,6 +664,13 @@ export default class machineTableDetailed extends Vue {
     if (size == 0) return 0;
     var i = Math.floor(Math.log(size) / Math.log(1024));
     return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+  }
+  isProcessExist(plotter: { processes: string[] }, name: string) {
+    return plotter?.processes.some(_ => _ == name);
+  }
+  getProductionDaily(seconds?: number): number {
+    if (!seconds) return 0;
+    return ((24 * 3600) / seconds);
   }
   plottingProgress(jobs: {
     phase: string;

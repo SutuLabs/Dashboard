@@ -344,7 +344,7 @@ export default class monitor extends Vue {
           .then(json => {
             this.plotters = json;
             this.plotters.forEach((plotter: any) => {
-              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              plotter.jobs?.forEach((_: any) => _.progress = this.calcProgress(_.phase));
             });
           })
           .then(() => {
@@ -408,7 +408,9 @@ export default class monitor extends Vue {
             if (m) {
               Vue.set(plotter, "jobs", m.jobs);
               Vue.set(plotter, "fileCounts", m.fileCounts);
-              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              Vue.set(plotter, "madmaxJob", m.madmaxJob);
+              Vue.set(plotter, "files", m.files);
+              plotter.jobs?.forEach((_: any) => _.progress = this.calcProgress(_.phase));
             }
           })
 
