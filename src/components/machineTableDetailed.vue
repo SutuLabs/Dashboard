@@ -76,7 +76,7 @@
               >({{ plotPlan[props.row.name]["rsyncdHost"].slice(-3) }}@{{ plotPlan[props.row.name]["rsyncdIndex"] }})</span
             >
           </span>
-          <span v-if="isProcessExist(props.row, 'rsync')">
+          <span v-if="isProcessExist(props.row.processes, 'rsync')">
             🐌
           </span>
         </template>
@@ -128,7 +128,7 @@
               <b-tag> {{ props.row.madmaxJob.statistics.averageTime }} s </b-tag>
             </b-tooltip>
           </span>
-          <span v-if="isProcessExist(props.row, 'chia_plot')">
+          <span v-if="isProcessExist(props.row.processes, 'chia_plot')">
             🚜
           </span>
         </div>
@@ -665,8 +665,9 @@ export default class machineTableDetailed extends Vue {
     var i = Math.floor(Math.log(size) / Math.log(1024));
     return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
   }
-  isProcessExist(plotter: { processes: string[] }, name: string) {
-    return plotter?.processes.some(_ => _ == name);
+  isProcessExist(processes: string[], name: string) {
+    if (!processes) return false;
+    return processes.some(_ => _ == name);
   }
   getProductionDaily(seconds?: number): number {
     if (!seconds) return 0;
