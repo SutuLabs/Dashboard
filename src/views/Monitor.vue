@@ -395,6 +395,7 @@ export default class monitor extends Vue {
     Vue.set(vueObj, 'process', machine.process);
     Vue.set(vueObj, 'networkIoSpeed', machine.networkIoSpeed);
     Vue.set(vueObj, 'power', machine.power);
+    Vue.set(vueObj, 'location', machine.location);
     Vue.set(vueObj, 'type', machine.type);
   }
   autoRefresh() {

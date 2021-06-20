@@ -15,6 +15,7 @@
       </b-table-column>
       <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info" v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
+        <span class="has-text-grey">[{{ props.row.location }}]</span>
       </b-table-column>
       <b-table-column
         :label="`Power (${machines.reduce((sum, e) => sum + e.power, 0)})`"
@@ -87,8 +88,7 @@
               class="has-text-grey"
               v-if="props.row.madmaxJob.job && props.row.madmaxJob.job.copyingSpeed && props.row.madmaxJob.job.copyingPercent"
             >
-              {{ humanize(props.row.madmaxJob.job.copyingSpeed) }}/s
-              ({{ props.row.madmaxJob.job.copyingPercent }}%)
+              {{ humanize(props.row.madmaxJob.job.copyingSpeed) }}/s ({{ props.row.madmaxJob.job.copyingPercent }}%)
             </span>
           </span>
         </template>
