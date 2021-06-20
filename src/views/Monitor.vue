@@ -358,6 +358,7 @@ export default class monitor extends Vue {
           if (/harvester(_s)?\d/.test(machine.name)) {
             this.harvesters.push(machine);
           }
+          this.harvesters.sort((a, b) => (a.name > b.name) ? 1 : -1);
           this.harvesters.forEach((harvester: any) => {
             getInfo.sortDisks(harvester);
           })
