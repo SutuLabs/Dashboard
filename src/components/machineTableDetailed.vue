@@ -35,7 +35,7 @@
         width="40"
         header-class="has-text-info"
         v-slot="props"
-        :visible="isPlotter"
+        :visible="isPlotter && machines.reduce((sum, e) => sum + ((e.jobs && e.jobs.length) || 0), 0) > 0"
       >
         <template>
           {{ (props.row.jobs || []).length }}
