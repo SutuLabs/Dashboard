@@ -208,8 +208,8 @@
             </div>
             <div class="card-header-icon">
               <b-button class="mx-2" @click="checkable = true" v-if="!checkable">批量启动</b-button>
-              <b-button class="mx-2" @click="selectAllHarvester" v-if="checkable == true">全选</b-button>
-              <b-button class="mx-2" @click="startDaemons" v-if="checkable == true">启动</b-button>
+              <b-button class="mx-2" @click="selectAllHarvester" v-if="checkable">全选</b-button>
+              <b-button class="mx-2" @click="startDaemons" v-if="checkable">启动</b-button>
               <b-button class="mx-2" @click="checkable = false" v-if="checkable">取消</b-button>
             </div>
           </div>
