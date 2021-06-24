@@ -426,7 +426,7 @@ export default class machineTableDetailed extends Vue {
   isHarvester = false;
   mulCheck = false;
   mulstop: any = [];
-  harvesterCheck: any = [];
+  harvesterCheck: string[] = [];
 
   mounted() {
     if (this.type == "plotter") {
