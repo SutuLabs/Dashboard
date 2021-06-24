@@ -222,7 +222,7 @@
 
                     <div class="content mb-3">
                       <b-field grouped group-multiline>
-                        <div v-for="kvp in props.row.smart.values" :key="props.row.sn + kvp.key">
+                        <div v-for="(kvp, idx) in props.row.smart.values" :key="props.row.sn + idx + kvp.key">
                           <div class="control">
                             <b-taglist attached>
                               <b-tag type="is-primary">{{ kvp.key }}</b-tag>
