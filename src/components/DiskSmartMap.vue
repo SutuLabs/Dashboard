@@ -138,6 +138,30 @@
                 </span>
               </template>
             </b-table-column>
+            <b-table-column label="磁盘状态" width="40" header-class="has-text-info" v-slot="props">
+              <template>
+                <b-tooltip type="is-light" size="is-large" multilined>
+                  <b-tag type="is-info"
+                    >{{ props.row.smart.powerOnHours }} / {{ props.row.smart.powerCycleCount }} /
+                    {{ props.row.smart.temperature }}</b-tag
+                  >
+                  <template v-slot:content>
+                    <b-taglist attached>
+                      <b-tag type="is-dark">电源启动次数</b-tag>
+                      <b-tag type="is-info">{{ props.row.smart.powerCycleCount }}</b-tag>
+                    </b-taglist>
+                    <b-taglist attached>
+                      <b-tag type="is-dark">启动时间</b-tag>
+                      <b-tag type="is-info">{{ props.row.smart.powerOnHours }}</b-tag>
+                    </b-taglist>
+                    <b-taglist attached>
+                      <b-tag type="is-dark">温度</b-tag>
+                      <b-tag type="is-info">{{ props.row.smart.temperature }}</b-tag>
+                    </b-taglist>
+                  </template>
+                </b-tooltip>
+              </template>
+            </b-table-column>
             <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
               <template>
                 <template v-if="numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn]">
@@ -195,6 +219,19 @@
                         </tr>
                       </tbody>
                     </table>
+
+                    <div class="content mb-3">
+                      <b-field grouped group-multiline>
+                        <div v-for="kvp in props.row.smart.values" :key="props.row.sn + kvp.key">
+                          <div class="control">
+                            <b-taglist attached>
+                              <b-tag type="is-primary">{{ kvp.key }}</b-tag>
+                              <b-tag type="is-info">{{ kvp.value }}</b-tag>
+                            </b-taglist>
+                          </div>
+                        </div>
+                      </b-field>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -293,8 +330,6 @@ export default class DiskSmartMap extends Vue {
     this.hostDict = this.machines
       .flatMap(m => m.disks ? m.disks.map(d => ({ d, m })) : [])
       .reduce((dict, cur, idx) => (dict[cur.d.sn] = cur.m.name, dict), {} as Dictionary<string>);
-
-    console.log(this.hostDict)
   }
 
   humanize(size: number) {
