@@ -344,7 +344,7 @@ export default class monitor extends Vue {
           .then(json => {
             this.plotters = json;
             this.plotters.forEach((plotter: any) => {
-              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              plotter.jobs?.forEach((_: any) => _.progress = this.calcProgress(_.phase));
             });
           })
           .then(() => {
@@ -358,6 +358,7 @@ export default class monitor extends Vue {
           if (/harvester(_s)?\d/.test(machine.name)) {
             this.harvesters.push(machine);
           }
+          this.harvesters.sort((a, b) => (a.name > b.name) ? 1 : -1);
           this.harvesters.forEach((harvester: any) => {
             getInfo.sortDisks(harvester);
           })
@@ -394,6 +395,7 @@ export default class monitor extends Vue {
     Vue.set(vueObj, 'process', machine.process);
     Vue.set(vueObj, 'networkIoSpeed', machine.networkIoSpeed);
     Vue.set(vueObj, 'power', machine.power);
+    Vue.set(vueObj, 'location', machine.location);
     Vue.set(vueObj, 'type', machine.type);
   }
   autoRefresh() {
@@ -408,13 +410,18 @@ export default class monitor extends Vue {
             if (m) {
               Vue.set(plotter, "jobs", m.jobs);
               Vue.set(plotter, "fileCounts", m.fileCounts);
-              plotter.jobs.forEach((_: any) => _.progress = this.calcProgress(_.phase));
+              Vue.set(plotter, "madmaxJob", m.madmaxJob);
+              Vue.set(plotter, "files", m.files);
+              plotter.jobs?.forEach((_: any) => _.progress = this.calcProgress(_.phase));
             }
           })
 
-          let incomings: { [key: string]: any } = this.plotters.reduce((rv: { [key: string]: any }, x: { configuration: { rsyncdHost: string } }) => {
+          let incomings: { [key: string]: any } = this.plotters.reduce((rv: { [key: string]: any }, x: { configuration: { rsyncdHost: string }, madmaxJob: { job: { copyingTarget: string } } }) => {
             // group by last segment
-            (rv[x.configuration.rsyncdHost] = rv[x.configuration.rsyncdHost] || []).push(x);
+            if (x.configuration)
+              (rv[x.configuration.rsyncdHost] = rv[x.configuration.rsyncdHost] || []).push(x);
+            else if (x.madmaxJob?.job?.copyingTarget)
+              (rv[x.madmaxJob.job.copyingTarget] = rv[x.madmaxJob.job.copyingTarget] || []).push(x);
             return rv;
           }, {});
           for (const key in incomings) {
@@ -422,7 +429,12 @@ export default class monitor extends Vue {
               let inc = incomings[key];
               let seg = key.slice(key.lastIndexOf('.') + 1);
               let harvester = this.harvesters.find((_: any) => _.name.slice(_.name.lastIndexOf('-') + 1) == seg);
-              let result = inc.map((_: any) => ({ count: _.fileCounts && _.fileCounts.length > 0 && _.fileCounts[0]?.count, name: _.name }));
+              let result = inc.map((_: any) => ({
+                count: _.fileCounts && _.fileCounts.length > 0 && _.fileCounts[0]?.count,
+                name: _.name,
+                percent: _?.madmaxJob?.job?.copyingPercent,
+                speed: _?.madmaxJob?.job?.copyingSpeed,
+              }));
               if (harvester)
                 Vue.set(harvester, 'incomings', result);
             }

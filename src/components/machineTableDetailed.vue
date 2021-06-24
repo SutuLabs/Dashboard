@@ -15,6 +15,7 @@
       </b-table-column>
       <b-table-column field="name" label="Name" width="40" header-class="has-text-info" cell-class="has-text-info" v-slot="props">
         <a :id="props.row.name" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.name }}</a>
+        <span class="has-text-grey">[{{ props.row.location }}]</span>
       </b-table-column>
       <b-table-column
         :label="`Power (${machines.reduce((sum, e) => sum + e.power, 0)})`"
@@ -34,7 +35,7 @@
         width="40"
         header-class="has-text-info"
         v-slot="props"
-        :visible="isPlotter"
+        :visible="isPlotter && machines.reduce((sum, e) => sum + ((e.jobs && e.jobs.length) || 0), 0) > 0"
       >
         <template>
           {{ (props.row.jobs || []).length }}
@@ -76,6 +77,20 @@
               >({{ plotPlan[props.row.name]["rsyncdHost"].slice(-3) }}@{{ plotPlan[props.row.name]["rsyncdIndex"] }})</span
             >
           </span>
+          <span v-if="isProcessExist(props.row.processes, 'rsync')">
+            <b-tooltip :label="props.row.madmaxJob.job.copyingFile">
+              🐌
+            </b-tooltip>
+            <span class="has-text-grey">-></span>
+            <span>{{ props.row.madmaxJob.job.copyingTarget && props.row.madmaxJob.job.copyingTarget.slice(-3) }}</span>
+            <br />
+            <span
+              class="has-text-grey"
+              v-if="props.row.madmaxJob.job && props.row.madmaxJob.job.copyingSpeed && props.row.madmaxJob.job.copyingPercent"
+            >
+              {{ humanize(props.row.madmaxJob.job.copyingSpeed) }}/s ({{ props.row.madmaxJob.job.copyingPercent }}%)
+            </span>
+          </span>
         </template>
       </b-table-column>
       <b-table-column label="Move In" width="40" header-class="has-text-info" v-slot="props" :visible="isHarvester">
@@ -87,6 +102,7 @@
                 <b-taglist attached v-for="inc in props.row.incomings" :key="inc.name">
                   <b-tag type="is-dark">{{ inc.name }}</b-tag>
                   <b-tag type="is-info">{{ inc.count }}</b-tag>
+                  <b-tag type="is-info is-light">{{ humanize(inc.speed) }}/s({{ inc.percent }}%)</b-tag>
                 </b-taglist>
               </template>
             </b-tooltip>
@@ -94,13 +110,44 @@
         </template>
       </b-table-column>
       <b-table-column
-        label="Plotting Progress"
-        width="20%"
+        :label="
+          'Plotting Progress (' +
+            machines
+              .reduce(
+                (sum, e) => sum + getProductionDaily(e.madmaxJob && e.madmaxJob.statistics && e.madmaxJob.statistics.averageTime),
+                0
+              )
+              .toFixed(0) +
+            ')'
+        "
+        width="40"
         header-class="has-text-info"
         v-slot="props"
         :visible="isPlotter && !isMobile"
       >
-        <div style="font-family: Courier New, Courier, monospace">
+        <div v-if="props.row.madmaxJob && props.row.madmaxJob.job && props.row.madmaxJob.job.phase != '-1'">
+          {{ props.row.madmaxJob.job.phase }}
+          <span v-if="props.row.madmaxJob && props.row.madmaxJob.statistics">
+            <b-tooltip
+              :label="
+                '⬇' +
+                  props.row.madmaxJob.statistics.minTime +
+                  '/⬆' +
+                  props.row.madmaxJob.statistics.maxTime +
+                  '/🎚️预计每日产量' +
+                  getProductionDaily(props.row.madmaxJob.statistics.averageTime).toFixed(2)
+              "
+            >
+              <b-tag> {{ props.row.madmaxJob.statistics.averageTime }} s </b-tag>
+            </b-tooltip>
+          </span>
+          <span v-if="isProcessExist(props.row.processes, 'chia_plot')">
+            <b-tooltip :label="props.row.madmaxJob.job.lastUpdateTime">
+              🚜
+            </b-tooltip>
+          </span>
+        </div>
+        <div v-if="props.row.jobs" style="font-family: Courier New, Courier, monospace">
           {{ plottingProgress(props.row.jobs) }}
         </div>
       </b-table-column>
@@ -127,7 +174,7 @@
       </b-table-column>
       <b-table-column
         field="totalPlot"
-        :label="`田数 (${machines.reduce((sum, e) => sum + e && e.totalPlot || 0, 0)})`"
+        :label="`田数 (${machines.reduce((sum, e) => sum + ((e && e.totalPlot) || 0), 0)})`"
         width="40"
         header-class="has-text-info"
         v-slot="props"
@@ -612,7 +659,7 @@ export default class machineTableDetailed extends Vue {
       return null;
     }
 
-    var priv = ["/data/tmp", "/data", "/"];
+    var priv = ["/data/final", "/data/tmp", "/data", "/"];
     for (let i = 0; i < priv.length; i++) {
       const path = priv[i];
       var idx = disks.findIndex(_ => _.path == path);
@@ -632,6 +679,14 @@ export default class machineTableDetailed extends Vue {
     if (size == 0) return 0;
     var i = Math.floor(Math.log(size) / Math.log(1024));
     return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+  }
+  isProcessExist(processes: string[], name: string) {
+    if (!processes) return false;
+    return processes.some(_ => _ == name);
+  }
+  getProductionDaily(seconds?: number): number {
+    if (!seconds) return 0;
+    return ((24 * 3600) / seconds);
   }
   plottingProgress(jobs: {
     phase: string;
