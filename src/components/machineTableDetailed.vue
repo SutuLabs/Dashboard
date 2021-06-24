@@ -219,13 +219,15 @@
         </div>
       </b-table-column>
       <b-table-column label="动作" width="40" header-class="has-text-info" :visible="isHarvester">
-        <template v-slot:header>
-          收割机
-          <b-button size="is-small" @click="startDaemons(machines.map(_ => _.name))">启动所有</b-button>
-        </template>
+        <template v-slot:header>管理</template>
         <template v-slot="props">
-          <b-button size="is-small" @click="startDaemons([props.row.name])">启动</b-button>
           <b-button size="is-small" @click="mountAll([props.row.name])">挂载</b-button>
+        </template>
+      </b-table-column>
+      <b-table-column label="选择" width="40" header-class="has-text-info" :visible="isHarvester && checkable">
+        <template v-slot:header></template>
+        <template v-slot="props">
+          <b-checkbox v-model="harvesterCheck" :native-value="props.row.name"></b-checkbox>
         </template>
       </b-table-column>
 
@@ -418,11 +420,13 @@ export default class machineTableDetailed extends Vue {
   @Prop() private showPlan!: boolean;
   @Prop() private hideProcess!: boolean;
   @Prop() private isMobile!: boolean;
+  @Prop() private checkable!: boolean;
 
   isPlotter = false;
   isHarvester = false;
   mulCheck = false;
   mulstop: any = [];
+  harvesterCheck: any = [];
 
   mounted() {
     if (this.type == "plotter") {
