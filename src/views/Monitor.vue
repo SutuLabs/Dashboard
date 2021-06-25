@@ -548,7 +548,7 @@ export default class monitor extends Vue {
     (this.$refs.machine as machineTableDetailed).applyPlotPlan(plotList)
   }
   startDaemons() {
-    var harvester = (this.$refs.harvester as machineTableDetailed)
+    var harvester = this.$refs.harvester
     harvester.startDaemons(harvester.harvesterCheck)
   }
   checkStacking(plotters: any[]) {
