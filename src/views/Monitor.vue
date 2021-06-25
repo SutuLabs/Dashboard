@@ -45,14 +45,14 @@
             </div>
             <div class="control">
               <b-taglist v-if="plotters != null" attached>
-                <b-tag type="is-dark">收割机</b-tag>
+                <b-tag type="is-dark">绘图机</b-tag>
                 <b-tag v-if="checkStacking(plotters)" type="is-danger">{{ checkStacking(plotters) }}台堆积</b-tag>
                 <b-tag v-else type="is-success">正常</b-tag>
               </b-taglist>
             </div>
             <div class="control">
               <b-taglist v-if="farmers != null" attached>
-                <b-tag type="is-dark">绘图机</b-tag>
+                <b-tag type="is-dark">收割机</b-tag>
                 <b-tag v-if="checkDisksFull(harvesters)" type="is-danger">{{ checkDisksFull(harvesters) }}台容量不足</b-tag>
                 <b-tag v-else type="is-success">正常</b-tag>
               </b-taglist>
@@ -90,7 +90,7 @@
             机器信息
             <div class="mt-3">
               <div class="columns is-mobile">
-                <div class="column">绘图机：</div>
+                <div class="column">收割机：</div>
                 <div class="column">{{ harvesters && harvesters.length }}台</div>
               </div>
               <div class="columns is-mobile">
@@ -98,7 +98,7 @@
                 <div class="column">{{ farmers && farmers.length }}台</div>
               </div>
               <div class="columns is-mobile">
-                <div class="column">收割机：</div>
+                <div class="column">绘图机：</div>
                 <div class="column">{{ plotters && plotters.length }}台</div>
               </div>
             </div>
@@ -144,13 +144,13 @@
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
           <div v-else>
-            <div class="p-4 sticky has-background-dark">
+            <!-- <div class="p-4 sticky has-background-dark">
               <b-switch v-model="hideJobs">Hide Jobs</b-switch>
               <b-switch v-model="showPlan">Show Plan</b-switch>
-              <!-- <b-switch v-model="hideProcess">Hide Process</b-switch> -->
+              <b-switch v-model="hideProcess">Hide Process</b-switch>
               <b-button class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
               <b-button class="is-pulled-right" @click="cleanTemporary(plotters.map(_ => _.name))">Clean All</b-button>
-            </div>
+            </div> -->
             <div class="is-hidden-mobile">
               <machine-table-detailed
                 :machines="plotters"
