@@ -144,7 +144,7 @@
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
           <div v-else>
-            <div class="p-4 sticky has-background-dark" v-if="false">
+            <div class="p-4 sticky has-background-dark" v-if="legacyPlotter">
               <b-switch v-model="hideJobs">Hide Jobs</b-switch>
               <b-switch v-model="showPlan">Show Plan</b-switch>
               <b-switch v-model="hideProcess">Hide Process</b-switch>
@@ -323,6 +323,7 @@ export default class monitor extends Vue {
   plotPlan: any = null;
   username = localStorage.getItem('username');
   checkable = false;
+  legacyPlotter = false;
 
   $refs!: {
     harvester: machineTableDetailed,
