@@ -144,13 +144,13 @@
           </div>
           <div v-if="plotters == null || plotPlan == null" class="card-content">Loading</div>
           <div v-else>
-            <!-- <div class="p-4 sticky has-background-dark">
+            <div class="p-4 sticky has-background-dark" v-if="false">
               <b-switch v-model="hideJobs">Hide Jobs</b-switch>
               <b-switch v-model="showPlan">Show Plan</b-switch>
               <b-switch v-model="hideProcess">Hide Process</b-switch>
               <b-button class="is-pulled-right" @click="applyPlotPlan(Object.keys(plotPlan))">Apply All</b-button>
               <b-button class="is-pulled-right" @click="cleanTemporary(plotters.map(_ => _.name))">Clean All</b-button>
-            </div> -->
+            </div>
             <div class="is-hidden-mobile">
               <machine-table-detailed
                 :machines="plotters"
