@@ -18,7 +18,7 @@
         <span class="has-text-grey">[{{ props.row.location }}]</span>
       </b-table-column>
       <b-table-column
-        :label="`Power (${machines.reduce((sum, e) => sum + e.power, 0)})`"
+        :label="`Power (${machines.reduce((sum, e) => sum + (e.power || 0), 0)})`"
         width="40"
         header-class="has-text-info"
         v-slot="props"
@@ -26,7 +26,7 @@
       >
         <template>
           <span class="has-text-grey">
-            {{ props.row.power }}
+            {{ props.row.power || 0 }}
           </span>
         </template>
       </b-table-column>
@@ -97,7 +97,9 @@
         <template>
           <template v-if="props.row.incomings">
             <b-tooltip multilined>
-              {{ props.row.incomings.reduce((sum, e) => sum + e.count, 0) }}
+              <template v-if="props.row.incomings">
+                {{ props.row.incomings.reduce((sum, e) => sum + e.count, 0) }}
+              </template>
               <template v-slot:content>
                 <b-taglist attached v-for="inc in props.row.incomings" :key="inc.name">
                   <b-tag type="is-dark">{{ inc.name }}</b-tag>
@@ -107,6 +109,7 @@
               </template>
             </b-tooltip>
           </template>
+          <template v-else>0</template>
         </template>
       </b-table-column>
       <b-table-column
@@ -291,7 +294,7 @@
                 <div v-if="!hideJobs" class="table-container">
                   <table class="table is-striped is-hoverable">
                     <thead>
-                      <tr>
+                      <!-- <tr>
                         <th class="is-hidden-mobile"></th>
                         <th>id</th>
                         <th>工作时长</th>
@@ -301,7 +304,7 @@
                           <b-button @click="mulCheck = !mulCheck">{{ mulCheck == false ? "批量操作" : "取消操作" }}</b-button>
                           <b-button :disabled="!mulCheck" @click="stopPlot(plot.name, mulstop)">停止</b-button>
                         </th>
-                      </tr>
+                      </tr> -->
                     </thead>
                     <tbody>
                       <tr v-for="job in plot.jobs" v-bind:key="job.id">
