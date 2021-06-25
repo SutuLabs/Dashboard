@@ -294,7 +294,7 @@
                 <div v-if="!hideJobs" class="table-container">
                   <table class="table is-striped is-hoverable">
                     <thead>
-                      <!-- <tr>
+                      <tr v-if="false">
                         <th class="is-hidden-mobile"></th>
                         <th>id</th>
                         <th>工作时长</th>
@@ -304,7 +304,7 @@
                           <b-button @click="mulCheck = !mulCheck">{{ mulCheck == false ? "批量操作" : "取消操作" }}</b-button>
                           <b-button :disabled="!mulCheck" @click="stopPlot(plot.name, mulstop)">停止</b-button>
                         </th>
-                      </tr> -->
+                      </tr>
                     </thead>
                     <tbody>
                       <tr v-for="job in plot.jobs" v-bind:key="job.id">
