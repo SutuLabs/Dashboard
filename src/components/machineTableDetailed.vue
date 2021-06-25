@@ -211,15 +211,12 @@
         v-slot="props"
         :visible="isHarvester"
       >
-        <span class="has-text-danger" v-if="checkDiskSpace(props.row.disks)">
+        <div :class="checkDiskSpace(props.row.disks) ? 'has-text-danger' : 'has-text-success'">
           {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b, 0)) }}
-        </span>
-        <span class="has-text-success" v-else>
-          {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b, 0)) }}
-        </span>
-        <span class="has-text-light"
-          >({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0) }})</span
-        >
+          <span class="has-text-light"
+            >({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0) }})</span
+          >
+        </div>
       </b-table-column>
       <b-table-column label="动作" width="40" header-class="has-text-info" :visible="isHarvester">
         <template v-slot:header>管理</template>
