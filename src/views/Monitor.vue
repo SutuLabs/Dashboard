@@ -206,6 +206,12 @@
                 <span v-else>容量充足</span>
               </div>
             </div>
+            <div class="card-header-icon">
+              <b-button class="mx-2" @click="checkable = true" v-if="!checkable">批量启动</b-button>
+              <b-button class="mx-2" @click="selectAllHarvester" v-if="checkable">全选</b-button>
+              <b-button class="mx-2" @click="startDaemons" v-if="checkable">启动</b-button>
+              <b-button class="mx-2" @click="checkable = false" v-if="checkable">取消</b-button>
+            </div>
           </div>
           <div v-if="harvesters == null" class="card-content">Loading</div>
           <div v-else>
@@ -217,6 +223,8 @@
               :hideProcess="false"
               :showPlan="false"
               :isMobile="false"
+              :checkable="checkable"
+              ref="harvester"
             />
           </div>
         </div>
@@ -314,6 +322,12 @@ export default class monitor extends Vue {
   showPlan = false;
   plotPlan: any = null;
   username = localStorage.getItem('username');
+  checkable = false;
+
+  $refs!: {
+    harvester: machineTableDetailed,
+    machine: machineTableDetailed,
+  }
 
   mounted() {
     if (this.username) {
@@ -533,6 +547,10 @@ export default class monitor extends Vue {
   applyPlotPlan(plotList: string[]) {
     (this.$refs.machine as machineTableDetailed).applyPlotPlan(plotList)
   }
+  startDaemons() {
+    var harvester = this.$refs.harvester
+    harvester.startDaemons(harvester.harvesterCheck)
+  }
   checkStacking(plotters: any[]) {
     var count = 0;
     for (var i = 0; i < plotters.length; i++) {
@@ -552,6 +570,13 @@ export default class monitor extends Vue {
       if (availableSpace < 4 * Math.pow(1024, 3)) count += 1;
     }
     return count;
+  }
+  selectAllHarvester() {
+    var harvester = this.$refs.harvester
+    harvester.harvesterCheck = [];
+    this.harvesters.forEach((_)=>{
+      harvester.harvesterCheck.push(_.name)
+    })
   }
   get sortedErrors() {
     return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
