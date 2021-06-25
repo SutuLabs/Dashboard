@@ -294,7 +294,7 @@
                 <div v-if="!hideJobs" class="table-container">
                   <table class="table is-striped is-hoverable">
                     <thead>
-                      <tr v-if="false">
+                      <tr v-if="legacyPlotter">
                         <th class="is-hidden-mobile"></th>
                         <th>id</th>
                         <th>工作时长</th>
@@ -430,6 +430,7 @@ export default class machineTableDetailed extends Vue {
   mulCheck = false;
   mulstop: any = [];
   harvesterCheck: string[] = [];
+  legacyPlotter = false ;
 
   mounted() {
     if (this.type == "plotter") {
