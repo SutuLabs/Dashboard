@@ -82,7 +82,26 @@
               🐌
             </b-tooltip>
             <span class="has-text-grey">-></span>
-            <span>{{ props.row.madmaxJob.job.copyingTarget && props.row.madmaxJob.job.copyingTarget.slice(-3) }}</span>
+            <span>
+              <b-tooltip multilined>
+                {{ props.row.madmaxJob.job.copyingTarget && props.row.madmaxJob.job.copyingTarget.slice(-3) }}
+                <template v-slot:content>
+                  <b-taglist
+                    attached
+                    v-for="machine in machines.filter((_) => {
+                      return _.madmaxJob.job.copyingTarget == props.row.madmaxJob.job.copyingTarget
+                    })"
+                    :key="machine.name"
+                  >
+                    <b-tag type="is-dark">{{ machine.name }}</b-tag>
+                    <b-tag type="is-info">{{ machine.fileCounts[0].count }}</b-tag>
+                    <b-tag type="is-info is-light"
+                      >{{ humanize(machine.madmaxJob.job.copyingSpeed) }}/s({{ machine.madmaxJob.job.copyingPercent }}%)</b-tag
+                    >
+                  </b-taglist>
+                </template>
+              </b-tooltip>
+            </span>
             <br />
             <span
               class="has-text-grey"
