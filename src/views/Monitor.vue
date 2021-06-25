@@ -323,7 +323,7 @@ export default class monitor extends Vue {
   plotPlan: any = null;
   username = localStorage.getItem('username');
   checkable = false;
-  legacyPlotter = false;
+  legacyPlotter = this.$refs.machine.legacyPlotter
 
   $refs!: {
     harvester: machineTableDetailed,
