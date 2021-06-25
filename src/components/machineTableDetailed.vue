@@ -746,7 +746,7 @@ export default class machineTableDetailed extends Vue {
   }
   checkDiskSpace(disks: any[]) {
     var availableSpace = this.diskAvailable(disks).reduce((a, b) => a + b, 0);
-    if (availableSpace < 5 * Math.pow(1024, 4)) return true
+    if (availableSpace < 4 * Math.pow(1024, 4)) return true
     else return false
   }
 }
