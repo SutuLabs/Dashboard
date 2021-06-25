@@ -211,7 +211,7 @@
         v-slot="props"
         :visible="isHarvester"
       >
-        <div class="has-text-success">
+        <div :class="checkDiskSpace(props.row.disks) ? 'has-text-danger' : 'has-text-success'">
           {{ humanize(diskAvailable(props.row.disks).reduce((a, b) => a + b, 0)) }}
           <span class="has-text-light"
             >({{ diskAvailable(props.row.disks).reduce((a, b) => a + Math.floor(b / 106430464 / 1024), 0) }})</span
@@ -740,6 +740,11 @@ export default class machineTableDetailed extends Vue {
       if (disk.available >= 2 * 106430464) toReturn.push(disk.available * 1024);
     })
     return toReturn;
+  }
+  checkDiskSpace(disks: any[]) {
+    var availableSpace = this.diskAvailable(disks).reduce((a, b) => a + b, 0);
+    if (availableSpace < 4 * Math.pow(1024, 4)) return true
+    else return false
   }
 }
 </script>
