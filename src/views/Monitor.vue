@@ -440,9 +440,10 @@ export default class monitor extends Vue {
           }, {});
           for (const key in incomings) {
             if (Object.prototype.hasOwnProperty.call(incomings, key)) {
-              let inc = incomings[key];
               let seg = key.slice(key.lastIndexOf('.') + 1);
-              let harvester = this.harvesters.find((_: any) => _.name.slice(_.name.lastIndexOf('-') + 1) == seg);
+              let scdNet = key.substring(0, key.length - 3) + (parseInt(seg) + 1).toString();
+              let inc = (incomings[key] || []).concat(incomings[scdNet] || []);
+              let harvester = this.harvesters.find((_: any) => _.name.slice(_.name.lastIndexOf('-') + 1) == seg)
               let result = inc.map((_: any) => ({
                 count: _.fileCounts && _.fileCounts.length > 0 && _.fileCounts[0]?.count,
                 name: _.name,
