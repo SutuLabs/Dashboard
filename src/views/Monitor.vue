@@ -324,6 +324,11 @@ export default class monitor extends Vue {
   username = localStorage.getItem('username');
   checkable = false;
 
+  $refs!: {
+    harvester: machineTableDetailed,
+    machine: machineTableDetailed,
+  }
+
   mounted() {
     if (this.username) {
       this.load();
@@ -567,11 +572,11 @@ export default class monitor extends Vue {
     return count;
   }
   selectAllHarvester() {
-    var harvester = (this.$refs.harvester as machineTableDetailed)
+    var harvester = this.$refs.harvester
     harvester.harvesterCheck = [];
-    this.harvesters.map((_) => [
+    this.harvesters.forEach((_)=>{
       harvester.harvesterCheck.push(_.name)
-    ]);
+    })
   }
   get sortedErrors() {
     return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
