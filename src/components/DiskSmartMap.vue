@@ -202,6 +202,13 @@
                     >
                       删除异常分区
                     </b-button>
+                    <b-button
+                      v-if="!props.row.smart || !props.row.smart.values || props.row.smart.values.length == 0"
+                      size="is-small"
+                      @click="enableSmart(machine.name, props.row.blockDevice)"
+                    >
+                      启用SMART
+                    </b-button>
                   </template>
                 </template>
               </template>
@@ -447,6 +454,61 @@ export default class DiskSmartMap extends Vue {
             Snackbar.open({
               type: 'is-danger',
               message: '移除失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
+
+  enableSmart(host: string, block: string) {
+    this.confirmAndExecute({
+      confirmTitle: '确认启用SMART',
+      confirmMessage: `启用SMART（可查看温度等，无副作用），确认吗？`,
+      workingMessage: `正在启用 ${host} 上磁盘 ${block} 的SMART`,
+      successMessage: `${host}\\${block}的SMART已启用`,
+      failureMessage: '启用失败',
+    },
+      () => getInfo.enableSmart(host, block)
+    );
+  }
+
+  confirmAndExecute(options: { confirmTitle: string, confirmMessage: string, confirmType?: 'success' | 'danger', workingMessage: string, successMessage: string, failureMessage: string }, operation: () => Promise<Response>) {
+    this.$buefy.dialog.confirm({
+      title: options.confirmTitle,
+      message: options.confirmMessage,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: options.confirmType == 'danger' ? 'is-danger' : 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-info',
+          message: options.workingMessage,
+          indefinite: true,
+          queue: false
+        })
+        operation()
+          .then(resp => {
+            t.close();
+            if (resp.ok) {
+              Snackbar.open({
+                type: 'is-success',
+                message: options.successMessage,
+                indefinite: true,
+                queue: false
+              })
+            } else {
+              Snackbar.open({
+                type: 'is-danger',
+                message: options.failureMessage,
+                indefinite: true,
+              });
+            }
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-danger',
+              message: options.failureMessage,
               indefinite: true,
             });
           });
