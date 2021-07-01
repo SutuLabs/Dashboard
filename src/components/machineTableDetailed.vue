@@ -244,12 +244,8 @@
         <template v-slot:header>管理</template>
         <template v-slot="props">
           <b-button size="is-small" @click="mountAll([props.row.name])">挂载</b-button>
-        </template>
-      </b-table-column>
-      <b-table-column label="选择" width="40" header-class="has-text-info" :visible="isHarvester && checkable">
-        <template v-slot:header></template>
-        <template v-slot="props">
-          <b-checkbox v-model="harvesterCheck" :native-value="props.row.name"></b-checkbox>
+          <b-checkbox class="mx-3" v-if="checkable" v-model="harvesterCheck" :native-value="props.row.name"></b-checkbox>
+          <b-button v-else size="is-small" @click="startDaemons([props.row.name])">启动</b-button>
         </template>
       </b-table-column>
 
@@ -712,7 +708,7 @@ export default class machineTableDetailed extends Vue {
     return processes.some(_ => _ == name);
   }
   getProductionDaily(seconds?: number): number {
-    if (!seconds) return 0;
+    if (!seconds || seconds < 0) return 0;
     return ((24 * 3600) / seconds);
   }
   plottingProgress(jobs: {
