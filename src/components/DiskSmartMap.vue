@@ -190,6 +190,25 @@
                       Mount Partition
                       <span class="has-text-info">[{{ props.row.parts[0].label }}]</span>
                     </b-button>
+                    <b-button
+                      v-if="
+                        !props.row.parts[0].mountPoint &&
+                          numbersDict[props.row.sn] != props.row.parts[0].label &&
+                          props.row.model == 'TOSHIBA MD04ABA400V'
+                      "
+                      size="is-small"
+                      type="is-danger"
+                      @click="removeNtfsPart(machine.name, props.row.blockDevice)"
+                    >
+                      删除异常分区
+                    </b-button>
+                    <b-button
+                      v-if="!props.row.smart || !props.row.smart.values || props.row.smart.values.length == 0"
+                      size="is-small"
+                      @click="enableSmart(machine.name, props.row.blockDevice)"
+                    >
+                      启用SMART
+                    </b-button>
                   </template>
                 </template>
               </template>
@@ -397,6 +416,104 @@ export default class DiskSmartMap extends Vue {
           queue: false
         })
       });
+  }
+
+  removeNtfsPart(host: string, block: string) {
+    this.$buefy.dialog.confirm({
+      title: '确认移除',
+      message: `将彻底移除机器[${host}]的分区[${block}]（数据删除后将无法找回！！！），请务必确认该盘属于特殊情况，确认吗？`,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-danger',
+          message: `删除 ${host} 上磁盘 ${block} 的分区ing`,
+          indefinite: true,
+          queue: false
+        })
+        getInfo.removeNtfsPartition(host, block)
+          .then(resp => {
+            t.close();
+            if (resp.ok) {
+              Snackbar.open({
+                type: 'is-success',
+                message: `${host}\\${block}已删除`,
+                indefinite: true,
+                queue: false
+              })
+            } else {
+              Snackbar.open({
+                type: 'is-danger',
+                message: '移除失败',
+                indefinite: true,
+              });
+            }
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-danger',
+              message: '移除失败',
+              indefinite: true,
+            });
+          });
+      }
+    })
+  }
+
+  enableSmart(host: string, block: string) {
+    this.confirmAndExecute({
+      confirmTitle: '确认启用SMART',
+      confirmMessage: `启用SMART（可查看温度等，无副作用），确认吗？`,
+      workingMessage: `正在启用 ${host} 上磁盘 ${block} 的SMART`,
+      successMessage: `${host}\\${block}的SMART已启用`,
+      failureMessage: '启用失败',
+    },
+      () => getInfo.enableSmart(host, block)
+    );
+  }
+
+  confirmAndExecute(options: { confirmTitle: string, confirmMessage: string, confirmType?: 'success' | 'danger', workingMessage: string, successMessage: string, failureMessage: string }, operation: () => Promise<Response>) {
+    this.$buefy.dialog.confirm({
+      title: options.confirmTitle,
+      message: options.confirmMessage,
+      cancelText: '取消',
+      confirmText: '确定',
+      type: options.confirmType == 'danger' ? 'is-danger' : 'is-success',
+      onConfirm: () => {
+        var t = Snackbar.open({
+          type: 'is-info',
+          message: options.workingMessage,
+          indefinite: true,
+          queue: false
+        })
+        operation()
+          .then(resp => {
+            t.close();
+            if (resp.ok) {
+              Snackbar.open({
+                type: 'is-success',
+                message: options.successMessage,
+                indefinite: true,
+                queue: false
+              })
+            } else {
+              Snackbar.open({
+                type: 'is-danger',
+                message: options.failureMessage,
+                indefinite: true,
+              });
+            }
+          }).catch(() => {
+            t.close();
+            Snackbar.open({
+              type: 'is-danger',
+              message: options.failureMessage,
+              indefinite: true,
+            });
+          });
+      }
+    })
   }
 }
 </script>

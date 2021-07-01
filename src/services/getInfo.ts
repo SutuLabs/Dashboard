@@ -114,6 +114,24 @@ export default {
     });
   },
 
+  removeNtfsPartition(host: string, block: string) {
+    const url = `${this.baseUrl}/server/remove-ntfs-part?host=${host}&block=${block}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
+  enableSmart(host: string, block: string) {
+    const url = `${this.baseUrl}/server/enable-smart?host=${host}&block=${block}`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+  },
+
   removePlotDir(host: string, path: string) {
     const url = `${this.baseUrl}/server/plot-dir?host=${host}&path=${path}`;
 
