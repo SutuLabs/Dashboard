@@ -44,6 +44,20 @@
               </b-tooltip>
             </div>
             <div class="control">
+              <b-tooltip :label="'挖币地址: ' + farmer.extended.targetAddress" position="is-bottom">
+                <b-taglist attached>
+                  <b-tag type="is-dark">地址</b-tag>
+                  <b-tag
+                    type="is-success"
+                    v-if="farmer.extended.targetAddress == 'xch1ca2yhwkzdgfpww3289h6uxvsv562u69tuk0npzt0473ytn6naukqjhu922'"
+                  >
+                    正常
+                  </b-tag>
+                  <b-tag type="is-danger" v-else>非法：{{ farmer.extended.targetAddress }}</b-tag>
+                </b-taglist>
+              </b-tooltip>
+            </div>
+            <div class="control">
               <b-taglist v-if="plotters != null" attached>
                 <b-tag type="is-dark">绘图机</b-tag>
                 <b-tag v-if="checkStacking(plotters)" type="is-danger">{{ checkStacking(plotters) }}台堆积</b-tag>
