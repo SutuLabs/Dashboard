@@ -161,7 +161,7 @@
     }
     autoRefresh() {
       var temp;
-      temp = setInterval(() => {
+      temp = window.setInterval(() => {
         getInfo.getInfo("farmer")
           .then(response => response.json())
           .then(json => {
@@ -175,7 +175,7 @@
           });
       }, 5000);
       this.intervals.push(temp);
-      temp = setInterval(() => {
+      temp = window.setInterval(() => {
         getInfo.save("farm", this.farm);
       }, 5000);
       this.intervals.push(temp);

@@ -43,7 +43,7 @@
 
     autoRefresh() {
       var temp: number;
-      temp = setInterval(() => {
+      temp = window.setInterval(() => {
         this.load();
       }, 20000);
       this.intervals.push(temp);

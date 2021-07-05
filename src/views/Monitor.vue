@@ -448,8 +448,7 @@ export default class monitor extends Vue {
     Vue.set(vueObj, 'type', machine.type);
   }
   autoRefresh() {
-    var temp;
-    temp = setInterval(() => {
+    var temp: number = window.setInterval(() => {
       getInfo.getInfo('plotter')
         .then(response => response.json())
         .then(json => {
