@@ -250,9 +250,11 @@
             <nav class="panel">
               <p class="panel-heading">Errors</p>
               <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
-                <b-tooltip type="is-light" size="is-large" multilined>
-                  <b-tag type="is-info is-light">{{ err.time }}</b-tag>
-                  <span class="has-text-danger">
+                <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
+                  <b-tag type="is-info">{{ err.machineName }}</b-tag>
+                </b-tooltip>
+                <b-tooltip class="error-tooltip" type="is-light" size="is-large" multilined>
+                  <span :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
                     {{ shorten(err.error) }}
                   </span>
                   <template v-slot:content>
@@ -269,7 +271,9 @@
             <nav class="panel">
               <p class="panel-heading">Events</p>
               <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="sortedEvents.indexOf(evt)">
-                <b-tag type="is-info is-light">{{ evt.time }}</b-tag>
+                <b-tooltip :label="'时间: ' + evt.time" position="is-bottom">
+                  <b-tag type="is-info">{{ evt.machineName }}</b-tag>
+                </b-tooltip>
                 <span class="has-text-danger" v-if="evt.proofs > 0">
                   {{ evt.eligibleNumber }}/{{ evt.total }} 个图块被选中，发现 {{ evt.proofs }} 个证明, 时长: {{ evt.duration }} s
                 </span>
@@ -308,6 +312,10 @@ import SnUploader from '@/components/SnUploader.vue'
 import {
   SnackbarProgrammatic as Snackbar
 } from 'buefy'
+import * as signalR from "@microsoft/signalr";
+
+interface ErrorEntity { time: Date, machineName: string, level: "ERROR" | "WARNING", error: string }
+interface EligibleFarmerEventEntity { time: Date, machineName: string, eligibleNumber: number, proofs: number, duration: number, total: number }
 
 @Component({
   components: {
@@ -325,8 +333,8 @@ export default class monitor extends Vue {
   farmer: any = null;
   plotters: any = null;
   harvesters: any[] = [];
-  errors: any = null;
-  events: any = null;
+  errors: ErrorEntity[] = [];
+  events: EligibleFarmerEventEntity[] = [];
   evtNum = 10;
   errNum = 10;
   connectionStatus = 'loading';
@@ -352,6 +360,28 @@ export default class monitor extends Vue {
   }
 
   load() {
+    const connection = new signalR.HubConnectionBuilder()
+      .withAutomaticReconnect()
+      .withUrl("http://10.177.0.165:5000/hub/events", {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
+      .build();
+
+    connection.on("Error", (error: ErrorEntity) => {
+      this.errors.unshift(error);
+      if (this.errors.length > 100)
+        this.errors.splice(-1, 1);
+    });
+
+    connection.on("Event", (evt: EligibleFarmerEventEntity) => {
+      this.events.unshift(evt);
+      if (this.events.length > 100)
+        this.events.splice(-1, 1);
+    });
+
+    connection.start().catch(err => console.warn(err));
+
     getInfo.getInfo('servers')
       .then(response => response.json())
       .then((servers: any) => {
@@ -397,16 +427,6 @@ export default class monitor extends Vue {
       }).catch(() => {
         this.connectionStatus = 'failed'
       });
-    getInfo.getInfo('errors')
-      .then(response => response.json())
-      .then(json => {
-        this.errors = json;
-      });
-    getInfo.getInfo('events')
-      .then(response => response.json())
-      .then(json => {
-        this.events = json;
-      });
     getInfo.getPlotPlan()
       .then(response => response.json())
       .then(json => {
@@ -428,8 +448,7 @@ export default class monitor extends Vue {
     Vue.set(vueObj, 'type', machine.type);
   }
   autoRefresh() {
-    var temp;
-    temp = setInterval(() => {
+    var temp: number = window.setInterval(() => {
       getInfo.getInfo('plotter')
         .then(response => response.json())
         .then(json => {
@@ -515,16 +534,6 @@ export default class monitor extends Vue {
         }).catch(() => {
           this.connectionStatus = 'failed'
         });
-      getInfo.getInfo('errors')
-        .then(response => response.json())
-        .then(json => {
-          this.errors = json;
-        });
-      getInfo.getInfo('events')
-        .then(response => response.json())
-        .then(json => {
-          this.events = json;
-        });
       getInfo.getPlotPlan()
         .then(response => response.json())
         .then(json => {
@@ -545,17 +554,7 @@ export default class monitor extends Vue {
     if (p == 4) return 98;
   }
   shorten(err: any) {
-    var temp: string;
-    if (err.includes("plot")) {
-      err = err.split("plot");
-      temp = err[0] + err[err.length - 1];
-      return temp;
-    } else if (err.includes("id")) {
-      temp = err.slice(0, err.lastIndexOf("id")) + "<id>" + err.slice(err.indexOf(","), err.length - 1);
-      return temp;
-    } else {
-      return err;
-    }
+    return err.replace(/plot-k(?<k>\d{2})-\d{2}(?<time>(\d{2}-){5})(?<id>[0-9a-f]{4})[0-9a-f]{60}\.plot/g, '$<k>-$<time>$<id>.plot');
   }
   cleanTemporary(names: string[]) {
     (this.$refs.machine as machineTableDetailed).cleanTemporary(names)
@@ -590,7 +589,7 @@ export default class monitor extends Vue {
   selectAllHarvester() {
     var harvester = this.$refs.harvester
     harvester.harvesterCheck = [];
-    this.harvesters.forEach((_)=>{
+    this.harvesters.forEach((_) => {
       harvester.harvesterCheck.push(_.name)
     })
   }
@@ -614,7 +613,7 @@ export default class monitor extends Vue {
 </script>
 
 <style>
-#errors .tooltip-content {
+#errors .error-tooltip .tooltip-content {
   width: 600px;
 }
 
