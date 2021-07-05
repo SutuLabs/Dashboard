@@ -312,6 +312,10 @@ import SnUploader from '@/components/SnUploader.vue'
 import {
   SnackbarProgrammatic as Snackbar
 } from 'buefy'
+import * as signalR from "@microsoft/signalr";
+
+interface ErrorEntity { time: Date, machineName: string, level: string, error: string }
+interface EligibleFarmerEventEntity { time: Date, machineName: string, eligibleNumber: number, proofs: number, duration: number, total: number }
 
 @Component({
   components: {
@@ -329,8 +333,8 @@ export default class monitor extends Vue {
   farmer: any = null;
   plotters: any = null;
   harvesters: any[] = [];
-  errors: any = null;
-  events: any = null;
+  errors: ErrorEntity[] = [];
+  events: EligibleFarmerEventEntity[] = [];
   evtNum = 10;
   errNum = 10;
   connectionStatus = 'loading';
@@ -356,6 +360,28 @@ export default class monitor extends Vue {
   }
 
   load() {
+    const connection = new signalR.HubConnectionBuilder()
+      .withAutomaticReconnect()
+      .withUrl("http://10.177.0.165:5000/hub/events", {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
+      .build();
+
+    connection.on("Error", (error: ErrorEntity) => {
+      this.errors.unshift(error);
+      if (this.errors.length > 100)
+        this.errors.splice(-1, 1);
+    });
+
+    connection.on("Event", (evt: EligibleFarmerEventEntity) => {
+      this.events.unshift(evt);
+      if (this.events.length > 100)
+        this.events.splice(-1, 1);
+    });
+
+    connection.start().catch(err => console.warn(err));
+
     getInfo.getInfo('servers')
       .then(response => response.json())
       .then((servers: any) => {
@@ -400,16 +426,6 @@ export default class monitor extends Vue {
         this.connectionStatus = 'success'
       }).catch(() => {
         this.connectionStatus = 'failed'
-      });
-    getInfo.getInfo('errors')
-      .then(response => response.json())
-      .then(json => {
-        this.errors = json;
-      });
-    getInfo.getInfo('events')
-      .then(response => response.json())
-      .then(json => {
-        this.events = json;
       });
     getInfo.getPlotPlan()
       .then(response => response.json())
@@ -518,16 +534,6 @@ export default class monitor extends Vue {
           this.connectionStatus = 'success'
         }).catch(() => {
           this.connectionStatus = 'failed'
-        });
-      getInfo.getInfo('errors')
-        .then(response => response.json())
-        .then(json => {
-          this.errors = json;
-        });
-      getInfo.getInfo('events')
-        .then(response => response.json())
-        .then(json => {
-          this.events = json;
         });
       getInfo.getPlotPlan()
         .then(response => response.json())
