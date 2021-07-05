@@ -254,7 +254,7 @@
                   <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
                     <b-tag type="is-info">{{ err.machineName }}</b-tag>
                   </b-tooltip>
-                  <span class="has-text-danger">
+                  <span :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
                     {{ shorten(err.error) }}
                   </span>
                   <template v-slot:content>
@@ -314,7 +314,7 @@ import {
 } from 'buefy'
 import * as signalR from "@microsoft/signalr";
 
-interface ErrorEntity { time: Date, machineName: string, level: string, error: string }
+interface ErrorEntity { time: Date, machineName: string, level: "ERROR" | "WARNING", error: string }
 interface EligibleFarmerEventEntity { time: Date, machineName: string, eligibleNumber: number, proofs: number, duration: number, total: number }
 
 @Component({
