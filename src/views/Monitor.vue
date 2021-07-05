@@ -250,10 +250,10 @@
             <nav class="panel">
               <p class="panel-heading">Errors</p>
               <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
-                <b-tooltip type="is-light" size="is-large" multilined>
-                  <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
-                    <b-tag type="is-info">{{ err.machineName }}</b-tag>
-                  </b-tooltip>
+                <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
+                  <b-tag type="is-info">{{ err.machineName }}</b-tag>
+                </b-tooltip>
+                <b-tooltip class="error-tooltip" type="is-light" size="is-large" multilined>
                   <span :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
                     {{ shorten(err.error) }}
                   </span>
@@ -555,17 +555,7 @@ export default class monitor extends Vue {
     if (p == 4) return 98;
   }
   shorten(err: any) {
-    var temp: string;
-    if (err.includes("plot")) {
-      err = err.split("plot");
-      temp = err[0] + err[err.length - 1];
-      return temp;
-    } else if (err.includes("id")) {
-      temp = err.slice(0, err.lastIndexOf("id")) + "<id>" + err.slice(err.indexOf(","), err.length - 1);
-      return temp;
-    } else {
-      return err;
-    }
+    return err.replace(/plot-k(?<k>\d{2})-\d{2}(?<time>(\d{2}-){5})(?<id>[0-9a-f]{4})[0-9a-f]{60}\.plot/g, '$<k>-$<time>$<id>.plot');
   }
   cleanTemporary(names: string[]) {
     (this.$refs.machine as machineTableDetailed).cleanTemporary(names)
@@ -624,7 +614,7 @@ export default class monitor extends Vue {
 </script>
 
 <style>
-#errors .tooltip-content {
+#errors .error-tooltip .tooltip-content {
   width: 600px;
 }
 
