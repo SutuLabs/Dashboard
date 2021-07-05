@@ -590,7 +590,7 @@ export default class monitor extends Vue {
   selectAllHarvester() {
     var harvester = this.$refs.harvester
     harvester.harvesterCheck = [];
-    this.harvesters.forEach((_)=>{
+    this.harvesters.forEach((_) => {
       harvester.harvesterCheck.push(_.name)
     })
   }
