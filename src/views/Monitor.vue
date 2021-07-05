@@ -251,7 +251,9 @@
               <p class="panel-heading">Errors</p>
               <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
                 <b-tooltip type="is-light" size="is-large" multilined>
-                  <b-tag type="is-info is-light">{{ err.time }}</b-tag>
+                  <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
+                    <b-tag type="is-info">{{ err.machineName }}</b-tag>
+                  </b-tooltip>
                   <span class="has-text-danger">
                     {{ shorten(err.error) }}
                   </span>
@@ -269,7 +271,9 @@
             <nav class="panel">
               <p class="panel-heading">Events</p>
               <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="sortedEvents.indexOf(evt)">
-                <b-tag type="is-info is-light">{{ evt.time }}</b-tag>
+                <b-tooltip :label="'时间: ' + evt.time" position="is-bottom">
+                  <b-tag type="is-info">{{ evt.machineName }}</b-tag>
+                </b-tooltip>
                 <span class="has-text-danger" v-if="evt.proofs > 0">
                   {{ evt.eligibleNumber }}/{{ evt.total }} 个图块被选中，发现 {{ evt.proofs }} 个证明, 时长: {{ evt.duration }} s
                 </span>
