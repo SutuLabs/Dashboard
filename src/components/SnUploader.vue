@@ -39,7 +39,7 @@ import {
 
 @Component({
   filters: {
-    shorten: function (value: any, len = 15) {
+    shorten: function (value: string, len = 15) {
       if (!value) return ''
       let padding = '...';
       let left = Math.ceil((len - padding.length) / 2);
