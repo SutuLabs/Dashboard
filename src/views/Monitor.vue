@@ -254,7 +254,7 @@
                   <b-tag type="is-info">{{ err.machineName }}</b-tag>
                 </b-tooltip>
                 <b-tooltip class="error-tooltip" type="is-light" size="is-large" multilined>
-                  <span :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
+                  <span class="single-line" :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
                     {{ shorten(err.error) }}
                   </span>
                   <template v-slot:content>
@@ -637,5 +637,13 @@ export default class monitor extends Vue {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.single-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  display: block;
 }
 </style>
