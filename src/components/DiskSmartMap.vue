@@ -1,27 +1,44 @@
 ﻿<template>
   <div>
-    <b-field class="ml-5">
-      <b-select placeholder="Select a machine" v-model="machineSelected">
-        <option value="" key="">All</option>
-        <option v-for="option in machineNames" :value="option" :key="option">
-          {{ option }}
-        </option>
-      </b-select>
-      <b-button @click="load()">查看</b-button>
-      <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
-    </b-field>
+    <div class="columns">
+      <b-field class="ml-5">
+        <b-select placeholder="Select a machine" v-model="machineSelected">
+          <option value="" key="">All</option>
+          <option v-for="option in machineNames" :value="option" :key="option">
+            {{ option }}
+          </option>
+        </b-select>
+        <b-button @click="load()">查看</b-button>
+        <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
+      </b-field>
+      <div class="column is-offset-8">
+        <b-field>
+          <b-select v-model="perPage" :disabled="!isPaginated">
+            <option :value="20">20</option>
+            <option :value="40">40</option>
+            <option :value="60">60</option>
+            <option :value="80">80</option>
+          </b-select>
+          <b-switch v-model="isPaginated">
+            <span>{{ isPaginated ? '分页' : '不分页' }}</span>
+          </b-switch>
+        </b-field>
+      </div>
+    </div>
     <div class="card-content">
       <div class="content">
         <b-table
           v-if="allDisks"
           :data="allDisks"
           detailed
+          :paginated="isPaginated"
           :show-detail-icon="false"
           detail-key="sn"
           custom-detail-row
           striped
           :mobile-cards="false"
           default-sort-direction="desc"
+          :per-page="perPage"
         >
           <b-table-column field="label" label="编号" width="40" header-class="has-text-info" v-slot="props" searchable sortable>
             <a class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.label }}</a>
@@ -64,9 +81,15 @@
                   </b-tag>
                 </span>
                 <template v-slot:content>
-                  <b-taglist v-if="hostDict[props.row.sn]" attached>
+                  <b-taglist attached>
                     <b-tag type="is-dark">实际挂载目标：</b-tag>
-                    <b-tag type="is-info">{{ hostDict[props.row.sn] }}</b-tag>
+                    <b-tag v-if="hostDict[props.row.sn]" type="is-info">{{ hostDict[props.row.sn] }}</b-tag>
+                    <b-tag v-else type="is-info">无</b-tag>
+                  </b-taglist>
+                  <b-taglist attached>
+                    <b-tag type="is-dark">期望挂载目标：</b-tag>
+                    <b-tag v-if="props.row.planHarvester" type="is-info">{{ props.row.planHarvester }}</b-tag>
+                    <b-tag v-else type="is-info">无</b-tag>
                   </b-taglist>
                 </template>
               </b-tooltip>
@@ -301,6 +324,8 @@ export default class DiskSmartMap extends Vue {
   private isOpen = 0;
   private forceGetDiskInfo = false;
   private machineSelected = '';
+  private perPage = 20
+  private isPaginated = true
 
   load() {
     this.machines = []
