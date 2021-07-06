@@ -251,7 +251,7 @@
               <div class="card-header-title">
                 硬盘
                 <div class="has-text-info heading" v-if="$refs.diskList">
-                共{{ $refs.diskList.numsOfmachines }}块硬盘盘，
+                共{{ $refs.diskList.numsOfmachines }}块硬盘，
                 {{ $refs.diskList.numOfCacheDisk }}块缓存盘
               </div>
               </div>
