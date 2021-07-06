@@ -84,7 +84,7 @@
               <b-tooltip type="is-light" size="is-large" multilined>
                 <b-tag type="is-link" class="has-text-light"
                   >{{ props.row.smart.powerOnHours }} | {{ props.row.smart.powerCycleCount }} |
-                  {{ props.row.temperature }}'℃'</b-tag
+                  {{ props.row.temperature }}℃</b-tag
                 >
                 <span v-if="props.row.temperature && props.row.temperature > 43">🔥</span>
                 <span v-if="props.row.temperature && props.row.temperature > 50">🔥</span>
