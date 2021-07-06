@@ -20,7 +20,7 @@
             <option :value="80">80</option>
           </b-select>
           <b-switch v-model="isPaginated">
-            <span>{{ isPaginated ? '分页' : '不分页' }}</span>
+            <span>{{ isPaginated ? "分页" : "不分页" }}</span>
           </b-switch>
         </b-field>
       </div>
@@ -74,9 +74,9 @@
                 </span>
                 <span class="has-text-light" v-else>
                   <b-tag class="has-background-danger-dark">
-                    {{ props.row.currentHarvester || '无' }}
+                    {{ props.row.currentHarvester || "无" }}
                     <span class="has-text-dark">
-                      {{ ' ( ' + (props.row.planHarvester || '无') + ' ) ' }}
+                      {{ " ( " + (props.row.planHarvester || "无") + " ) " }}
                     </span>
                   </b-tag>
                 </span>
@@ -166,8 +166,8 @@
                   <b-button
                     v-if="
                       !props.row.parts[0].mountPoint &&
-                      numbersDict[props.row.sn] != props.row.parts[0].label &&
-                      props.row.model == 'TOSHIBA MD04ABA400V'
+                        numbersDict[props.row.sn] != props.row.parts[0].label &&
+                        props.row.model == 'TOSHIBA MD04ABA400V'
                     "
                     size="is-small"
                     type="is-danger"
@@ -191,9 +191,9 @@
               <span class="has-text-grey">
                 <span>
                   {{
-                    (numbers.filter((number) => number.id == props.row.label)[0] &&
-                      numbers.filter((number) => number.id == props.row.label)[0].note) ||
-                    ''
+                    (numbers.filter(number => number.id == props.row.label)[0] &&
+                      numbers.filter(number => number.id == props.row.label)[0].note) ||
+                      ""
                   }}
                 </span>
               </span>
@@ -602,7 +602,7 @@ export default class DiskSmartMap extends Vue {
     })
     return num
   }
-  findMachineName(sn: string) : string {
+  findMachineName(sn: string): string {
     this.machines.forEach(_ => {
       _.disks.forEach(x => {
         if (x.sn == sn) {
