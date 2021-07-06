@@ -43,7 +43,7 @@
           </b-table-column>
           <b-table-column
             field="planHvs"
-            label="Harvester"
+            :label="'Harvester('+this.resultOfCheck+')'"
             width="40"
             header-class="has-text-info"
             v-slot="props"
@@ -503,8 +503,8 @@ export default class DiskSmartMap extends Vue {
     return disks;
   }
   checkHarvester(plan: string, actual: string) {
-    if (plan == '缓存盘') return true
-    else if (plan == '' || actual == '' || plan == undefined || actual == undefined) return false
+    if (plan == '缓存盘' ) return true
+    else if (plan == '' && actual =='') return true
     else {
       return plan == actual
     }
@@ -522,7 +522,7 @@ export default class DiskSmartMap extends Vue {
   get resultOfCheck() {
     var num = 0
     this.machineDisk.forEach(machine => {
-      if (this.checkHarvester(machine.planHvs, machine.harvester)) num++
+      if (!this.checkHarvester(machine.planHvs, machine.harvester)) num++
     })
     return num
   }
