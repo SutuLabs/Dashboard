@@ -50,14 +50,14 @@
             v-slot="props"
             searchable
           >
-            <template v-if="props.row.planHarvester != '' || props.row.harvester != ''">
+            <template v-if="props.row.planHarvester != '' || props.row.currentHarvester != ''">
               <b-tooltip type="is-light" size="is-large" multilined>
-                <span class="has-text-light" v-if="checkHarvester(props.row.planHarvester, props.row.harvester)">
+                <span class="has-text-light" v-if="checkHarvester(props.row.planHarvester, props.row.currentHarvester)">
                   {{ props.row.planHarvester }}
                 </span>
                 <span class="has-text-light" v-else>
                   <b-tag class="has-background-danger-dark">
-                    {{ props.row.harvester || '无' }}
+                    {{ props.row.currentHarvester || '无' }}
                     <span class="has-text-dark">
                       {{ ' ( ' + (props.row.planHarvester || '无') + ' ) ' }}
                     </span>
@@ -237,6 +237,31 @@ import {
   Dictionary
 } from 'vue-router/types/router';
 
+interface disk {
+  blockDevice: string,
+  parts: {
+    name: string,
+    label: string,
+    mountPoint: string,
+    size: string,
+    uuid: string,
+  }[],
+  sn: string,
+  model: string,
+  smart: {
+    powerCycleCount: number,
+    powerOnHours: number,
+    temperature: string,
+    values: {
+      key: string,
+      value: string
+    }[],
+  }
+  label?: string,
+  temperature?: string,
+  planHarvester?: string,
+  currentHarvester?: string,
+}
 @Component
 export default class DiskSmartMap extends Vue {
   private machines: {
@@ -252,7 +277,15 @@ export default class DiskSmartMap extends Vue {
       }[],
       sn: string,
       model: string,
-      smart: any,
+      smart: {
+        powerCycleCount: number,
+        powerOnHours: number,
+        temperature: string,
+        values: {
+          key: string,
+          value: string
+        }[]
+      },
     }[]
   }[] = [];
   @Prop() private machineNames!: string[];
@@ -478,33 +511,17 @@ export default class DiskSmartMap extends Vue {
     })
   }
   get allDisks() {
-    var disks: any[] = []
+    var disks: disk[] = []
     this.machines.forEach(machine => {
       machine.disks && machine.disks.forEach(disk => {
         if (disk.parts[0].size.search('M') != -1) return
-        let newDisk: {
-          blockDevice: string,
-          parts: {
-            name: string,
-            label: string,
-            mountPoint: string,
-            size: string,
-            uuid: string,
-          }[],
-          sn: string,
-          model: string,
-          smart: any,
-          label?: string,
-          temperature?: string,
-          planHarvester?: string,
-          harvester?: string,
-        } = disk
+        let newDisk: disk = disk
         let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
         newDisk.label = disk.parts[0].label
         newDisk.temperature = disk.smart.temperature && disk.smart.temperature.slice(0, 2) || ''
         if (number)
           newDisk.planHarvester = number.host
-        newDisk.harvester = 'sh' + (this.hostDict && this.hostDict[disk.sn]).slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
+        newDisk.currentHarvester = 'sh' + (this.hostDict && this.hostDict[disk.sn]).slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
         disks.push(newDisk)
       })
     })
@@ -516,9 +533,17 @@ export default class DiskSmartMap extends Vue {
             parts: [],
             model: '',
             sn: number.sn,
-            smart: {},
+            smart: {
+              powerCycleCount: 0,
+              powerOnHours: 0,
+              temperature: '',
+              values: [{
+                key: '',
+                value: '',
+              }]
+            },
             label: number.id,
-            harvester: '',
+            currentHarvester: '',
             planHarvester: number.host,
             temperature: ''
           }
@@ -543,12 +568,12 @@ export default class DiskSmartMap extends Vue {
     return num
   }
   get numsOfDisks() {
-    return this.numbers.length
+    return this.allDisks.length
   }
   get resultOfCheck() {
     var num = 0
     this.allDisks.forEach(machine => {
-      if (!this.checkHarvester(machine.planHarvester, machine.harvester)) num++
+      if (!this.checkHarvester(machine.planHarvester || '', machine.currentHarvester || '')) num++
     })
     return num
   }
