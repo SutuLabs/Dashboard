@@ -244,6 +244,33 @@
         </div>
       </div>
 
+      <div class="block card">
+        <b-collapse aria-id="contentIdForA11y2" class="panel" animation="slide">
+          <template #trigger="props">
+            <div class="card-header" role="button" aria-controls="contentIdForA11y3">
+              <div class="card-header-title">
+                硬盘
+                <div class="has-text-info heading" v-if="$refs.diskList">
+                共{{ $refs.diskList.numsOfmachines }}块，
+                {{ $refs.diskList.numOfCacheDisk }}个缓存块
+              </div>
+              </div>
+              <a class="card-header-icon">
+                <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+              </a>
+            </div>
+          </template>
+          <b-tabs type="is-boxed" expanded>
+            <b-tab-item label="硬盘信息">
+              <disk-smart-map :machine-names="harvesters.map((_) => _.name)" ref="diskList" />
+            </b-tab-item>
+            <b-tab-item label="上传硬盘信息">
+              <sn-uploader />
+            </b-tab-item>
+          </b-tabs>
+        </b-collapse>
+      </div>
+
       <div class="block" id="errors">
         <div class="columns is-desktop">
           <div class="column is-half" v-if="errors != null">
@@ -289,8 +316,6 @@
       </div>
 
       <plots-map />
-      <disk-smart-map :machine-names="harvesters.map(_ => _.name)" />
-      <sn-uploader />
     </div>
   </div>
 </template>
@@ -350,6 +375,7 @@ export default class monitor extends Vue {
   $refs!: {
     harvester: machineTableDetailed,
     machine: machineTableDetailed,
+    diskList: DiskSmartMap
   }
 
   mounted() {
