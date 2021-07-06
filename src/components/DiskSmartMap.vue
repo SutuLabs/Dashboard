@@ -51,17 +51,25 @@
             searchable
           >
             <template v-if="props.row.planHvs != '' || props.row.harvester != ''">
-              <span class="has-text-light" v-if="checkHarvester(props.row.planHvs, props.row.harvester)">
-                {{ props.row.planHvs }}
-              </span>
-              <span class="has-text-light" v-else>
-                <b-tag class="has-background-danger-dark">
-                  {{ props.row.harvester || '无' }}
-                  <span class="has-text-dark">
-                    {{ ' ( ' + (props.row.planHvs || '无') + ' ) ' }}
-                  </span>
-                </b-tag>
-              </span>
+              <b-tooltip type="is-light" size="is-large" multilined>
+                <span class="has-text-light" v-if="checkHarvester(props.row.planHvs, props.row.harvester)">
+                  {{ props.row.planHvs }}
+                </span>
+                <span class="has-text-light" v-else>
+                  <b-tag class="has-background-danger-dark">
+                    {{ props.row.harvester || '无' }}
+                    <span class="has-text-dark">
+                      {{ ' ( ' + (props.row.planHvs || '无') + ' ) ' }}
+                    </span>
+                  </b-tag>
+                </span>
+                <template v-slot:content>
+                  <b-taglist v-if="hostDict[props.row.sn]" attached>
+                    <b-tag type="is-dark">实际挂载目标：</b-tag>
+                    <b-tag type="is-info">{{ hostDict[props.row.sn] }}</b-tag>
+                  </b-taglist>
+                </template>
+              </b-tooltip>
             </template>
           </b-table-column>
           <b-table-column field="blockDevice" label="Block" width="40" header-class="has-text-info" v-slot="props">
@@ -71,14 +79,7 @@
               </span>
             </template>
           </b-table-column>
-          <b-table-column
-            field="temperature"
-            label="磁盘状态"
-            width="40"
-            header-class="has-text-info"
-            v-slot="props"
-            sortable
-          >
+          <b-table-column field="temperature" label="磁盘状态" width="40" header-class="has-text-info" v-slot="props" sortable>
             <template v-if="props.row.temperature != ''">
               <b-tooltip type="is-light" size="is-large" multilined>
                 <b-tag type="is-link" class="has-text-light"
