@@ -1,264 +1,215 @@
 ﻿<template>
   <div>
-    <b-field label="Disk List Retrieval">
+    <b-field class="ml-5">
       <b-select placeholder="Select a machine" v-model="machineSelected">
         <option value="" key="">All</option>
         <option v-for="option in machineNames" :value="option" :key="option">
           {{ option }}
         </option>
       </b-select>
-      <b-button @click="load()">Get Disk Info</b-button>
-      <b-checkbox v-model="forceGetDiskInfo">
-        Force Get
-      </b-checkbox>
+      <b-button @click="load()">查看</b-button>
+      <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
     </b-field>
-
-    <b-collapse v-if="machines" class="card" animation="slide" :open="isOpen == 999" @open="isOpen = 999">
-      <template #trigger="props">
-        <div class="card-header" role="button">
-          <p class="card-header-title">
-            All Disks
-          </p>
-          <a class="card-header-icon">
-            <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
-          </a>
-        </div>
-      </template>
-      <div class="card-content">
-        <div class="content">
-          <b-table v-if="numbers" :data="numbers" striped :mobile-cards="false">
-            <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
-              <a class="has-text-light" @click="props.toggleDetails(props.row)">{{ numbers.indexOf(props.row) + 1 }}</a>
-            </b-table-column>
-            <b-table-column
-              field="sn"
-              label="Name"
-              width="40"
-              header-class="has-text-info"
-              cell-class="has-text-info"
-              v-slot="props"
-            >
-              <a :id="props.row.sn" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.sn }}</a>
-            </b-table-column>
-            <b-table-column field="id" label="Id" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  {{ props.row.id }}
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="Host" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  {{ props.row.host }}
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="实际状态" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  {{ hostDict && hostDict[props.row.sn] }}
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="Note" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  {{ props.row.note }}
-                </span>
-              </template>
-            </b-table-column>
-          </b-table>
-        </div>
-      </div>
-    </b-collapse>
-    <b-collapse
-      class="card"
-      animation="slide"
-      v-for="(machine, index) of machines"
-      :key="index"
-      :open="isOpen == index"
-      @open="isOpen = index"
-    >
-      <template #trigger="props">
-        <div class="card-header" role="button">
-          <p class="card-header-title">
-            {{ machine.name }}
-          </p>
-          <a class="card-header-icon">
-            <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
-          </a>
-        </div>
-      </template>
-      <div class="card-content">
-        <div class="content">
-          <b-table
-            v-if="machine.disks"
-            :data="machine.disks"
-            detailed
-            :show-detail-icon="false"
-            detail-key="sn"
-            custom-detail-row
-            striped
-            :mobile-cards="false"
+    <div class="card-content">
+      <div class="content">
+        <b-table
+          v-if="machineDisk"
+          :data="machineDisk"
+          detailed
+          :show-detail-icon="false"
+          detail-key="sn"
+          custom-detail-row
+          striped
+          :mobile-cards="false"
+        >
+          <b-table-column field="label" label="编号" width="40" header-class="has-text-info" v-slot="props" searchable sortable>
+            <a class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.label }}</a>
+          </b-table-column>
+          <b-table-column
+            field="sn"
+            label="序列号"
+            width="40"
+            header-class="has-text-info"
+            cell-class="has-text-info"
+            v-slot="props"
+            searchable
           >
-            <b-table-column label="#" width="40" header-class="has-text-info" v-slot="props">
-              <a class="has-text-light" @click="props.toggleDetails(props.row)">{{ machine.disks.indexOf(props.row) + 1 }}</a>
-            </b-table-column>
-            <b-table-column
-              field="sn"
-              label="Name"
-              width="40"
-              header-class="has-text-info"
-              cell-class="has-text-info"
-              v-slot="props"
-            >
-              <a :id="props.row.sn" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.sn }}</a>
-            </b-table-column>
-            <b-table-column label="Model" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  {{ props.row.model }}
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="Block" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  {{ props.row.blockDevice }}
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="Partitions" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <span class="has-text-grey">
-                  <span v-for="part in props.row.parts" :key="part.uuid">
-                    {{ part.label }}
-                  </span>
-                </span>
-              </template>
-            </b-table-column>
-            <b-table-column label="磁盘状态" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <b-tooltip type="is-light" size="is-large" multilined>
-                  <b-tag type="is-info"
-                    >{{ props.row.smart.powerOnHours }} / {{ props.row.smart.powerCycleCount }} /
-                    {{ props.row.smart.temperature }}</b-tag
-                  >
-                  <template v-slot:content>
-                    <b-taglist attached>
-                      <b-tag type="is-dark">电源启动次数</b-tag>
-                      <b-tag type="is-info">{{ props.row.smart.powerCycleCount }}</b-tag>
-                    </b-taglist>
-                    <b-taglist attached>
-                      <b-tag type="is-dark">启动时间</b-tag>
-                      <b-tag type="is-info">{{ props.row.smart.powerOnHours }}</b-tag>
-                    </b-taglist>
-                    <b-taglist attached>
-                      <b-tag type="is-dark">温度</b-tag>
-                      <b-tag type="is-info">{{ props.row.smart.temperature }}</b-tag>
-                    </b-taglist>
-                  </template>
-                </b-tooltip>
-              </template>
-            </b-table-column>
-            <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
-              <template>
-                <template v-if="numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn]">
+            <a :id="props.row.sn" class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.sn }}</a>
+          </b-table-column>
+          <b-table-column field="model" label="型号" width="40" header-class="has-text-info" v-slot="props" searchable>
+            <span class="has-text-light">
+              {{ props.row.model }}
+            </span>
+          </b-table-column>
+          <b-table-column
+            field="planHvs"
+            label="Harvester"
+            width="40"
+            header-class="has-text-info"
+            v-slot="props"
+            sortable
+            searchable
+          >
+            <template v-if="props.row.planHvs != '' || props.row.harvester != ''">
+              <span class="has-text-light" v-if="checkHarvester(props.row.planHvs, props.row.harvester)">
+                {{ props.row.planHvs }}
+              </span>
+              <span class="has-text-light" v-else>
+                <b-tag class="has-background-danger-dark">
+                  {{ props.row.harvester || '无' }}
+                  {{ ' ( ' + (props.row.planHvs || '无') + ' ) ' }}
+                </b-tag>
+              </span>
+            </template>
+          </b-table-column>
+          <b-table-column field="blockDevice" label="Block" width="40" header-class="has-text-info" v-slot="props">
+            <template>
+              <span class="has-text-light">
+                {{ props.row.blockDevice }}
+              </span>
+            </template>
+          </b-table-column>
+          <b-table-column field="temperature" label="磁盘状态" width="40" header-class="has-text-info" v-slot="props" sortable>
+            <template v-if="props.row.temperature != ''">
+              <b-tooltip type="is-light" size="is-large" multilined>
+                <b-tag type="is-success" class="has-text-light"
+                  >{{ props.row.smart.powerOnHours }} | {{ props.row.smart.powerCycleCount }} |
+                  {{ props.row.temperature + '℃' }}</b-tag
+                >
+                <span v-if="props.row.temperature && props.row.temperature > 43">🔥</span>
+                <span v-if="props.row.temperature && props.row.temperature > 50">🔥</span>
+                <template v-slot:content>
+                  <b-taglist attached>
+                    <b-tag type="is-dark">电源启动次数</b-tag>
+                    <b-tag type="is-info">{{ props.row.smart.powerCycleCount }}</b-tag>
+                  </b-taglist>
+                  <b-taglist attached>
+                    <b-tag type="is-dark">启动时间</b-tag>
+                    <b-tag type="is-info">{{ props.row.smart.powerOnHours }}</b-tag>
+                  </b-taglist>
+                  <b-taglist attached>
+                    <b-tag type="is-dark">温度</b-tag>
+                    <b-tag type="is-info">{{ props.row.smart.temperature }}</b-tag>
+                  </b-taglist>
+                </template>
+              </b-tooltip>
+            </template>
+          </b-table-column>
+          <b-table-column label="Ops" width="40" header-class="has-text-info" v-slot="props">
+            <template>
+              <template v-if="numbersDict && numbersDict[props.row.sn] && numbersDict[props.row.sn]">
+                <b-button
+                  v-if="!props.row.parts"
+                  size="is-small"
+                  @click="create(findMachineName(props.row.sn), props.row.blockDevice, numbersDict[props.row.sn])"
+                >
+                  Create Partition
+                  <span class="has-text-info">[{{ numbersDict[props.row.sn] }}]</span>
+                </b-button>
+                <template v-if="props.row.parts && props.row.parts.length > 0">
                   <b-button
-                    v-if="!props.row.parts"
+                    v-if="numbersDict[props.row.sn] != props.row.parts[0].label"
                     size="is-small"
-                    @click="create(machine.name, props.row.blockDevice, numbersDict[props.row.sn])"
+                    @click="
+                      rename(
+                        findMachineName(props.row.sn),
+                        props.row.blockDevice,
+                        props.row.parts[0].label,
+                        numbersDict[props.row.sn]
+                      )
+                    "
                   >
-                    Create Partition
-                    <span class="has-text-info">[{{ numbersDict[props.row.sn] }}]</span>
+                    Rename Partition
+                    <span class="has-text-info">[{{ props.row.parts[0].label }}->{{ numbersDict[props.row.sn] }}]</span>
                   </b-button>
-                  <template v-if="props.row.parts && props.row.parts.length > 0">
-                    <b-button
-                      v-if="numbersDict[props.row.sn] != props.row.parts[0].label"
-                      size="is-small"
-                      @click="rename(machine.name, props.row.blockDevice, props.row.parts[0].label, numbersDict[props.row.sn])"
-                    >
-                      Rename Partition
-                      <span class="has-text-info">[{{ props.row.parts[0].label }}->{{ numbersDict[props.row.sn] }}]</span>
-                    </b-button>
-                    <b-button
-                      v-if="!props.row.parts[0].mountPoint"
-                      size="is-small"
-                      @click="mount(machine.name, props.row.blockDevice, props.row.parts[0].label)"
-                    >
-                      Mount Partition
-                      <span class="has-text-info">[{{ props.row.parts[0].label }}]</span>
-                    </b-button>
-                    <b-button
-                      v-if="
-                        !props.row.parts[0].mountPoint &&
-                          numbersDict[props.row.sn] != props.row.parts[0].label &&
-                          props.row.model == 'TOSHIBA MD04ABA400V'
-                      "
-                      size="is-small"
-                      type="is-danger"
-                      @click="removeNtfsPart(machine.name, props.row.blockDevice)"
-                    >
-                      删除异常分区
-                    </b-button>
-                    <b-button
-                      v-if="!props.row.smart || !props.row.smart.values || props.row.smart.values.length == 0"
-                      size="is-small"
-                      @click="enableSmart(machine.name, props.row.blockDevice)"
-                    >
-                      启用SMART
-                    </b-button>
-                  </template>
+                  <b-button
+                    v-if="!props.row.parts[0].mountPoint"
+                    size="is-small"
+                    @click="mount(findMachineName(props.row.sn), props.row.blockDevice, props.row.parts[0].label)"
+                  >
+                    Mount Partition
+                    <span class="has-text-info">[{{ props.row.parts[0].label }}]</span>
+                  </b-button>
+                  <b-button
+                    v-if="
+                      !props.row.parts[0].mountPoint &&
+                      numbersDict[props.row.sn] != props.row.parts[0].label &&
+                      props.row.model == 'TOSHIBA MD04ABA400V'
+                    "
+                    size="is-small"
+                    type="is-danger"
+                    @click="removeNtfsPart(findMachineName(props.row.sn), props.row.blockDevice)"
+                  >
+                    删除异常分区
+                  </b-button>
+                  <b-button
+                    v-if="!props.row.smart || !props.row.smart.values || props.row.smart.values.length == 0"
+                    size="is-small"
+                    @click="enableSmart(findMachineName(props.row.sn), props.row.blockDevice)"
+                  >
+                    启用SMART
+                  </b-button>
                 </template>
               </template>
-            </b-table-column>
+            </template>
+          </b-table-column>
+          <b-table-column label="备注" width="40" header-class="has-text-info" v-slot="props">
+            <template>
+              <span class="has-text-grey">
+                <span>
+                  {{
+                    (numbers.filter((number) => number.id == props.row.label)[0] &&
+                      numbers.filter((number) => number.id == props.row.label)[0].note) ||
+                    ''
+                  }}
+                </span>
+              </span>
+            </template>
+          </b-table-column>
+          <template slot="detail" slot-scope="props">
+            <tr>
+              <td class="has-background-dark" colspan="8">
+                <div class="table-container pt-2">
+                  <table class="table is-striped" v-if="props.row.parts">
+                    <thead>
+                      <tr>
+                        <th>label</th>
+                        <th>mount point</th>
+                        <th>name</th>
+                        <th>size</th>
+                        <th>uuid</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="part in props.row.parts" :key="part.label">
+                        <td>{{ part.label }}</td>
+                        <td>{{ part.mountPoint }}</td>
+                        <td>{{ part.name }}</td>
+                        <td>{{ part.size }}</td>
+                        <td>{{ part.uuid }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-            <template slot="detail" slot-scope="props">
-              <tr>
-                <td class="has-background-dark" colspan="8">
-                  <div class="table-container pt-2">
-                    <table class="table is-striped" v-if="props.row.parts">
-                      <thead>
-                        <tr>
-                          <th>label</th>
-                          <th>mount point</th>
-                          <th>name</th>
-                          <th>size</th>
-                          <th>uuid</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="part in props.row.parts" :key="part.label">
-                          <td>{{ part.label }}</td>
-                          <td>{{ part.mountPoint }}</td>
-                          <td>{{ part.name }}</td>
-                          <td>{{ part.size }}</td>
-                          <td>{{ part.uuid }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    <div class="content mb-3">
-                      <b-field grouped group-multiline>
-                        <div v-for="(kvp, idx) in props.row.smart.values" :key="props.row.sn + idx + kvp.key">
-                          <div class="control">
-                            <b-taglist attached>
-                              <b-tag type="is-primary">{{ kvp.key }}</b-tag>
-                              <b-tag type="is-info">{{ kvp.value }}</b-tag>
-                            </b-taglist>
-                          </div>
+                  <div class="mb-3 p-3">
+                    <div class="columns is-multiline is-mobile">
+                      <div class="column is-2" v-for="(kvp, idx) in props.row.smart.values" :key="props.row.sn + idx + kvp.key">
+                        <div class="columns">
+                          <div class="column has-background-primary">{{ kvp.key }}</div>
                         </div>
-                      </b-field>
+                        <div class="columns">
+                          <div class="column has-background-success-dark">{{ kvp.value }}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </td>
-              </tr>
-            </template>
-          </b-table>
-        </div>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </b-table>
       </div>
-    </b-collapse>
+    </div>
   </div>
 </template>
 
@@ -514,6 +465,77 @@ export default class DiskSmartMap extends Vue {
           });
       }
     })
+  }
+  get machineDisk() {
+    var disks: any[] = []
+    this.machines.forEach(machine => {
+      machine.disks && machine.disks.forEach(disk => {
+        if (disk.parts[0].size.search('M') != -1) return
+        let newDisk: any = disk
+        let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
+        newDisk.label = disk.parts[0].label
+        newDisk.temperature = disk.smart.temperature && disk.smart.temperature.slice(0, 2) || ''
+        if (number)
+          newDisk.planHvs = number.host
+        newDisk.harvester = 'sh' + (this.hostDict && this.hostDict[disk.sn]).slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
+        disks.push(newDisk)
+      })
+    })
+    if (!this.machineSelected) {
+      this.numbers.forEach(number => {
+        if (!this.hostDict[number.sn]) {
+          let newDisk: any
+          newDisk = {
+            blockDevice: '',
+            parts: [],
+            model: '',
+            sn: number.sn,
+            smart: {},
+            label: number.id,
+            harvester: '',
+            planHvs: number.host,
+            temperature: ''
+          }
+          disks.push(newDisk)
+        }
+      })
+    }
+    return disks;
+  }
+  checkHarvester(plan: string, actual: string) {
+    if (plan == '缓存盘') return true
+    else if (plan == '' || actual == '' || plan == undefined || actual == undefined) return false
+    else {
+      return plan == actual
+    }
+  }
+  get numOfCacheDisk() {
+    var num = 0
+    this.numbers.forEach(number => {
+      number.host == '缓存盘' ? num++ : num
+    })
+    return num
+  }
+  get numsOfmachines() {
+    return this.numbers.length
+  }
+  get resultOfCheck() {
+    var num = 0
+    this.machineDisk.forEach(machine => {
+      if (this.checkHarvester(machine.planHvs, machine.harvester)) num++
+    })
+    return num
+  }
+  findMachineName(sn: string) {
+    var name = ''
+    this.machines.forEach(_ => {
+      _.disks.forEach(x => {
+        if (x.sn == sn) {
+          return name = _.name
+        }
+      })
+    })
+    return name
   }
 }
 </script>
