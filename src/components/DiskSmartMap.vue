@@ -21,6 +21,7 @@
           custom-detail-row
           striped
           :mobile-cards="false"
+          default-sort-direction="desc"
         >
           <b-table-column field="label" label="编号" width="40" header-class="has-text-info" v-slot="props" searchable sortable>
             <a class="has-text-info" @click="props.toggleDetails(props.row)">{{ props.row.label }}</a>
@@ -47,7 +48,6 @@
             width="40"
             header-class="has-text-info"
             v-slot="props"
-            sortable
             searchable
           >
             <template v-if="props.row.planHvs != '' || props.row.harvester != ''">
@@ -57,7 +57,9 @@
               <span class="has-text-light" v-else>
                 <b-tag class="has-background-danger-dark">
                   {{ props.row.harvester || '无' }}
-                  {{ ' ( ' + (props.row.planHvs || '无') + ' ) ' }}
+                  <span class="has-text-dark">
+                    {{ ' ( ' + (props.row.planHvs || '无') + ' ) ' }}
+                  </span>
                 </b-tag>
               </span>
             </template>
@@ -69,10 +71,17 @@
               </span>
             </template>
           </b-table-column>
-          <b-table-column field="temperature" label="磁盘状态" width="40" header-class="has-text-info" v-slot="props" sortable>
+          <b-table-column
+            field="temperature"
+            label="磁盘状态"
+            width="40"
+            header-class="has-text-info"
+            v-slot="props"
+            sortable
+          >
             <template v-if="props.row.temperature != ''">
               <b-tooltip type="is-light" size="is-large" multilined>
-                <b-tag type="is-success" class="has-text-light"
+                <b-tag type="is-link" class="has-text-light"
                   >{{ props.row.smart.powerOnHours }} | {{ props.row.smart.powerCycleCount }} |
                   {{ props.row.temperature + '℃' }}</b-tag
                 >
@@ -198,7 +207,7 @@
                           <div class="column has-background-primary">{{ kvp.key }}</div>
                         </div>
                         <div class="columns">
-                          <div class="column has-background-success-dark">{{ kvp.value }}</div>
+                          <div class="column has-background-link">{{ kvp.value }}</div>
                         </div>
                       </div>
                     </div>
@@ -260,6 +269,7 @@ export default class DiskSmartMap extends Vue {
   private machineSelected = '';
 
   load() {
+    this.machines = []
     getInfo.getInfo(`serial-number`)
       .then(response => response.json())
       .then(json => {
@@ -503,8 +513,8 @@ export default class DiskSmartMap extends Vue {
     return disks;
   }
   checkHarvester(plan: string, actual: string) {
-    if (plan == '缓存盘' ) return true
-    else if (plan == '' && actual =='') return true
+    if (plan == '缓存盘') return true
+    else if (plan == '' && actual == '') return true
     else {
       return plan == actual
     }
