@@ -1,15 +1,29 @@
 ﻿<template>
-  <div>
-    <div class="large-12 medium-12 small-12 cell">
-      <label
-        >Files
-        <input type="file" id="files" ref="files" v-on:change="handleFilesUpload()" />
-      </label>
+  <section>
+    <b-field>
+      <b-upload v-model="file" drag-drop>
+        <section class="section">
+          <div class="content has-text-centered">
+            <p>
+              <img src="../../public/img/icons8-upload-to-cloud-100.png" />
+            </p>
+            <p>请上传.csv格式文件</p>
+          </div>
+        </section>
+      </b-upload>
+    </b-field>
+
+    <div class="tags">
+      <span v-if="file != null" class="tag is-primary">
+        {{ file.name }}
+        <button class="delete is-small" type="button" @click="deleteDropFile"></button>
+      </span>
     </div>
+
     <div class="large-12 medium-12 small-12 cell">
-      <button v-on:click="submitFiles()">Submit</button>
+      <b-button v-on:click="submitFiles()">确认上传</b-button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -25,9 +39,9 @@ import {
 
 @Component
 export default class SnUploader extends Vue {
-  private file: any;
-  $refs!: {
-    files: HTMLInputElement
+  private file: any = null;
+  deleteDropFile() {
+    this.file = null
   }
 
   submitFiles() {
@@ -54,11 +68,6 @@ export default class SnUploader extends Vue {
           message: `Failed to upload`,
         })
       });
-  }
-
-  handleFilesUpload() {
-    this.file = this.$refs.files.files && this.$refs.files.files[0];
-    console.log(this.file, this.$refs.files.files)
   }
 }
 </script>
