@@ -245,9 +245,9 @@
       </div>
 
       <div class="block card">
-        <b-collapse :open="false" aria-id="contentIdForA11y2" class="panel" animation="slide">
+        <b-collapse :open="false" class="panel" animation="slide">
           <template #trigger="props">
-            <div class="card-header" role="button" aria-controls="contentIdForA11y3">
+            <div class="card-header" role="button" >
               <div class="card-header-title">
                 硬盘
                 <div class="has-text-info heading" v-if="$refs.diskList">
