@@ -12,7 +12,7 @@
         <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
       </b-field>
       <div class="column is-offset-8">
-        <b-field grouped>>
+        <b-field grouped>
           <b-select v-model="perPage" :disabled="!isPaginated">
             <option :value="20">20</option>
             <option :value="40">40</option>
