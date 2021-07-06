@@ -270,49 +270,7 @@
         </b-collapse>
       </div>
 
-      <div class="block" id="errors">
-        <div class="columns is-desktop">
-          <div class="column is-half" v-if="errors != null">
-            <nav class="panel">
-              <p class="panel-heading">Errors</p>
-              <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
-                <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
-                  <b-tag type="is-info">{{ err.machineName }}</b-tag>
-                </b-tooltip>
-                <b-tooltip class="error-tooltip" type="is-light" size="is-large" multilined>
-                  <span class="single-line" :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
-                    {{ shorten(err.error) }}
-                  </span>
-                  <template v-slot:content>
-                    <p class="is-size-7">{{ err.error }}</p>
-                  </template>
-                </b-tooltip>
-              </div>
-            </nav>
-            <b-button rounded @click="errNum += 10" :disabled="errNum >= errors.length">Expand</b-button>
-            <b-button rounded @click="errNum = 10" :disabled="errNum == 10">Shrink</b-button>
-          </div>
-
-          <div class="column is-half" v-if="events != null">
-            <nav class="panel">
-              <p class="panel-heading">Events</p>
-              <div class="panel-block" v-for="evt in sortedEvents" v-bind:key="sortedEvents.indexOf(evt)">
-                <b-tooltip :label="'时间: ' + evt.time" position="is-bottom">
-                  <b-tag type="is-info">{{ evt.machineName }}</b-tag>
-                </b-tooltip>
-                <span class="has-text-danger" v-if="evt.proofs > 0">
-                  {{ evt.eligibleNumber }}/{{ evt.total }} 个图块被选中，发现 {{ evt.proofs }} 个证明, 时长: {{ evt.duration }} s
-                </span>
-                <span class="has-text-info" v-else>
-                  {{ evt.eligibleNumber }}/{{ evt.total }} 个图块被选中，发现 {{ evt.proofs }} 个证明, 时长: {{ evt.duration }} s
-                </span>
-              </div>
-            </nav>
-            <b-button rounded @click="evtNum += 10" :disabled="evtNum >= events.length">Expand</b-button>
-            <b-button rounded @click="evtNum = 10" :disabled="evtNum == 10">Shrink</b-button>
-          </div>
-        </div>
-      </div>
+      <event-list :errors="errors" :events="events" />
 
       <plots-map />
     </div>
@@ -333,13 +291,14 @@ import machineTableDetailed from '@/components/machineTableDetailed.vue'
 import PlotsMap from '@/components/PlotsMap.vue'
 import DiskSmartMap from '@/components/DiskSmartMap.vue'
 import SnUploader from '@/components/SnUploader.vue'
+import EventList from '@/components/EventList.vue'
 import {
   SnackbarProgrammatic as Snackbar
 } from 'buefy'
 import * as signalR from "@microsoft/signalr";
 
-interface ErrorEntity { time: Date, machineName: string, level: "ERROR" | "WARNING", error: string }
-interface EligibleFarmerEventEntity { time: Date, machineName: string, eligibleNumber: number, proofs: number, duration: number, total: number }
+export interface ErrorEntity { time: Date, machineName: string, level: "ERROR" | "WARNING", error: string }
+export interface EligibleFarmerEventEntity { time: Date, machineName: string, eligibleNumber: number, proofs: number, duration: number, total: number }
 
 @Component({
   components: {
@@ -350,6 +309,7 @@ interface EligibleFarmerEventEntity { time: Date, machineName: string, eligibleN
     PlotsMap,
     DiskSmartMap,
     SnUploader,
+    EventList,
   },
 })
 export default class monitor extends Vue {
@@ -359,8 +319,6 @@ export default class monitor extends Vue {
   harvesters: any[] = [];
   errors: ErrorEntity[] = [];
   events: EligibleFarmerEventEntity[] = [];
-  evtNum = 10;
-  errNum = 10;
   connectionStatus = 'loading';
   intervals: number[] = [];
   hideJobs = false;
@@ -578,9 +536,6 @@ export default class monitor extends Vue {
     if (p == 3) return 56 + n * 5;
     if (p == 4) return 98;
   }
-  shorten(err: any) {
-    return err.replace(/plot-k(?<k>\d{2})-\d{2}(?<time>(\d{2}-){5})(?<id>[0-9a-f]{4})[0-9a-f]{60}\.plot/g, '$<k>-$<time>$<id>.plot');
-  }
   cleanTemporary(names: string[]) {
     (this.$refs.machine as machineTableDetailed).cleanTemporary(names)
   }
@@ -617,12 +572,6 @@ export default class monitor extends Vue {
     this.harvesters.forEach((_) => {
       harvester.harvesterCheck.push(_.name)
     })
-  }
-  get sortedErrors() {
-    return this.errors.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.errNum);
-  }
-  get sortedEvents() {
-    return this.events.sort((a: any, b: any) => a.time < b.time ? 1 : -1).slice(0, this.evtNum);
   }
 
   get harvestSpace() {
