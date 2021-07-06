@@ -6,7 +6,9 @@
           <p class="panel-heading">Errors</p>
           <div class="panel-block" v-for="err in sortedErrors" v-bind:key="sortedErrors.indexOf(err)">
             <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
-              <b-tag type="is-info">{{ err.machineName }}</b-tag>
+              <b-tag :type="new Date() - new Date(err.time + 'Z') > 1000 * 60 ? 'is-dark' : 'is-info'">{{
+                err.machineName
+              }}</b-tag>
             </b-tooltip>
             <b-button v-if="isRemovable(err.error)" size="is-small" class="is-danger" @click="remove(err.machineName, err.error)"
               >处理</b-button
