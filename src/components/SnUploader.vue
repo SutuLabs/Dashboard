@@ -1,7 +1,7 @@
 ﻿<template>
   <section>
-    <b-field>
-      <b-upload v-model="file" drag-drop>
+    <b-field class="columns is-centered">
+      <b-upload class="column is-2" v-model="file" drag-drop>
         <section class="section">
           <div class="content has-text-centered">
             <p>
@@ -13,15 +13,15 @@
       </b-upload>
     </b-field>
 
-    <div class="tags">
-      <span v-if="file != null" class="tag is-primary">
-        {{ file.name }}
+    <div class="columns is-centered">
+      <div class="column is-1 mb-2 tag is-primary" v-if="file != null">
+        {{ file.name | shorten }}
         <button class="delete is-small" type="button" @click="deleteDropFile"></button>
-      </span>
-    </div>
+      </div>
 
-    <div class="large-12 medium-12 small-12 cell">
-      <b-button v-on:click="submitFiles()">确认上传</b-button>
+    </div>
+    <div class="columns is-centered">
+      <b-button class="column is-1" v-on:click="submitFiles()">确认上传</b-button>
     </div>
   </section>
 </template>
@@ -37,7 +37,17 @@ import {
   SnackbarProgrammatic as Snackbar
 } from 'buefy'
 
-@Component
+@Component({
+  filters: {
+    shorten: function (value: any, len = 15) {
+      if (!value) return ''
+      let padding = '...';
+      let left = Math.ceil((len - padding.length) / 2);
+      let right = len - padding.length - left;
+      return value.length >= len ? value.substr(0, left) + padding + value.substr(-right) : value;
+    },
+  },
+})
 export default class SnUploader extends Vue {
   private file: any = null;
   deleteDropFile() {
