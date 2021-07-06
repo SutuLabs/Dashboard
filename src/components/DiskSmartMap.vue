@@ -13,8 +13,8 @@
     <div class="card-content">
       <div class="content">
         <b-table
-          v-if="machineDisk"
-          :data="machineDisk"
+          v-if="allDisks"
+          :data="allDisks"
           detailed
           :show-detail-icon="false"
           detail-key="sn"
@@ -43,23 +43,23 @@
             </span>
           </b-table-column>
           <b-table-column
-            field="planHvs"
-            :label="'Harvester('+this.resultOfCheck+')'"
+            field="planHarvester"
+            :label="'Harvester(' + this.resultOfCheck + ')'"
             width="40"
             header-class="has-text-info"
             v-slot="props"
             searchable
           >
-            <template v-if="props.row.planHvs != '' || props.row.harvester != ''">
+            <template v-if="props.row.planHarvester != '' || props.row.harvester != ''">
               <b-tooltip type="is-light" size="is-large" multilined>
-                <span class="has-text-light" v-if="checkHarvester(props.row.planHvs, props.row.harvester)">
-                  {{ props.row.planHvs }}
+                <span class="has-text-light" v-if="checkHarvester(props.row.planHarvester, props.row.harvester)">
+                  {{ props.row.planHarvester }}
                 </span>
                 <span class="has-text-light" v-else>
                   <b-tag class="has-background-danger-dark">
                     {{ props.row.harvester || '无' }}
                     <span class="has-text-dark">
-                      {{ ' ( ' + (props.row.planHvs || '无') + ' ) ' }}
+                      {{ ' ( ' + (props.row.planHarvester || '无') + ' ) ' }}
                     </span>
                   </b-tag>
                 </span>
@@ -80,11 +80,11 @@
             </template>
           </b-table-column>
           <b-table-column field="temperature" label="磁盘状态" width="40" header-class="has-text-info" v-slot="props" sortable>
-            <template v-if="props.row.temperature != ''">
+            <template v-if="props.row.temperature">
               <b-tooltip type="is-light" size="is-large" multilined>
                 <b-tag type="is-link" class="has-text-light"
                   >{{ props.row.smart.powerOnHours }} | {{ props.row.smart.powerCycleCount }} |
-                  {{ props.row.temperature + '℃' }}</b-tag
+                  {{ props.row.temperature }}'℃'</b-tag
                 >
                 <span v-if="props.row.temperature && props.row.temperature > 43">🔥</span>
                 <span v-if="props.row.temperature && props.row.temperature > 50">🔥</span>
@@ -477,17 +477,33 @@ export default class DiskSmartMap extends Vue {
       }
     })
   }
-  get machineDisk() {
+  get allDisks() {
     var disks: any[] = []
     this.machines.forEach(machine => {
       machine.disks && machine.disks.forEach(disk => {
         if (disk.parts[0].size.search('M') != -1) return
-        let newDisk: any = disk
+        let newDisk: {
+          blockDevice: string,
+          parts: {
+            name: string,
+            label: string,
+            mountPoint: string,
+            size: string,
+            uuid: string,
+          }[],
+          sn: string,
+          model: string,
+          smart: any,
+          label?: string,
+          temperature?: string,
+          planHarvester?: string,
+          harvester?: string,
+        } = disk
         let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
         newDisk.label = disk.parts[0].label
         newDisk.temperature = disk.smart.temperature && disk.smart.temperature.slice(0, 2) || ''
         if (number)
-          newDisk.planHvs = number.host
+          newDisk.planHarvester = number.host
         newDisk.harvester = 'sh' + (this.hostDict && this.hostDict[disk.sn]).slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
         disks.push(newDisk)
       })
@@ -495,8 +511,7 @@ export default class DiskSmartMap extends Vue {
     if (!this.machineSelected) {
       this.numbers.forEach(number => {
         if (!this.hostDict[number.sn]) {
-          let newDisk: any
-          newDisk = {
+          let newDisk = {
             blockDevice: '',
             parts: [],
             model: '',
@@ -504,7 +519,7 @@ export default class DiskSmartMap extends Vue {
             smart: {},
             label: number.id,
             harvester: '',
-            planHvs: number.host,
+            planHarvester: number.host,
             temperature: ''
           }
           disks.push(newDisk)
@@ -520,20 +535,20 @@ export default class DiskSmartMap extends Vue {
       return plan == actual
     }
   }
-  get numOfCacheDisk() {
+  get numOfCacheDisks() {
     var num = 0
     this.numbers.forEach(number => {
       number.host == '缓存盘' ? num++ : num
     })
     return num
   }
-  get numsOfmachines() {
+  get numsOfDisks() {
     return this.numbers.length
   }
   get resultOfCheck() {
     var num = 0
-    this.machineDisk.forEach(machine => {
-      if (!this.checkHarvester(machine.planHvs, machine.harvester)) num++
+    this.allDisks.forEach(machine => {
+      if (!this.checkHarvester(machine.planHarvester, machine.harvester)) num++
     })
     return num
   }
