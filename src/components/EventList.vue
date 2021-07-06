@@ -8,6 +8,9 @@
             <b-tooltip :label="'时间: ' + err.time" position="is-bottom">
               <b-tag type="is-info">{{ err.machineName }}</b-tag>
             </b-tooltip>
+            <b-button v-if="isRemovable(err.error)" size="is-small" class="is-danger" @click="remove(err.machineName, err.error)"
+              >处理</b-button
+            >
             <b-tooltip class="error-tooltip" type="is-light" size="is-large" multilined>
               <span class="single-line" :class="err.level == 'ERROR' ? 'has-text-danger' : 'has-text-warning'">
                 {{ shorten(err.error) }}
@@ -58,13 +61,12 @@ import {
 
 @Component
 export default class EventList extends Vue {
-  @Prop() private disks!: any[];
-  @Prop() private abnormals!: string[];
   @Prop() private errors!: ErrorEntity[];
   @Prop() private events!: EligibleFarmerEventEntity[];
 
   evtNum = 10;
   errNum = 10;
+  rePlot = /\/farm\/A\d{1,4}\/plot-k\d{2}-\d{4}(-\d{2}){4}-[0-9a-f]{64}\.plot/;
 
   removePlot(host: string, plot: string) {
     const name = `${host}@${plot}`;
@@ -123,8 +125,26 @@ export default class EventList extends Vue {
     })
   }
 
+  remove(host: string, message: string) {
+    const plot = message.match(this.rePlot);
+    if (!plot) return;
+
+    this.removePlot(host, plot[0]);
+  }
+
   shorten(err: any) {
     return err.replace(/plot-k(?<k>\d{2})-\d{2}(?<time>(\d{2}-){5})(?<id>[0-9a-f]{4})[0-9a-f]{60}\.plot/g, '$<k>-$<time>$<id>.plot');
+  }
+
+  isRemovable(message: string): boolean {
+    const plot = message.match(this.rePlot);
+    if (!plot || plot.length == 0) return false;
+
+    const msg = message.replace(this.rePlot, '');
+    if (msg == 'Have multiple copies of the plot , not adding it.') return true;
+    if (msg.startsWith('Failed to open file ')) return true;
+
+    return false;
   }
 
   get sortedErrors() {
