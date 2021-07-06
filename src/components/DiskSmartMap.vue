@@ -260,7 +260,7 @@ import {
   Dictionary
 } from 'vue-router/types/router';
 
-interface disk {
+interface Disk {
   blockDevice: string,
   parts: {
     name: string,
@@ -536,11 +536,11 @@ export default class DiskSmartMap extends Vue {
     })
   }
   get allDisks() {
-    var disks: disk[] = []
+    var disks: Disk[] = []
     this.machines.forEach(machine => {
       machine.disks && machine.disks.forEach(disk => {
         if (disk.parts[0].size.search('M') != -1) return
-        let newDisk: disk = disk
+        let newDisk: Disk = disk
         let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
         newDisk.label = disk.parts[0].label
         newDisk.temperature = disk.smart.temperature && disk.smart.temperature.slice(0, 2) || ''
@@ -602,16 +602,15 @@ export default class DiskSmartMap extends Vue {
     })
     return num
   }
-  findMachineName(sn: string) {
-    var name = ''
+  findMachineName(sn: string) : string {
     this.machines.forEach(_ => {
       _.disks.forEach(x => {
         if (x.sn == sn) {
-          return name = _.name
+          return _.name
         }
       })
     })
-    return name
+    return '';
   }
 }
 </script>
