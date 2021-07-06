@@ -250,10 +250,9 @@
             <div class="card-header" role="button" >
               <div class="card-header-title">
                 硬盘
-                <div class="has-text-info heading" v-if="$refs.diskList">
-                  共{{ $refs.diskList.numsOfDisks }}块硬盘， {{ $refs.diskList.numOfCacheDisks }}块缓存盘
+                <div class="has-text-info heading">
+                  共{{ $refs.diskList && $refs.diskList.numsOfDisks }}块硬盘， {{ $refs.diskList && $refs.diskList.numOfCacheDisks }}块缓存盘
                 </div>
-                <div v-else class="has-text-info heading">无法获取硬盘信息</div>
               </div>
               <a class="card-header-icon">
                 <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
