@@ -141,6 +141,16 @@ export default {
     });
   },
 
+  removePlots(host: string, plots: string[]) {
+    const url = `${this.baseUrl}/server/plots?host=${host}`;
+
+    return fetch(url, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+      body: JSON.stringify(plots),
+    });
+  },
+
   getHeaders(isJson = true): Headers {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
