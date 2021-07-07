@@ -543,7 +543,7 @@ export default class DiskSmartMap extends Vue {
         let newDisk: Disk = disk
         let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
         newDisk.label = disk.parts[0].label
-        newDisk.temperature = disk.smart.temperature && disk.smart.temperature.slice(0, 2) || ''
+        newDisk.temperature = disk.smart.temperature
         if (number)
           newDisk.planHarvester = number.host
         newDisk.currentHarvester = 'sh' + (this.hostDict && this.hostDict[disk.sn]).slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
