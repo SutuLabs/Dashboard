@@ -10,7 +10,11 @@
                 err.machineName
               }}</b-tag>
             </b-tooltip>
-            <b-button v-if="isRemovable(err.error)" size="is-small" class="is-danger" @click="remove(err.machineName, err.error)"
+            <b-button
+              v-if="isRemovable(err.error)"
+              size="is-small"
+              :class="err.handled ? 'is-dark' : 'is-warning'"
+              @click="remove(err.machineName, err.error, err)"
               >处理</b-button
             >
             <b-tooltip class="error-tooltip" type="is-light" size="is-large" multilined>
@@ -127,11 +131,12 @@ export default class EventList extends Vue {
     })
   }
 
-  remove(host: string, message: string) {
+  remove(host: string, message: string, obj: any) {
     const plot = message.match(this.rePlot);
     if (!plot) return;
 
     this.removePlot(host, plot[0]);
+    Vue.set(obj, "handled", true);
   }
 
   shorten(err: any) {
