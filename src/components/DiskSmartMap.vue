@@ -349,16 +349,16 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.pushWithReplace(this.machines, json, 'name')
           this.sortDisks();
-          this.hasAllDisks = false
         });
+      this.hasAllDisks = false
     } else {
       getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
         .then(response => response.json())
         .then(json => {
           this.machines = json;
           this.sortDisks();
-          this.hasAllDisks = true
         });
+      this.hasAllDisks = true
     }
   }
 
