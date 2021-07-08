@@ -10,7 +10,7 @@
         </b-select>
         <b-button @click="load()">查看</b-button>
         <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
-        <b-switch v-model="showError" :disabled="!numsOfDisks">
+        <b-switch v-model="showError">
           <span>只看出错</span>
         </b-switch>
       </b-field>
