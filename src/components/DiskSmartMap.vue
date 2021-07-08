@@ -10,8 +10,11 @@
         </b-select>
         <b-button @click="load()">查看</b-button>
         <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
+        <b-switch v-model="showError" :disabled="!numsOfDisks">
+          <span>只看出错</span>
+        </b-switch>
       </b-field>
-      <div class="column is-offset-8">
+      <div class="column is-offset-7">
         <b-field grouped>
           <b-select v-model="perPage" :disabled="!isPaginated">
             <option :value="20">15</option>
@@ -60,7 +63,7 @@
             </span>
           </b-table-column>
           <b-table-column
-            field="planHarvester"
+            field="currentHarvester"
             :label="'Harvester(' + this.resultOfCheck + ')'"
             width="40"
             header-class="has-text-info"
@@ -69,8 +72,11 @@
           >
             <template v-if="props.row.planHarvester != '' || props.row.currentHarvester != ''">
               <b-tooltip type="is-light" size="is-large" multilined>
-                <span class="has-text-light" v-if="checkHarvester(props.row.planHarvester, props.row.currentHarvester)">
-                  {{ props.row.planHarvester }}
+                <span
+                  class="has-text-light"
+                  v-if="checkHarvester(props.row.planHarvester, props.row.currentHarvester, props.row.parts[0].size)"
+                >
+                  {{ props.row.currentHarvester }}
                 </span>
                 <span class="has-text-light" v-else>
                   <b-tag class="has-background-danger-dark">
@@ -326,6 +332,7 @@ export default class DiskSmartMap extends Vue {
   private machineSelected = '';
   private perPage = 20
   private isPaginated = true
+  private showError = false
   public hasAllDisks = false
 
   load() {
@@ -542,15 +549,18 @@ export default class DiskSmartMap extends Vue {
     var disks: Disk[] = []
     this.machines.forEach(machine => {
       machine.disks && machine.disks.forEach(disk => {
-        if (disk.parts[0].size.search('M') != -1) return
         let newDisk: Disk = disk
         let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
         newDisk.label = disk.parts[0].label
-        newDisk.temperature = disk.smart.temperature && disk.smart.temperature.slice(0, 2) || ''
+        newDisk.temperature = disk.smart.temperature
         if (number)
           newDisk.planHarvester = number.host
-        newDisk.currentHarvester = 'sh' + (this.hostDict && this.hostDict[disk.sn]).slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
-        disks.push(newDisk)
+        if (this.hostDict && this.hostDict[disk.sn].search('farm') != -1)
+          newDisk.currentHarvester = this.hostDict[disk.sn]
+        else {
+          newDisk.currentHarvester = 'sh' + this.hostDict[disk.sn].slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
+        }
+        this.showError ? !this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts[0].size) && disks.push(newDisk) : disks.push(newDisk)
       })
     })
     if (!this.machineSelected) {
@@ -558,7 +568,13 @@ export default class DiskSmartMap extends Vue {
         if (!this.hostDict[number.sn]) {
           let newDisk = {
             blockDevice: '',
-            parts: [],
+            parts: [{
+              name: '',
+              label: number.id,
+              mountPoint: '',
+              size: '',
+              uuid: '',
+            }],
             model: '',
             sn: number.sn,
             smart: {
@@ -575,14 +591,14 @@ export default class DiskSmartMap extends Vue {
             planHarvester: number.host,
             temperature: ''
           }
-          disks.push(newDisk)
+          this.showError ? !this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts[0].size) && disks.push(newDisk) : disks.push(newDisk)
         }
       })
     }
     return disks;
   }
-  checkHarvester(plan: string, actual: string) {
-    if (plan == '缓存盘') return true
+  checkHarvester(plan: string, actual: string, size: string) {
+    if (size.search('M') != -1 || plan == '缓存盘') return true
     else if (plan == '' && actual == '') return true
     else {
       return plan == actual
@@ -601,7 +617,7 @@ export default class DiskSmartMap extends Vue {
   get resultOfCheck() {
     var num = 0
     this.allDisks.forEach(machine => {
-      if (!this.checkHarvester(machine.planHarvester || '', machine.currentHarvester || '')) num++
+      if (!this.checkHarvester(machine.planHarvester || '', machine.currentHarvester || '', machine.parts[0].size)) num++
     })
     return num
   }
