@@ -10,8 +10,11 @@
         </b-select>
         <b-button @click="load()">查看</b-button>
         <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
+        <b-switch v-model="showError" :disabled="!numsOfDisks">
+          <span>只看出错</span>
+        </b-switch>
       </b-field>
-      <div class="column is-offset-8">
+      <div class="column is-offset-7">
         <b-field grouped>
           <b-select v-model="perPage" :disabled="!isPaginated">
             <option :value="20">15</option>
@@ -330,6 +333,7 @@ export default class DiskSmartMap extends Vue {
   private perPage = 20
   private isPaginated = true
   public hasAllDisks = false
+  private showError = false
 
   load() {
     this.machines = []
@@ -556,7 +560,7 @@ export default class DiskSmartMap extends Vue {
         else {
           newDisk.currentHarvester = 'sh' + this.hostDict[disk.sn].slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
         }
-        disks.push(newDisk)
+        this.showError ? !this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts[0].size) && disks.push(newDisk) : disks.push(newDisk)
       })
     })
     if (!this.machineSelected) {
@@ -587,7 +591,7 @@ export default class DiskSmartMap extends Vue {
             planHarvester: number.host,
             temperature: ''
           }
-          disks.push(newDisk)
+          this.showError ? !this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts[0].size) && disks.push(newDisk) : disks.push(newDisk)
         }
       })
     }
