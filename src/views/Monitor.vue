@@ -247,15 +247,13 @@
       <div class="block card">
         <b-collapse :open="true" class="panel" animation="slide">
           <template #trigger="props">
-            <div class="card-header" role="button" >
+            <div class="card-header" role="button">
               <div class="card-header-title">
                 硬盘
                 <div class="has-text-info heading" v-if="$refs.diskList">
                   <template v-if="$refs.diskList.numsOfDisks">
-                  共{{ $refs.diskList.numsOfDisks }}个硬盘 
-                  <template v-if="$refs.diskList.hasAllDisks">
-                  ,{{ $refs.diskList.numOfCacheDisks }}个缓存盘
-                  </template>
+                    共{{ $refs.diskList.numsOfDisks }}个硬盘
+                    <template v-if="$refs.diskList.hasAllDisks"> ,{{ $refs.diskList.numOfCacheDisks }}个缓存盘 </template>
                   </template>
                 </div>
               </div>
