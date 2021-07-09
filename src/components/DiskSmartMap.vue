@@ -10,7 +10,7 @@
         </b-select>
         <b-button @click="load()">查看</b-button>
         <b-checkbox v-model="forceGetDiskInfo"> Force Get </b-checkbox>
-        <b-switch v-model="showError" :disabled="!numsOfDisks">
+        <b-switch v-model="showError">
           <span>只看出错</span>
         </b-switch>
       </b-field>
@@ -333,6 +333,7 @@ export default class DiskSmartMap extends Vue {
   private perPage = 20
   private isPaginated = true
   private showError = false
+  public hasAllDisks = false
 
   load(): void {
     this.machines = []
@@ -348,6 +349,7 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.pushWithReplace(this.machines, json, 'name')
           this.sortDisks();
+          this.hasAllDisks = false;
         });
     } else {
       getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
@@ -355,6 +357,7 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.machines = json;
           this.sortDisks();
+          this.hasAllDisks = true;
         });
     }
   }
