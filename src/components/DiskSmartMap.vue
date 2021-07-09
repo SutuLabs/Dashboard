@@ -332,9 +332,8 @@ export default class DiskSmartMap extends Vue {
   private machineSelected = '';
   private perPage = 20
   private isPaginated = true
-  public hasAllDisks = false
   private showError = false
-  
+
   load(): void {
     this.machines = []
     getInfo.getInfo(`serial-number`)
@@ -349,7 +348,6 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.pushWithReplace(this.machines, json, 'name')
           this.sortDisks();
-          this.hasAllDisks = false
         });
     } else {
       getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
@@ -357,7 +355,6 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.machines = json;
           this.sortDisks();
-          this.hasAllDisks = true
         });
     }
   }
