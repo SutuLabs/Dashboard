@@ -14,10 +14,10 @@
       <div class="column is-offset-8">
         <b-field grouped>
           <b-select v-model="perPage" :disabled="!isPaginated">
-            <option :value="20">20</option>
-            <option :value="40">40</option>
-            <option :value="60">60</option>
-            <option :value="80">80</option>
+            <option :value="20">15</option>
+            <option :value="40">20</option>
+            <option :value="60">40</option>
+            <option :value="80">60</option>
           </b-select>
           <b-switch v-model="isPaginated">
             <span>{{ isPaginated ? "分页" : "不分页" }}</span>
@@ -326,6 +326,7 @@ export default class DiskSmartMap extends Vue {
   private machineSelected = '';
   private perPage = 20
   private isPaginated = true
+  public hasAllDisks = false
 
   load() {
     this.machines = []
@@ -341,6 +342,7 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.pushWithReplace(this.machines, json, 'name')
           this.sortDisks();
+          this.hasAllDisks = false
         });
     } else {
       getInfo.getInfo(`disks?force=${this.forceGetDiskInfo}`)
@@ -348,6 +350,7 @@ export default class DiskSmartMap extends Vue {
         .then(json => {
           this.machines = json;
           this.sortDisks();
+          this.hasAllDisks = true
         });
     }
   }
