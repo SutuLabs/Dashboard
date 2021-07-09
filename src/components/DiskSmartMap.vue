@@ -334,6 +334,7 @@ export default class DiskSmartMap extends Vue {
   private isPaginated = true
   public hasAllDisks = false
   private showError = false
+  public hasAllDisks = false
 
   load() {
     this.machines = []
@@ -560,7 +561,13 @@ export default class DiskSmartMap extends Vue {
         else {
           newDisk.currentHarvester = 'sh' + this.hostDict[disk.sn].slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
         }
-        this.showError ? !this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts[0].size) && disks.push(newDisk) : disks.push(newDisk)
+        if (this.showError) {
+          if (!this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts && newDisk.parts[0].size))
+            disks.push(newDisk)
+        }
+        else {
+          disks.push(newDisk)
+        }
       })
     })
     if (!this.machineSelected) {
@@ -591,14 +598,20 @@ export default class DiskSmartMap extends Vue {
             planHarvester: number.host,
             temperature: ''
           }
-          this.showError ? !this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts[0].size) && disks.push(newDisk) : disks.push(newDisk)
+          if (this.showError) {
+            if (!this.checkHarvester(newDisk.planHarvester || '', newDisk.currentHarvester || '', newDisk.parts && newDisk.parts[0].size))
+              disks.push(newDisk)
+          }
+          else {
+            disks.push(newDisk)
+          }
         }
       })
     }
     return disks;
   }
   checkHarvester(plan: string, actual: string, size: string) {
-    if (size.search('M') != -1 || plan == '缓存盘') return true
+    if (size.search('M') != -1 || plan == '缓存盘') return true //根据硬盘容量排除系统盘
     else if (plan == '' && actual == '') return true
     else {
       return plan == actual
@@ -617,7 +630,7 @@ export default class DiskSmartMap extends Vue {
   get resultOfCheck() {
     var num = 0
     this.allDisks.forEach(machine => {
-      if (!this.checkHarvester(machine.planHarvester || '', machine.currentHarvester || '', machine.parts[0].size)) num++
+      if (!this.checkHarvester(machine.planHarvester || '', machine.currentHarvester || '', machine.parts && machine.parts[0].size || '')) num++
     })
     return num
   }
