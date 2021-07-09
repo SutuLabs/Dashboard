@@ -335,7 +335,7 @@ export default class DiskSmartMap extends Vue {
   private showError = false
   public hasAllDisks = false
 
-  load(): void {
+  load() {
     this.machines = []
     getInfo.getInfo(`serial-number`)
       .then(response => response.json())
