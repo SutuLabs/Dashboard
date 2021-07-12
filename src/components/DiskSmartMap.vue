@@ -285,32 +285,13 @@ interface Disk {
   planHarvester?: string,
   currentHarvester?: string,
 }
+interface MachineEntity {
+  name: string,
+  disks: Disk[],
+}
 @Component
 export default class DiskSmartMap extends Vue {
-  private machines: {
-    name: string,
-    disks: {
-      blockDevice: string,
-      parts: {
-        name: string,
-        label: string,
-        mountPoint: string,
-        size: string,
-        uuid: string,
-      }[],
-      sn: string,
-      model: string,
-      smart: {
-        powerCycleCount: number,
-        powerOnHours: number,
-        temperature: string,
-        values: {
-          key: string,
-          value: string
-        }[]
-      },
-    }[]
-  }[] = [];
+  private machines: MachineEntity[] = [];
   @Prop() private machineNames!: string[];
   private numbers: {
     id: string,
@@ -423,22 +404,21 @@ export default class DiskSmartMap extends Vue {
   }
 
   mount(host: string, block: string, label: string) {
-    var t = Snackbar.open({
-      type: 'is-primary',
-      message: `mounting ${host} ${block} ${label}`,
-      indefinite: true,
-      queue: false
-    })
-    getInfo.mountPartition(host, block, label)
-      .then(_ => {
-        t.close();
-        Snackbar.open({
-          type: 'is-success',
-          message: `success fully mounted ${host} ${block} ${label}`,
-          indefinite: true,
-          queue: false
-        })
-      });
+    if (!host || !block || !label) {
+      console.warn('cannot mount', host, block, label);
+      return;
+    }
+
+    const target = `${label}[${host}@/dev/${block}]`;
+    this.confirmAndExecute({
+      confirmTitle: '确认Mount',
+      confirmMessage: `Mount ${target}，确认吗？`,
+      workingMessage: `正在Mount ${target}`,
+      successMessage: `${target}已Mount`,
+      failureMessage: 'Mount失败',
+    },
+      () => getInfo.mountPartition(host, block, label)
+    );
   }
 
   removeNtfsPart(host: string, block: string) {
@@ -485,11 +465,12 @@ export default class DiskSmartMap extends Vue {
   }
 
   enableSmart(host: string, block: string) {
+    const target = `${host}@${block}`;
     this.confirmAndExecute({
       confirmTitle: '确认启用SMART',
       confirmMessage: `启用SMART（可查看温度等，无副作用），确认吗？`,
-      workingMessage: `正在启用 ${host} 上磁盘 ${block} 的SMART`,
-      successMessage: `${host}\\${block}的SMART已启用`,
+      workingMessage: `正在启用 ${target} 的SMART`,
+      successMessage: `${target}的SMART已启用`,
       failureMessage: '启用失败',
     },
       () => getInfo.enableSmart(host, block)
@@ -606,13 +587,12 @@ export default class DiskSmartMap extends Vue {
     return num
   }
   findMachineName(sn: string): string {
-    this.machines.forEach(_ => {
-      _.disks.forEach(x => {
-        if (x.sn == sn) {
-          return _.name
-        }
-      })
-    })
+    for (const m of this.machines) {
+      for (const d of m.disks) {
+        if (d.sn == sn) return m.name
+      }
+    }
+
     return '';
   }
 }
