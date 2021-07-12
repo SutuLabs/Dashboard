@@ -83,8 +83,10 @@
             </b-tooltip>
             <span class="has-text-grey">-></span>
             <span>
-              <b-tooltip multilined>
+              <b-tooltip v-if="props.row.madmaxJob && props.row.madmaxJob.job" multilined>
                 {{ props.row.madmaxJob.job.copyingTarget && props.row.madmaxJob.job.copyingTarget.slice(-3) }}
+                @
+                {{ props.row.madmaxJob.job.copyingDisk }}
                 <template v-slot:content>
                   <b-taglist
                     attached
@@ -93,7 +95,7 @@
                     })"
                     :key="machine.name"
                   >
-                    <b-tag type="is-dark">{{ machine.name }}</b-tag>
+                    <b-tag type="is-dark">{{ machine.name }}@{{ machine && machine.madmaxJob && machine.madmaxJob.job && machine.madmaxJob.job.copyingDisk }}</b-tag>
                     <b-tag type="is-info">{{ machine.fileCounts[0].count }}</b-tag>
                     <b-tag type="is-info is-light"
                       >{{ humanize(machine.madmaxJob.job.copyingSpeed) }}/s({{ machine.madmaxJob.job.copyingPercent }}%)</b-tag
