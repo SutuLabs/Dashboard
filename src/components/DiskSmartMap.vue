@@ -555,7 +555,7 @@ export default class DiskSmartMap extends Vue {
         newDisk.temperature = disk.smart.temperature
         if (number)
           newDisk.planHarvester = number.host
-        if (this.hostDict && this.hostDict[disk.sn].search('farm') != -1)
+        if (this.hostDict && this.hostDict[disk.sn] && this.hostDict[disk.sn].search('farm') != -1)
           newDisk.currentHarvester = this.hostDict[disk.sn]
         else {
           newDisk.currentHarvester = 'sh' + this.hostDict[disk.sn].slice(this.hostDict[disk.sn].length - 5, this.hostDict[disk.sn].length - 4)
