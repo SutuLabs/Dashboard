@@ -74,7 +74,7 @@
               <b-tooltip type="is-light" size="is-large" multilined>
                 <span
                   class="has-text-light"
-                  v-if="checkHarvester(props.row.planHarvester, props.row.currentHarvester, props.row.parts[0].size)"
+                  v-if="checkHarvester(props.row.planHarvester, props.row.currentHarvester, props.row.parts && props.row.parts[0].size)"
                 >
                   {{ props.row.currentHarvester }}
                 </span>
