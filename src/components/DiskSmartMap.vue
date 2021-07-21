@@ -538,7 +538,7 @@ export default class DiskSmartMap extends Vue {
       machine.disks && machine.disks.forEach(disk => {
         let newDisk: Disk = disk
         let number = this.numbers.filter((number) => number.sn == disk.sn)[0]
-        newDisk.label = disk.parts[0].label
+        newDisk.label = disk.parts && disk.parts[0].label
         newDisk.temperature = disk.smart.temperature
         if (number)
           newDisk.planHarvester = number.host
@@ -596,8 +596,8 @@ export default class DiskSmartMap extends Vue {
     }
     return disks;
   }
-  checkHarvester(plan: string, actual: string, size: string) {
-    if (size.search('M') != -1 || plan == '缓存盘') return true //根据硬盘容量排除系统盘
+  checkHarvester(plan: string, actual: string, size?: string) {
+    if (size && size.search('M') != -1 || plan == '缓存盘') return true //根据硬盘容量排除系统盘
     else if (plan == '' && actual == '') return true
     else {
       return plan == actual
