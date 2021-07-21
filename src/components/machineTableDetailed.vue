@@ -90,12 +90,16 @@
                 <template v-slot:content>
                   <b-taglist
                     attached
-                    v-for="machine in machines.filter((_) => {
-                      return _.madmaxJob.job.copyingTarget == props.row.madmaxJob.job.copyingTarget
+                    v-for="machine in machines.filter(_ => {
+                      return _.madmaxJob.job.copyingTarget == props.row.madmaxJob.job.copyingTarget;
                     })"
                     :key="machine.name"
                   >
-                    <b-tag type="is-dark">{{ machine.name }}@{{ machine && machine.madmaxJob && machine.madmaxJob.job && machine.madmaxJob.job.copyingDisk }}</b-tag>
+                    <b-tag type="is-dark"
+                      >{{ machine.name }}@{{
+                        machine && machine.madmaxJob && machine.madmaxJob.job && machine.madmaxJob.job.copyingDisk
+                      }}</b-tag
+                    >
                     <b-tag type="is-info">{{ machine.fileCounts[0].count }}</b-tag>
                     <b-tag type="is-info is-light"
                       >{{ humanize(machine.madmaxJob.job.copyingSpeed) }}/s({{ machine.madmaxJob.job.copyingPercent }}%)</b-tag
@@ -447,7 +451,7 @@ export default class machineTableDetailed extends Vue {
   mulCheck = false;
   mulstop: any = [];
   harvesterCheck: string[] = [];
-  legacyPlotter = false ;
+  legacyPlotter = false;
 
   mounted() {
     if (this.type == "plotter") {
