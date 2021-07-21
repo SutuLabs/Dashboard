@@ -189,7 +189,7 @@
       <b-table-column label="Disk Space" width="30%" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template v-if="props.row.disks">
           <div class="summary-progress">
-            <disk-list :disks="[getProperDisk(props.row.disks)]" />
+            <disk-list :disks="getProperDisk(props.row.disks)" />
           </div>
         </template>
         <template v-else>
@@ -681,14 +681,14 @@ export default class machineTableDetailed extends Vue {
   }
   getProperDisk(disks: any[]) {
     if (!disks || disks.length == 0) {
-      return null;
+      return [];
     }
 
     var priv = ["/data/final", "/data/tmp", "/data", "/"];
     for (let i = 0; i < priv.length; i++) {
       const path = priv[i];
       var idx = disks.findIndex(_ => _.path == path);
-      if (idx >= 0) return disks[idx];
+      if (idx >= 0) return [disks[idx]];
 
     }
 
@@ -698,7 +698,7 @@ export default class machineTableDetailed extends Vue {
         maxSizeIdx = i;
       }
     }
-    return disks[maxSizeIdx];
+    return [disks[maxSizeIdx]];
   }
   humanize(size: number) {
     if (size == 0) return 0;
