@@ -80,11 +80,16 @@
               <div class="column">
                 <div class="mb-5">
                   耕田数量
-                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ farmer.farmer.plotCount }}</div>
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">
+                    {{ farmer.farmer.plotCount || plotCount }}
+                  </div>
                 </div>
                 <div>
                   矿场算力
-                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ harvestSpace }}Tib</div>
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">
+                    <template v-if="farmer.farmer.totalSize == '0.000 GiB'">{{ harvestSpace }} Tib</template>
+                    <template v-else>{{ farmer.farmer.totalSize }}</template>
+                  </div>
                 </div>
               </div>
               <div class="column">
@@ -264,7 +269,7 @@
           </template>
           <b-tabs type="is-boxed" expanded>
             <b-tab-item label="硬盘信息">
-              <disk-smart-map :machine-names="harvesters.map((_) => _.name)" ref="diskList" />
+              <disk-smart-map :machine-names="harvesters.map(_ => _.name)" ref="diskList" />
             </b-tab-item>
             <b-tab-item label="上传硬盘信息">
               <sn-uploader />
@@ -578,7 +583,10 @@ export default class monitor extends Vue {
   }
 
   get harvestSpace() {
-    return ((this.harvesters.reduce((sum, e) => sum + ((e && e.totalPlot) || 0), 0) * 101.4) / 1024).toFixed(2)
+    return ((this.plotCount * 101.4) / 1024).toFixed(2)
+  }
+  get plotCount() {
+    return this.harvesters.reduce((sum, e) => sum + ((e && e.totalPlot) || 0), 0)
   }
   get estimatedTime() {
     return getTime.getEstimatedTime(parseFloat(this.harvestSpace), parseFloat(this.farmer.node.space))

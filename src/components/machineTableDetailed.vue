@@ -90,12 +90,16 @@
                 <template v-slot:content>
                   <b-taglist
                     attached
-                    v-for="machine in machines.filter((_) => {
-                      return _.madmaxJob.job.copyingTarget == props.row.madmaxJob.job.copyingTarget
+                    v-for="machine in machines.filter(_ => {
+                      return _.madmaxJob.job.copyingTarget == props.row.madmaxJob.job.copyingTarget;
                     })"
                     :key="machine.name"
                   >
-                    <b-tag type="is-dark">{{ machine.name }}@{{ machine && machine.madmaxJob && machine.madmaxJob.job && machine.madmaxJob.job.copyingDisk }}</b-tag>
+                    <b-tag type="is-dark"
+                      >{{ machine.name }}@{{
+                        machine && machine.madmaxJob && machine.madmaxJob.job && machine.madmaxJob.job.copyingDisk
+                      }}</b-tag
+                    >
                     <b-tag type="is-info">{{ machine.fileCounts[0].count }}</b-tag>
                     <b-tag type="is-info is-light"
                       >{{ humanize(machine.madmaxJob.job.copyingSpeed) }}/s({{ machine.madmaxJob.job.copyingPercent }}%)</b-tag
@@ -189,7 +193,7 @@
       <b-table-column label="Disk Space" width="30%" header-class="has-text-info" v-slot="props" :visible="isPlotter">
         <template v-if="props.row.disks">
           <div class="summary-progress">
-            <disk-list :disks="[getProperDisk(props.row.disks)]" />
+            <disk-list :disks="getProperDisk(props.row.disks)" />
           </div>
         </template>
         <template v-else>
@@ -447,7 +451,7 @@ export default class machineTableDetailed extends Vue {
   mulCheck = false;
   mulstop: any = [];
   harvesterCheck: string[] = [];
-  legacyPlotter = false ;
+  legacyPlotter = false;
 
   mounted() {
     if (this.type == "plotter") {
@@ -681,14 +685,14 @@ export default class machineTableDetailed extends Vue {
   }
   getProperDisk(disks: any[]) {
     if (!disks || disks.length == 0) {
-      return null;
+      return [];
     }
 
     var priv = ["/data/final", "/data/tmp", "/data", "/"];
     for (let i = 0; i < priv.length; i++) {
       const path = priv[i];
       var idx = disks.findIndex(_ => _.path == path);
-      if (idx >= 0) return disks[idx];
+      if (idx >= 0) return [disks[idx]];
 
     }
 
@@ -698,7 +702,7 @@ export default class machineTableDetailed extends Vue {
         maxSizeIdx = i;
       }
     }
-    return disks[maxSizeIdx];
+    return [disks[maxSizeIdx]];
   }
   humanize(size: number) {
     if (size == 0) return 0;
