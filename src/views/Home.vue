@@ -137,7 +137,7 @@
     farm :any= null;
     intervals: number[] = [];
     username = localStorage.getItem("username")
-    ChiaPrices ='';
+    chiaPrice = '';
 
     mounted() {
       if(this.username){
@@ -151,7 +151,7 @@
         .then(response => response.json())
         .then(json =>{
           let price = json
-          this.ChiaPrices = '$ ' + price[0].price.toFixed(2) 
+          this.chiaPrice = '$ ' + price[0].price.toFixed(2) 
         });
       getInfo.getInfo("farmer")
         .then(response => response.json())
@@ -173,7 +173,7 @@
           .then(response => response.json())
           .then(json =>{
             let price = json
-            this.ChiaPrices = '$ ' + price[0].price.toFixed(2)  
+            this.chiaPrice = '$ ' + price[0].price.toFixed(2)  
           });
         getInfo.getInfo("farmer")
           .then(response => response.json())
@@ -196,7 +196,7 @@
     getNetInfo(farm:any) {
       this.netInfoList = [{
         title: "当前币价",
-        data: this.ChiaPrices,
+        data: this.chiaPrice,
       },
       {
         title: "全网容量",
