@@ -14,10 +14,10 @@
           <b-navbar-item tag="router-link" :to="{path:'/'}">
             首页
           </b-navbar-item>
-          <b-navbar-item tag="router-link" :to="{path:'/explorer'}">
+          <b-navbar-item tag="router-link" :to="{path:'/explorer'}" v-if="false">
             区块链浏览器
           </b-navbar-item>
-          <b-navbar-item tag="router-link" :to="{path:'/calculator'}">
+          <b-navbar-item tag="router-link" :to="{path:'/calculator'}" v-if="false">
             计算器
           </b-navbar-item>
           <b-navbar-item tag="router-link" :to="{path:'/monitor'}">
@@ -26,6 +26,23 @@
           <b-navbar-item tag="router-link" :to="{path:'/plottingPerformance'}">
             P盘效率
           </b-navbar-item>
+          <b-dropdown :triggers="['hover']">
+            <template #trigger>
+              <b-navbar-item>
+                <span >常用工具</span>
+              </b-navbar-item>
+            </template>
+            <b-dropdown-item aria-role="menuitem">
+              <a  target="_blank" href="https://www.chiaexplorer.com/">
+                区块链浏览器<b-icon  size="is-small" icon="open-in-new"></b-icon>
+              </a>
+            </b-dropdown-item>
+            <b-dropdown-item aria-role="menuitem">
+              <a  target="_blank" href="https://chiacalculator.com/ ">
+                计算器<b-icon  size="is-small" icon="open-in-new"></b-icon>
+              </a>
+            </b-dropdown-item>
+          </b-dropdown>
           <b-dropdown :triggers="['hover']" position="is-bottom-left" aria-role="menu">
             <template #trigger>
               <b-navbar-item>
@@ -67,19 +84,19 @@
     <div class="is-hidden-tablet">
       <b-navbar :fixed-bottom="true" :mobile-burger="false">
         <template #brand>
-          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/'}">
+          <b-navbar-item class="navbarButton mx-4" tag="router-link" :to="{path:'/'}">
             <div>
               <b-icon icon="home"></b-icon>
             </div>
             <div class="is-size-7">首页</div>
           </b-navbar-item>
-          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/explorer'}">
+          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/explorer'}" v-if="false">
             <div>
               <b-icon icon="view-column"></b-icon>
             </div>
             <div class="is-size-7">浏览器</div>
           </b-navbar-item>
-          <b-navbar-item class="navbarButton" tag="router-link" :to="{path:'/monitor'}">
+          <b-navbar-item class="navbarButton mx-4" tag="router-link" :to="{path:'/monitor'}">
             <div>
               <b-icon icon="monitor-dashboard"></b-icon>
             </div>
