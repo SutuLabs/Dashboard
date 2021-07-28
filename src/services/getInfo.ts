@@ -180,4 +180,13 @@ export default {
     }
     return [];
   },
+
+  getChiaPrice() {
+    const url = `${this.baseUrl}/misc/prices`;
+
+    return fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+  },
 }
