@@ -33,12 +33,12 @@
               </b-navbar-item>
             </template>
             <b-dropdown-item aria-role="menuitem">
-              <a  target="_blank" href="https://www.chiaexplorer.com/">
-                区块链浏览器<b-icon  size="is-small" icon="open-in-new"></b-icon>
+              <a  target="_blank" class="has-text-light" href="https://www.chiaexplorer.com/">
+                <span>区块链浏览器<b-icon  size="is-small" icon="open-in-new"></b-icon></span>
               </a>
             </b-dropdown-item>
             <b-dropdown-item aria-role="menuitem">
-              <a  target="_blank" href="https://chiacalculator.com/ ">
+              <a  target="_blank"  class="has-text-light" href="https://chiacalculator.com/ ">
                 计算器<b-icon  size="is-small" icon="open-in-new"></b-icon>
               </a>
             </b-dropdown-item>
