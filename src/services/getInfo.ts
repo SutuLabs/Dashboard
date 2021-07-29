@@ -10,6 +10,15 @@ export default {
     });
   },
 
+  getPublicInfo(path: string) {
+    const url = `${this.baseUrl}/server/${path}`;
+
+    return fetch(url, {
+      method: 'GET',
+      headers: this.getPublicHeaders(),
+    });
+  },
+  
   uploadFile(path: string, formData: FormData): Promise<Response> {
     const url = `${this.baseUrl}/server/${path}`;
 
@@ -166,6 +175,21 @@ export default {
     return headers;
   },
 
+  getPublicHeaders(isJson = true): Headers {
+    const username = 'test';
+    const password = 'test@123';
+
+    const headers = new Headers();
+
+    if (isJson) {
+      headers.append('Content-Type', 'text/json');
+    }
+
+    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
+
+    return headers;
+  },
+
   save(key: string, value: any) {
     localStorage.setItem(key, JSON.stringify(value));
   },
@@ -186,7 +210,7 @@ export default {
 
     return fetch(url, {
       method: 'GET',
-      headers: this.getHeaders(),
+      headers: this.getPublicHeaders(),
     });
   },
 }
