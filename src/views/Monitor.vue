@@ -87,7 +87,7 @@
                 <div>
                   矿场算力
                   <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">
-                    <template v-if="farmer.farmer.totalSize == '0.000 GiB'">{{ harvestSpace }} Tib</template>
+                    <template v-if="farmer.farmer.totalSize == '0.000 GiB'">{{ harvestSpace }} TiB</template>
                     <template v-else>{{ farmer.farmer.totalSize }}</template>
                   </div>
                 </div>
@@ -95,7 +95,8 @@
               <div class="column">
                 <div class="mb-5">
                   总共挖币
-                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile">{{ farmer.farmer.totalFarmed }}</div>
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile is-hidden-mobile">{{ farmer.farmer.totalFarmed }}</div>
+                  <div class="has-text-success is-size-4 mt-2 has-text-centered-mobile is-hidden-tablet">{{ farmer.farmer.totalFarmed.toFixed(4) }}</div>
                 </div>
                 <div>
                   预计爆块时间

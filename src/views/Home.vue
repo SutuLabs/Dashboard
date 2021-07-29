@@ -20,15 +20,15 @@
       </div>
     </div>
     <div class="block is-hidden-tablet">
-      <b-carousel-list :data="netInfoList" :items-to-show="2">
-        <template #item="list">
+      <div class="columns is-multiline is-mobile is-variable is-1">
+        <div class="column is-half" v-for="item in netInfoList" :key="netInfoList.indexOf(item)">
           <div class="box">
-            <div class="heading">{{list.title}}</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{list.data}}</div>
+            <div class="heading">{{item.title}}</div>
+            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{item.data}}</div>
             <div v-if="!farm" class="title is-5">Loading</div>
           </div>
-        </template>
-      </b-carousel-list>
+        </div>
+      </div>
     </div>
     <div class="block" v-if="farm && false">
       <div class="card">
