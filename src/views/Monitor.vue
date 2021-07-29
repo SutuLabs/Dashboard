@@ -404,6 +404,17 @@ export default class monitor extends Vue {
               getInfo.sortDisks(plotter);
             });
           });
+        getInfo.getInfo('harvester')
+        .then(response => response.json())
+        .then(json => {
+          this.harvesters.forEach((machine: any) => {
+            var m = json.find((_: any) => _.name == machine.name);
+            Vue.set(machine, "totalPlot", m.totalPlot);
+            Vue.set(machine, "lastPlotTime", m.lastPlotTime);
+            Vue.set(machine, "abnormalFarmlands", m.abnormalFarmlands);
+            Vue.set(machine, "danglingPartitions", m.danglingPartitions);
+          })
+        });
         servers.forEach((machine: any) => {
           if (/harvester(_s)?\d/.test(machine.name)) {
             this.harvesters.push(machine);
