@@ -74,9 +74,9 @@
           </b-field>
         </div>
 
-        <div class="columns is-tablet m-1 box">
-          <div class="column is-half box has-background-dark has-text-weight-bold m-1">
-            <div class="columns is-mobile">
+        <div class="columns is-tablet p-3 my-3 box">
+          <div class="column is-half box has-background-dark has-text-weight-bold m-2">
+            <div class="columns is-mobile ml-1">
               <div class="column">
                 <div class="mb-5">
                   耕田数量
@@ -106,7 +106,7 @@
             </div>
           </div>
 
-          <div class="column has-background-dark box m-1 has-text-weight-bold">
+          <div class="column has-background-dark box m-2 has-text-weight-bold">
             机器信息
             <div class="mt-3">
               <div class="columns is-mobile">
@@ -123,7 +123,7 @@
               </div>
             </div>
           </div>
-          <div class="column has-background-dark box m-1">
+          <div class="column has-background-dark box m-2">
             <div class="is-size-7">
               <div class="columns is-mobile">
                 <div class="column">最高高度：</div>
