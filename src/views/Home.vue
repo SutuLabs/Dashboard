@@ -105,10 +105,10 @@
     },
   })
   export default class Home extends Vue {
-    netInfoList = [/*{
+    netInfoList = [{
       title: "当前币价",
       data: "Loading",
-    },*/
+    },
     {
       title: "全网容量",
       data: "Loading",
@@ -137,6 +137,7 @@
     farm :any= null;
     intervals: number[] = [];
     username = localStorage.getItem("username")
+    chiaPrice = '';
 
     mounted() {
       if(this.username){
@@ -146,6 +147,12 @@
     }
 
     load() {
+      getInfo.getChiaPrice()
+        .then(response => response.json())
+        .then(json =>{
+          let price = json
+          this.chiaPrice = '$ ' + price[0].price.toFixed(2) 
+        });
       getInfo.getInfo("farmer")
         .then(response => response.json())
         .then(json => {
@@ -162,6 +169,12 @@
     autoRefresh() {
       var temp;
       temp = window.setInterval(() => {
+        getInfo.getChiaPrice()
+          .then(response => response.json())
+          .then(json =>{
+            let price = json
+            this.chiaPrice = '$ ' + price[0].price.toFixed(2)  
+          });
         getInfo.getInfo("farmer")
           .then(response => response.json())
           .then(json => {
@@ -181,10 +194,10 @@
       this.intervals.push(temp);
     }
     getNetInfo(farm:any) {
-      this.netInfoList = [/*{
+      this.netInfoList = [{
         title: "当前币价",
-        data: "TODO",
-      },*/
+        data: this.chiaPrice,
+      },
       {
         title: "全网容量",
         data: farm.node.space,
