@@ -29,7 +29,9 @@
           <b-dropdown :triggers="['hover']">
             <template #trigger>
               <b-navbar-item>
-                <span >常用工具</span>
+                <span >常用工具
+                  <b-icon icon="menu-down"></b-icon>
+                </span>
               </b-navbar-item>
             </template>
             <b-dropdown-item aria-role="menuitem">

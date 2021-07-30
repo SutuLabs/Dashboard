@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="home">
-    <template class="container" v-if="username==null">
+    <template class="container" v-if="false">
       <b-notification type="is-danger" has-icon aria-close-label="Close notification" role="alert">
         尚未登录，无法查看！
       </b-notification>
@@ -20,17 +20,17 @@
       </div>
     </div>
     <div class="block is-hidden-tablet">
-      <b-carousel-list :data="netInfoList" :items-to-show="2">
-        <template #item="list">
+      <div class="columns is-multiline is-mobile is-variable is-1">
+        <div class="column is-half" v-for="item in netInfoList" :key="netInfoList.indexOf(item)">
           <div class="box">
-            <div class="heading">{{list.title}}</div>
-            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{list.data}}</div>
+            <div class="heading">{{item.title}}</div>
+            <div v-if="farm" class="title is-5 has-text-success has-text-weight-bold">{{item.data}}</div>
             <div v-if="!farm" class="title is-5">Loading</div>
           </div>
-        </template>
-      </b-carousel-list>
+        </div>
+      </div>
     </div>
-    <div class="block" v-if="farm">
+    <div class="block" v-if="farm && false">
       <div class="card">
         <router-link to="/calculator">
           <div class="card-header">
@@ -44,6 +44,9 @@
           <calculatorSimplified :farm="farm" />
         </div>
       </div>
+    </div>
+    <div class="block">
+      <disk-space-calculator/>
     </div>
     <div class="block" hidden>
       <div class="columns">
@@ -97,11 +100,13 @@
   import calculatorSimplified from '@/components/calculatorSimplified.vue'; // @ is an alias to /src
   import diskMap from '@/components/diskMap.vue';
   import getInfo from '@/services/getInfo'
+  import diskSpaceCalculator from '@/components/diskSpaceCalculator.vue';
 
   @Component({
     components: {
       calculatorSimplified,
       diskMap,
+      diskSpaceCalculator,
     },
   })
   export default class Home extends Vue {
@@ -140,10 +145,8 @@
     chiaPrice = '';
 
     mounted() {
-      if(this.username){
-        this.load();
-        this.autoRefresh();
-      }
+      this.load();
+      this.autoRefresh();
     }
 
     load() {
@@ -151,9 +154,9 @@
         .then(response => response.json())
         .then(json =>{
           let price = json
-          this.chiaPrice = '$ ' + price[0].price.toFixed(2) 
+          this.chiaPrice = price[0].price.toFixed(2) + ' '  + price[0].to
         });
-      getInfo.getInfo("farmer")
+      getInfo.getPublicInfo("farmer")
         .then(response => response.json())
         .then(json => {
           if (json[0].farmer.status == "Full Node Synced" || json[0].farmer.status == "Farming") {
@@ -173,9 +176,9 @@
           .then(response => response.json())
           .then(json =>{
             let price = json
-            this.chiaPrice = '$ ' + price[0].price.toFixed(2)  
+            this.chiaPrice = price[0].price.toFixed(2) + ' '  + price[0].to
           });
-        getInfo.getInfo("farmer")
+        getInfo.getPublicInfo("farmer")
           .then(response => response.json())
           .then(json => {
             if (json[0].farmer.status == "Full Node Synced" || json[0].farmer.status == "Farming") {
