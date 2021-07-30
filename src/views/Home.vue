@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="block">
-          <disk-space-calculator />
+          <disk-space-calculator/>
     </div>
     <div class="block" hidden>
       <div class="columns">

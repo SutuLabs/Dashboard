@@ -176,17 +176,10 @@ export default {
   },
 
   getPublicHeaders(isJson = true): Headers {
-    const username = 'test';
-    const password = 'test@123';
-
     const headers = new Headers();
-
     if (isJson) {
       headers.append('Content-Type', 'text/json');
     }
-
-    headers.append('Authorization', 'Basic ' + btoa(username + ":" + password));
-
     return headers;
   },
 
