@@ -10,15 +10,15 @@
           </template>
           <div class="card">
             <div class="card-content">
-              <b-field horizontal label="转账">
+              <b-field horizontal label="转账" :message="target">
                 <b-select placeholder="选择对象" v-model="target">
-                  <option v-for="option in receivers" :value="option.address" :key="option.address">
+                  <option v-for="option in receivers" :value="option.address" :key="option.id">
                     {{ option.name }}
                   </option>
                 </b-select>
               </b-field>
 
-              <b-field horizontal label="金额">
+              <b-field horizontal label="金额" :message="(amount * 1000000000000).toFixed() + ' mojo'">
                 <b-input name="amount" type="text" v-model="amount"></b-input>
               </b-field>
 
@@ -112,7 +112,7 @@
               <b-field>
                 <b-button type="is-primary" size="is-small" @click="refreshTxs">刷新</b-button>
               </b-field>
-              <b-table :data="txs" :mobile-cards="true" detail-key="address" narrowed striped hoverable focusable>
+              <b-table :data="txs" :mobile-cards="true" narrowed striped hoverable focusable>
                 <b-table-column field="name" label="ID" v-slot="props">
                   <b-tooltip :label="props.row.id">
                     <a @click="copy(props.row.id)">{{ props.row.id.slice(2, 10) }}</a>
@@ -287,6 +287,10 @@ export default class Transfer extends Vue {
             .then(json => {
               this.$buefy.notification.open({ message: '转账成功', type: 'is-success' });
             })
+        }
+        else {
+          this.$buefy.notification.open({ message: '转账失败', type: 'is-danger' });
+          this.showVerification = false;
         }
       });
   }
