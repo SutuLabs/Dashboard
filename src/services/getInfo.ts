@@ -18,7 +18,7 @@ export default {
       headers: this.getPublicHeaders(),
     });
   },
-  
+
   uploadFile(path: string, formData: FormData): Promise<Response> {
     const url = `${this.baseUrl}/server/${path}`;
 
@@ -204,6 +204,83 @@ export default {
     return fetch(url, {
       method: 'GET',
       headers: this.getPublicHeaders(),
+    });
+  },
+
+  preTransfer(address: string, amount: number) {
+    const url = `${this.baseUrl}/server/pre-transfer`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ address, amount })
+    });
+  },
+
+  transfer(address: string, amount: number, code: string) {
+    const url = `${this.baseUrl}/server/transfer`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ address, amount, code })
+    });
+  },
+
+  getBalance() {
+    const url = `${this.baseUrl}/server/pouch`;
+
+    return fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+  },
+
+  getTxs(txs: string[]) {
+    const url = `${this.baseUrl}/server/pouch/txs`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(txs)
+    });
+  },
+
+  getAllTxs() {
+    const url = `${this.baseUrl}/server/pouch/txs`;
+
+    return fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+  },
+
+  getReceivers() {
+    const url = `${this.baseUrl}/server/targets`;
+
+    return fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+  },
+
+  createOrUpdateReceiver(name: string, address: string, id: string | null = null) {
+    const url = `${this.baseUrl}/server/targets`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ id, name, address })
+    });
+  },
+
+  deleteReceiver(id: string) {
+    const url = `${this.baseUrl}/server/targets`;
+
+    return fetch(url, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ ids: [id] })
     });
   },
 }
