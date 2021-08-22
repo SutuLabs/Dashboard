@@ -78,6 +78,42 @@
             </div>
           </div>
         </b-tab-item>
+        <b-tab-item>
+          <template #header>
+            <span>
+              钱包管理
+            </span>
+          </template>
+          <div class="card">
+            <div class="card-content">
+              <b-button type="is-primary" class="is-pulled-right">Refresh</b-button>
+              <ul>
+                <li>高度 已同步</li>
+                <li>总共/等待可用/可用</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-content">
+              <b-field>
+                <b-button type="is-primary" size="is-small">Refresh</b-button>
+              </b-field>
+              <b-table :data="txs" :mobile-cards="true" detail-key="address" narrowed striped hoverable focusable>
+                <b-table-column field="name" label="ID，状态，数量，对象，时间" sortable v-slot="props">
+                  {{ props.row.name }}
+                </b-table-column>
+
+                <b-table-column field="address" label="地址" sortable v-slot="props">
+                  {{ props.row.address }}
+                </b-table-column>
+
+                <b-table-column field="address" label="操作" sortable v-slot="props">
+                  <b-button @click="reloadTx(props.row.address)">Reload</b-button>
+                </b-table-column>
+              </b-table>
+            </div>
+          </div>
+        </b-tab-item>
       </b-tabs>
     </div>
   </div>
@@ -93,6 +129,14 @@ interface IReceiver {
   address: string,
 }
 
+interface ITx {
+  id: string,
+  status: string,
+  amount: number,
+  target: string,
+  created: Date,
+}
+
 @Component({
   components: {
   },
@@ -100,6 +144,7 @@ interface IReceiver {
 export default class Transfer extends Vue {
   username = localStorage.getItem("username")
   receivers: IReceiver[] = [];
+  txs: ITx[] = [];
   showVerification = false;
   vcode = '';
   amount = 0;
