@@ -194,11 +194,11 @@ export default class Transfer extends Vue {
   receiverAddress = '';
   balance: IBalance | null = null;
 
-  mounted() {
+  mounted(): void {
     this.refreshReceivers();
   }
 
-  refreshReceivers() {
+  refreshReceivers(): void {
     getInfo.getReceivers()
       .then(response => response.json())
       .then(json => {
@@ -208,7 +208,7 @@ export default class Transfer extends Vue {
       });
   }
 
-  refreshTxs() {
+  refreshTxs(): void {
     getInfo.getAllTxs()
       .then(response => response.json())
       .then(json => {
@@ -216,7 +216,7 @@ export default class Transfer extends Vue {
       });
   }
 
-  refreshBalance() {
+  refreshBalance(): void {
     getInfo.getBalance()
       .then(response => response.json())
       .then(json => {
@@ -224,7 +224,7 @@ export default class Transfer extends Vue {
       });
   }
 
-  deleteReceiver(id: string) {
+  deleteReceiver(id: string): void {
     var r = this.receivers.find(_ => _.id == id);
     if (!r) return;
     const target = `${r.name}@${id}`;
@@ -242,7 +242,7 @@ export default class Transfer extends Vue {
     );
   }
 
-  createReceiver() {
+  createReceiver(): void {
     const target = `${this.receiverName}@${this.receiverAddress}`;
     confirm.confirmAndExecute({
       confirmTitle: '确认创建接收者',
@@ -260,7 +260,7 @@ export default class Transfer extends Vue {
     );
   }
 
-  preTransfer() {
+  preTransfer(): void {
     if (this.amount < 0 || !this.target) return;
     getInfo.preTransfer(this.target, this.amount)
       .then(resp => {
@@ -269,26 +269,27 @@ export default class Transfer extends Vue {
       });
   }
 
-  transfer() {
+  transfer(): void {
     if (this.amount < 0 || !this.target) return;
     getInfo.transfer(this.target, this.amount, this.vcode)
       .then(resp => {
         if (resp.ok) {
           resp.json()
             .then(json => {
-              this.$buefy.notification.open({ message: '转账成功', type: 'is-success' });
+              const tx = json.tx;
+              this.$buefy.snackbar.open({ message: '转账成功, ID: ' + tx, type: 'is-success', indefinite: true });
               this.showVerification = false;
               this.vcode = '';
             })
         }
         else {
-          this.$buefy.notification.open({ message: '转账失败', type: 'is-danger' });
+          this.$buefy.snackbar.open({ message: '转账失败', type: 'is-danger', indefinite: true });
           this.showVerification = false;
         }
       });
   }
 
-  copy(text: string) {
+  copy(text: string): void {
     utility.copy(text);
   }
 }
