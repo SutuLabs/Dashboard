@@ -39,6 +39,11 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "plottingPerformance" */ '../views/PlottingPerformance.vue')
   },
   {
+    path: '/transfer',
+    name: 'Transfer',
+    component: () => import(/* webpackChunkName: "monitor" */ '../views/Transfer.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
