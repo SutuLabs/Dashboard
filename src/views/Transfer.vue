@@ -103,7 +103,7 @@
                 <li v-if="balance.balance == balance.pending && balance.pending == balance.spendable">
                   余额: {{ balance.balance }}
                 </li>
-                <li v-else>余额: {{ balance.balance }}/等待可用: {{ balance.pending }}/可用: {{ balance.spendable }}</li>
+                <li v-else>余额: {{ balance.balance }}/待可用: {{ balance.pending }}/可用: {{ balance.spendable }}</li>
               </ul>
             </div>
           </div>
@@ -139,10 +139,6 @@
                 <b-table-column field="created" label="时间" sortable v-slot="props">
                   {{ props.row.created }}
                 </b-table-column>
-
-                <!-- <b-table-column field="address" label="操作" sortable v-slot="props">
-                  <b-button @click="reloadTx(props.row.id)" size="is-small">刷新</b-button>
-                </b-table-column> -->
               </b-table>
             </div>
           </div>
@@ -228,11 +224,6 @@ export default class Transfer extends Vue {
       });
   }
 
-  delete(id: string) {
-
-    let d = ''
-  }
-
   deleteReceiver(id: string) {
     var r = this.receivers.find(_ => _.id == id);
     if (!r) return;
@@ -286,6 +277,8 @@ export default class Transfer extends Vue {
           resp.json()
             .then(json => {
               this.$buefy.notification.open({ message: '转账成功', type: 'is-success' });
+              this.showVerification = false;
+              this.vcode = '';
             })
         }
         else {
@@ -298,8 +291,5 @@ export default class Transfer extends Vue {
   copy(text: string) {
     utility.copy(text);
   }
-  // reloadTx(id:string){
-  //   getInfo.getTxs()
-  // }
 }
 </script>
