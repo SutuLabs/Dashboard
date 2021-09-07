@@ -7,7 +7,7 @@
             <img src="./assets/logo.png">
           </b-navbar-item>
           <div class="slogan">
-            Chiabee，为矿场提供更专业的技术服务。
+            Chiabee，一站式 Chia 农场管理工具。
           </div>
         </template>
         <template #end>
@@ -73,7 +73,7 @@
             <img src="./assets/logo.png">
           </b-navbar-item>
           <div class="slogan">
-            Chiabee，为矿场提供更专业的技术服务。
+            Chiabee，一站式 Chia 农场管理工具。
           </div>
         </template>
       </b-navbar>
