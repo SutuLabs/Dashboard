@@ -1,24 +1,27 @@
-# chia
+# Chiabee
 
-## Project setup
-```
-npm install
-```
+## 简介
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Chiabee，一站式Chia农场管理工具。
 
-### Compiles and minifies for production
-```
-npm run build
-```
+通过可视化的界面呈现及简洁操作，让非技术人员也能轻松完成大规模集群的管理工作，推进挖矿产业的智能化、透明化、平民化。以下是一些功能和优点：
 
-### Lints and fixes files
-```
-npm run lint
-```
+* 使用可视化界面进行管理，非技术人员也能轻松运维Chia农场。
+* 解决chia官方管理界面粗糙的问题，将后台复杂的数据以图表形式，直观地展示在前端页面中。
+* 监控界面内，同时显示chia集群中的故障信息。
+* 通过电脑监控系统或者手机客户端，即可对整个集群进行实时监控。
+* 对农场运行连接状态、Plotter、Farmer、Harvester、硬盘进行全面监控。
+* 实时展示农场内机器信息、算力信息、收益/奖励信息。
+* 可连接办公社交软件，将chia集群中重要信息定时汇报给管理员；另外，非正常状态信息会第一时间汇报给管理员。
+* 多层级多角色管理员设置，根据实际需要配置权限。
+* 支持Plotter加速、双Farmer冗余。
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+进入[Chiabee官方网站](https://www.chiabee.net/)获取更多Chiabee信息。
+
+## 安装
+
+待补充。
+
+## 运行
+
+待补充。
