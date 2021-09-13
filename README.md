@@ -17,7 +17,7 @@ Chiabee，一站式Chia农场管理工具。
 * 支持Plotter加速、双Farmer冗余。
 
 进入[Chiabee官方网站](https://www.chiabee.net/)获取更多Chiabee信息。
-点击[Chiabee，一站式Chia农场管理工具](https://www.youtube.com/watch?v=saCTDXfI7Vc&t=12s) 查看演示视频。
+点击[Chiabee，一站式Chia农场管理工具](https://www.youtube.com/watch?v=saCTDXfI7Vc&t=12s)查看演示视频。
 
 ## 安装
 
