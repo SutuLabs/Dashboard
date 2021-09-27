@@ -21,11 +21,22 @@ Chiabee，一站式Chia农场管理工具。
 
 ## 安装
 
-待补充。
+使用Node.js
+```
+$ npm install
+```
 
 ## 运行
 
-待补充。
+编译并启用开发环境下的热重载
+```
+$ npm run serve
+```
+
+编译产品并最小化
+```
+$ npm run build
+```
 
 ---
 
@@ -52,8 +63,19 @@ Click [Chiabee: One-Stop Chia Farm Management Tool](https://www.youtube.com/watc
 
 ## Installing
 
-To be added.
+Project setup using Node.js
+```
+$ npm install
+```
 
 ## Running
 
-To be added.
+Compiles and hot-reloads for development
+```
+$ npm run serve
+```
+
+Compiles and minifies for production
+```
+$ npm run build
+```
