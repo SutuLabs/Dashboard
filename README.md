@@ -61,14 +61,16 @@ Through the visual interface presentation and concise operation, non-technical p
 Go to [Chiabee official website](https://www.chiabee.net/) for more information about Chiabee.
 Click [Chiabee: One-Stop Chia Farm Management Tool](https://www.youtube.com/watch?v=xtDcrkQ6teM) to view the demo video.
 
-## Installing
+## Prerequisites
+
+**Node.js** version 10.x and above with npm installed.
+
+## Build Client
 
 Project setup using Node.js
 ```
 $ npm install
 ```
-
-## Running
 
 Compiles and hot-reloads for development
 ```
@@ -79,3 +81,27 @@ Compiles and minifies for production
 ```
 $ npm run build
 ```
+
+## Usage
+
+Chiabee Client consists of five tabs, including: 
+
+### Home
+
+Home page gives an real-time overview of the farm, including connection status, machine status, network space, etc.
+
+### Farm Monitor
+
+Farm Monitor consists of three main sections, Plotter Moniter, Harvester Monitor, Hard Disk Monitor. Plotter Monitor displays real-time information of all plotter, supports adjusting plotting progress and automatically coordinates and balances plots storage to achieve optimal efficiency.
+
+### Plotting Efficiency
+
+Plotting Efficiency provides a list of plotting efficiency on different operation systems based on data from Chia.
+
+### Useful Tools
+
+Useful Tools redirects to external tools such as Chia Calculator and Chia Explorer which facilitates rational evaluation of Chia farming. 
+
+### User Center
+
+User Center implement user authoritation to allow authoritized personnel have access to confidential information, such as Farm Monitor, and perform potentially hazardous actions, such as terminating machines.
