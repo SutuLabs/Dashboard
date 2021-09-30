@@ -38,6 +38,34 @@ $ npm run serve
 $ npm run build
 ```
 
+### 其他配置
+
+获取后端API的默认路径是`/`。如果后端服务器并不是安装在本地，用户可以通过修改`.env`文件中的环境变量`VUE_APP_API`来修改路径。
+
+## 使用
+
+Chiabee客户端由以下五大模块组成：
+
+### 首页
+
+首页展示了农场的实时概况，包括连接状态，机器状态，网络空间大小等。
+
+### 矿场监控
+
+矿场监控由三大主要板块构成：绘图机监控，收割机监控，以及硬盘监控。绘图机监控可以监控每台P图机的运行状态，调整P图的进程和田块位置以获得更高的P图效率。收割机监控可以查看田块的传输状态，传输速率，收割机的剩余空间等。用户可以展开查看每台收割机的硬盘详情，根据需要进行挂载、卸载操作，如有异常情况，界面上会有相应的提示。硬盘监控可以查看硬盘的所在位置，SMART信息，并进行查询、挂载等操作。另外，矿场监控也提供了实时的错误提示与事件提示。
+
+### P盘效率
+
+P盘效率界面展示了不同系统下的P盘效率。
+
+### 常用工具
+
+常用工具提供了指向Chia计算器和Chia区块浏览器的快捷方式。
+
+### 个人中心
+
+用户可以通过个人中心登陆自己的账号，登录后有权限的账户才可以查看矿场监控等信息，或进行卸载机器等有风险的操作。
+
 ---
 
 # Chiabee
@@ -82,6 +110,10 @@ Compiles and minifies for production
 $ npm run build
 ```
 
+### Additional Configuration
+
+The default route to communicate with backend API is `/`. If the backend server is install in another machine, you can access it by changing the environment variable `VUE_APP_API` in `.env` file. 
+
 ## Usage
 
 Chiabee Client consists of five tabs, including: 
@@ -92,7 +124,7 @@ Home page gives an real-time overview of the farm, including connection status, 
 
 ### Farm Monitor
 
-Farm Monitor consists of three main sections, Plotter Moniter, Harvester Monitor, Hard Disk Monitor. Plotter Monitor displays real-time information of all plotter, supports adjusting plotting progress and automatically coordinates and balances plots storage to achieve optimal efficiency.
+Farm Monitor consists of three main sections, Plotter Moniter, Harvester Monitor, Hard Disk Monitor. Plotter Monitor displays real-time information of all plotter, supports adjusting plotting progress and automatically coordinates and balances plots storage to achieve optimal efficiency. Harvester Monitor displays transferring status of plots, remaining storage of hard disks and other useful indicators at a glance. Harvester Monitor reports abnormalies when hard disk is not functioning properly, and provides management controls which allow authoritized users to manipulate the machines accordingly. Hard Disk Mornitor collects physical location and SMART information of all hard disks and enables information filtering and disk management. Additionally, Farm Monitor supports real-time notification of errors and events.
 
 ### Plotting Efficiency
 
