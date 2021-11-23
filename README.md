@@ -50,9 +50,15 @@ Chiabee客户端由以下五大模块组成：
 
 首页展示了农场的实时概况，包括连接状态，机器状态，网络空间大小等。
 
+![概览](https://user-images.githubusercontent.com/90297530/142964227-2d3f2ce8-a8e6-4a32-a4f0-a41c61ef0f61.png)
+
 ### 矿场监控
 
 矿场监控由三大主要板块构成：绘图机监控，收割机监控，以及硬盘监控。绘图机监控可以监控每台P图机的运行状态，调整P图的进程和田块位置以获得更高的P图效率。收割机监控可以查看田块的传输状态，传输速率，收割机的剩余空间等。用户可以展开查看每台收割机的硬盘详情，根据需要进行挂载、卸载操作，如有异常情况，界面上会有相应的提示。硬盘监控可以查看硬盘的所在位置，SMART信息，并进行查询、挂载等操作。另外，矿场监控也提供了实时的错误提示与事件提示。
+
+![Plotter](https://user-images.githubusercontent.com/90297530/142964548-01929a5f-7802-4eec-be7e-141b6bb409bf.png)
+![Harvester](https://user-images.githubusercontent.com/90297530/142964557-829f644d-3164-4e52-b48d-4c1a4859c754.png)
+![硬盘](https://user-images.githubusercontent.com/90297530/142964562-80140aec-8af5-42d4-8053-3ee3f827bf7c.png)
 
 ### P盘效率
 
@@ -122,9 +128,15 @@ Chiabee Client consists of five tabs, including:
 
 Home page gives an real-time overview of the farm, including connection status, machine status, network space, etc.
 
+![概览](https://user-images.githubusercontent.com/90297530/142965346-1f86fdc4-6790-4636-bc72-7ca783b5de05.png)
+
 ### Farm Monitor
 
 Farm Monitor consists of three main sections, Plotter Moniter, Harvester Monitor, Hard Disk Monitor. Plotter Monitor displays real-time information of all plotter, supports adjusting plotting progress and automatically coordinates and balances plots storage to achieve optimal efficiency. Harvester Monitor displays transferring status of plots, remaining storage of hard disks and other useful indicators at a glance. Harvester Monitor reports abnormalies when hard disk is not functioning properly, and provides management controls which allow authoritized users to manipulate the machines accordingly. Hard Disk Mornitor collects physical location and SMART information of all hard disks and enables information filtering and disk management. Additionally, Farm Monitor supports real-time notification of errors and events.
+
+![Plotter](https://user-images.githubusercontent.com/90297530/142965376-202aef26-690b-41e4-b9a3-d9bc3f10107a.png)
+![Harvester](https://user-images.githubusercontent.com/90297530/142965378-b9d4be6a-26d0-4f37-8cce-2391b50bdfb0.png)
+![硬盘](https://user-images.githubusercontent.com/90297530/142965465-74e26ec0-6ad3-4abe-ac6b-19f06a463a7b.png)
 
 ### Plotting Efficiency
 
